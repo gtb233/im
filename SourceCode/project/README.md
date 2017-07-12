@@ -1,6 +1,12 @@
 # myproject
 
-gxt
+##架子：
+
+`https://github.com/HerringtonDarkholme/av-ts`
+
+##例子：
+
+`https://github.com/YongHao0/RongIMLib-Vue-Demo.git`
 
 Scripts:
 
@@ -11,5 +17,9 @@ Scripts:
 Setup: run `npm install`
 
 Enjoy!
+
+
+
+
 
 
