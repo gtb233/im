@@ -57,19 +57,24 @@ router.get('/login', function(req, res, next) {
 
 //取得TOKEN数据 （融云直接） 暂时GET
 router.get('/get_token', function(req, res, next) {
-    var key = 'usertoken_' + user.id; //前缀
+    var prefix = 'usertoken_'; //前缀
+    var reqToken = req.query.token;
     var token = '';
-
+    if(Utility.isEmpty(reqToken) || reqToken == 'null'){
+      return res.send(new APIResult(500, '数据丢失!'));
+    }
+    var cacheKey = prefix + reqToken;
+    
     //从本地获取TOKEN
     // token = Session.getUserTokenCookie(req);
-    Cache.get(key).then(function(cacheToken){
+    Cache.get(cacheKey).then(function(cacheToken){
       token = cacheToken;
     }).then(function(){
         if (Utility.isEmpty(token)){
               //若过期或不存在则重新请求
               getToken(user.id, user.nickname, user.portraitUri).then(function(newToken) {
                   // Session.setUserTokenCookie(res, newToken);
-                  Cache.set(key, newToken);
+                  Cache.set(cacheKey, newToken);
                   token = newToken;
                 }).then(function(){
                   return res.send(new APIResult(200, Utility.encodeResults({
