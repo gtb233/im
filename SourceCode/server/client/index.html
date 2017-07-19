@@ -72,6 +72,8 @@
 
     <script>
         $(function(){
+			setTargetInfo();
+
             /*在线咨询图片*/
             $('#img_upload').change(function(){
                 var file=this.files[0];
@@ -112,7 +114,7 @@
             })
 
             //初始化连接融云
-            startInit();
+            startInit('',targetId);
             })
     </script>
   </body>
