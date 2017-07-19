@@ -33,7 +33,7 @@ getToken = function(userId, nickname, portraitUri) {
     return rongCloud.user.getToken(userId, nickname, portraitUri, function(err, resultText) {
       var result;
       if (err) {
-        return sreject(err);
+        return reject(err);
       }
       result = JSON.parse(resultText);
       if (result.code !== 200) {
