@@ -33,7 +33,7 @@ getToken = function(userId, nickname, portraitUri) {
     return rongCloud.user.getToken(userId, nickname, portraitUri, function(err, resultText) {
       var result;
       if (err) {
-        returnsreject(err);
+        return sreject(err);
       }
       result = JSON.parse(resultText);
       if (result.code !== 200) {
@@ -48,7 +48,7 @@ getToken = function(userId, nickname, portraitUri) {
 };
 
 //测试数据gw00001
-var user = {id: "GW78829820", nickname:"nickname", portraitUri: "http://img5.imgtn.bdimg.com/it/u=3281768044,2052582677&fm=26&gp=0.jpg"};
+var user = {id: "", nickname:"nickname", portraitUri: "http://img5.imgtn.bdimg.com/it/u=3281768044,2052582677&fm=26&gp=0.jpg"};
 
 //验证用户
 router.get('/login', function(req, res, next) {
@@ -63,10 +63,13 @@ router.get('/get_token', function(req, res, next) {
     if(Utility.isEmpty(reqToken) || reqToken == 'null'){
       return res.send(new APIResult(500, '数据丢失!'));
     }
+    //此处应为获取用户信息并使用用户盖网号，现暂时用此
     var cacheKey = prefix + reqToken;
-    
+    user.id = reqToken;
+    user.nickname += reqToken;
+
     //从本地获取TOKEN
-    // token = Session.getUserTokenCookie(req);
+    // token = Session.getUserTokenCookie(req); //cookie保存方式测试，不适合
     Cache.get(cacheKey).then(function(cacheToken){
       token = cacheToken;
     }).then(function(){

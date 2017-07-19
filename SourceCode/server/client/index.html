@@ -24,24 +24,6 @@
 					</div>
 					<div class="socket-list">
 						<ul>
-							<li>
-								<img class="logo" src="./images/bgs/hedader-tx.png">
-								<p class="title">店铺店铺店铺</p>
-								<p class="txtle">欢迎咨询在线客服！<span>88</span></p>
-								<p class="time">2016-12-12</p>
-							</li>
-							<li class="active">
-								<img class="logo" src="./images/bgs/hedader-tx.png">
-								<p class="title">店铺一</p>
-								<p class="txtle">欢迎咨询在线客服！<span>888</span></p>
-								<p class="time">2016-12-12</p>
-							</li>
-							<li>
-								<img class="logo" src="./images/bgs/hedader-tx.png">
-								<p class="title">店铺一</p>
-								<p class="txtle">欢迎咨询在线客服！<span>88</span></p>
-								<p class="time">2016-12-12</p>
-							</li>
 						</ul>
 					</div>
 				</div>
@@ -89,107 +71,7 @@
     <script src="./js/RongEmoji-2.2.5.js"></script>
     <script src="./js/init.js"></script>
     <script src="app.config.js"></script>
-    <script>
-        instance = ''; //初始
-
-        //取得URL参数数据
-        function getQueryString(name) {
-                var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");  
-                var r = window.location.search.substr(1).match(reg);  
-                if (r != null) return unescape(r[2]);  
-                return null;  
-            }
-        
-        function startInit(user,targetId){
-            //取得用户TOKEN
-            var userToken = '';
-            $.ajax({
-                url: window.__sealtalk_config.serverUrl + "/user/get_token",
-                data: "token=" + getQueryString('token'),//取得URL上的TOKEN给服务端处理
-                type: 'GET',
-                dataType: 'json',
-                success: function(data){
-                    if(data.code == 200){
-                        userToken = data.result.token;
-                    }else{
-                        console.log('获取TOKEN失败!');
-                    }
-                },
-                error: function(){
-                }
-            }).then(function(){
-                var params = {
-                    appKey : window.__sealtalk_config.appkey,
-                    token : userToken,
-                    navi : ''
-                };
-                var callbacks = {
-                    getInstance : function(instance){
-                            // RongIMLib.RongIMEmoji.init();
-
-                            //获取列表，待改为保存到本地设置一定过期时间
-                            instance.getConversationList({
-                            onSuccess: function(list) {
-                                console.log(list);
-                                //取得列表，处理页面展示
-                            },
-                            onError: function(error) {
-                                //列表获取失败应该处理什么？
-                            }
-                        },null);
-
-                        //instance.sendMessage
-                    },
-                    getCurrentUser : function(userInfo){
-                        console.log(userInfo.userId);
-                        alert("链接成功；userid=" + userInfo.userId);
-                        //连接成功初始处理
-                    },
-                    receiveNewMessage : function(message){
-                        //接收信息处理
-                    }
-                };
-                init(params,callbacks);
-            });
-        }
-
-        //发送信息
-        function sendTextMessage(){
-            /*
-            1: 单条消息整体不得大于128K
-            2: conversatinType 类型是 number，targetId 类型是 string
-            */
-            var conversationtype = RongIMLib.ConversationType.PRIVATE;
-            var targetId = "GW00104713";
-
-            var content = {
-                // content:"hello " + encodeURIComponent('π，α，β'),
-                content:"test",
-                user : {
-                    "userId" : 'GW78829820',
-                    "name" : "张三",
-                    "portraitUri" : "http://rongcloud.cn/images/newVersion/log_wx.png"
-                },
-                extra:{
-                    "name":"name",
-                    "age" : 12
-                }
-            };
-
-            var msg = new RongIMLib.TextMessage(content);
-
-            var start = new Date().getTime();
-            instance.sendMessage(conversationtype, targetId, msg, {
-                onSuccess: function (message) {
-                    console.log("发送文字消息成功",message,start);
-                },
-                onError: function (errorCode,message) {
-                    console.log(errorCode);
-                    console.log("发送文字消息失败",message,start);
-                }
-            });
-        }
-    </script>
+    <script src="./js/start.js"></script>
 
     <script>
         $(function(){
@@ -224,7 +106,7 @@
             $('.socket-input button').click(function(){
                 var txt=$('.socket-input .input').html();
                 if(txt!=""){
-                    var li="<li><span>"+txt+"</span></li>";
+                    var li='<li  class="own"><span>'+txt+'</span></li>';
                     $('.socket-info ul').append(li);
                     $('.socket-input .input').html('');
                 }
