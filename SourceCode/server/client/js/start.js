@@ -1,16 +1,18 @@
-//
+//定义全局
 instance = ''; //融云
 userId   = ''; //用户ID, 当前用户
 targetId = ''; //目标用户ID
-conversationtype = RongIMLib.ConversationType.PRIVATE; //定义私有
+conversationtype = RongIMLib.ConversationType.PRIVATE; //定义私有单聊
 
-//取得URL参数数据 
+//取得URL参数数据
 function getQueryString(name) {
         var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");  
         var r = window.location.search.substr(1).match(reg);  
         if (r != null) return unescape(r[2]);  
         return null;  
     }
+
+/* -----------初始连接融云------------ */
 
 function startInit(user,targetId){
     //取得用户TOKEN
@@ -34,15 +36,16 @@ function startInit(user,targetId){
     }).then(function(){
         var params = {
             appKey : window.__sealtalk_config.appkey,
-            token : userToken,
+            token : userToken, //各用户专属TOKEN ，设置的一小时过期
             navi : ''
         };
         var callbacks = {
+            //连接状态回调
             getInstance : function(instance){
-                    // RongIMLib.RongIMEmoji.init();
+                // RongIMLib.RongIMEmoji.init();
 
-                    //获取列表，待改为保存到本地设置一定过期时间
-                    instance.getConversationList({
+                //获取列表，待改为保存到本地设置一定过期时间
+                instance.getConversationList({
                     onSuccess: function(list) {
                         console.log(list);
                         //取得列表，处理页面展示
@@ -65,26 +68,28 @@ function startInit(user,targetId){
                         }
                     },
                     onError: function(error) {
-                        //列表获取失败应该处理什么？
+                        //列表获取失败时处理
                     }
                 },null);
 
-                //instance.sendMessage
+                //instance.sendMessage 可发送初始回复
             },
             getCurrentUser : function(userInfo){
-                userId = userInfo.userId;
+                userId = userInfo.userId; //定义用户ID
                 console.log(userInfo.userId);
                 //连接成功初始处理
             },
             receiveNewMessage : function(message){
                 //接收信息处理,暂时添加到聊天窗口
-                var li="<li><span>"+message.content.content+"</span></li>";
+                var li="<li><span>" + message.content.content + "</span></li>";
                 $('.socket-info ul').append(li);
             }
         };
         init(params,callbacks);
     });
 }
+
+/* --------以下部分为处理函数--------- */
 
 //切换用户 根据URL数据 targetId
 function setTargetInfo(){
@@ -93,9 +98,12 @@ function setTargetInfo(){
     console.log('set targetid success');
 }
 //切换用户 (侧边列表用户ID)
-function setTargetId(storeID){
+function setTargetId(obj,storeID){
     targetId = storeID;
+    //测试直接先用刷新页面
     console.log(targetId);
+    window.location.href = "http://chat.com/?token="+ userId +"&storeID=" + storeID;
+    
     //处理对话框
 }
 
