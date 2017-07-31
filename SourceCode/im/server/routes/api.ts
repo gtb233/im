@@ -3,6 +3,7 @@ import { BaseRoute } from "./route";
 import * as login from '../sdk/openApi/login'
 import * as token from '../sdk/rong/token'
 import * as gxtToken from '../sdk/gxt/token'
+import * as tool from '../lib/util'
 
 /**
  * / route
@@ -30,12 +31,11 @@ export class ApiRoute extends BaseRoute {
     router.get("/api/login", (req: Request, res: Response, next: NextFunction) => {
       new ApiRoute().login(req, res, next);
     });
-
-    router.get("/api/token", (req: Request, res: Response, next: NextFunction) => {
+    router.post("/api/token", (req: Request, res: Response, next: NextFunction) => {
       new ApiRoute().token(req, res, next);
     });
 
-    router.get("/api/gxtToken", (req: Request, res: Response, next: NextFunction) => {
+    router.post("/api/gxtToken", (req: Request, res: Response, next: NextFunction) => {
       new ApiRoute().gxtToken(req, res, next);
     });
   }
@@ -73,12 +73,20 @@ export class ApiRoute extends BaseRoute {
     * @param next 
     */
   public async token(req: Request, res: Response, next: NextFunction) {
-    const rst = new token.TokenRst();
-    rst.userId = req.query.userId;
-    rst.name = req.query.name
-    rst.portraitUri = req.query.portraitUri
-    const data = await token.exec(rst);
-    res.send(data)
+    res.header("Access-Control-Allow-Origin", "*");
+    const check = tool.checkToken(req.body.userId, req.body.storeId, req.body.token)
+    if (!check) {
+      res.send("token 验证失败，您在当前页面停留过久，请刷新重试！");
+    } else {
+      //console.log(req.body);
+      const rst = new token.TokenRst();
+      rst.userId = req.body.userId;
+      rst.name = req.body.name
+      rst.portraitUri = req.body.portraitUri
+      const data = await token.exec(rst);
+      res.send(data)
+    }
+
   }
 
   /**
@@ -88,15 +96,11 @@ export class ApiRoute extends BaseRoute {
     * @param next 
    */
   public async gxtToken(req: Request, res: Response, next: NextFunction){
-    //验证来源
-    let checkToken = req.query.checkToken;
-    // if (!checkToken) {
-    //   res.send('error') // 待改成具体错误参数
-    // }
-    let newToken = ''; // 通过统一算法计算取得，待补充
-    // if (checkToken !== newToken){
-    //   res.send('error2')
-    // }
+    res.header("Access-Control-Allow-Origin", "*");
+    const check = tool.checkToken(req.body.userId, req.body.storeId, req.body.token)
+    if (!check) {
+      res.send("token 验证失败，您在当前页面停留过久，请刷新重试！");
+    }
 
     const rst = new gxtToken.TokenRst();
     rst.fromgw = req.query.userId;

@@ -66,16 +66,23 @@ let getUserList = function (cb, state) {
 export async function getUserTokenAsync (cb, state) {
   /* 请求获取TOKEN */
   let userToken = ''
-  let user = tool.urlParse()['user']
-  let currentThreadID = tool.urlParse()['store']
-  const checkToken = tool.urlParse()['token']
+  let get = tool.urlParse()
+  let user = get['user']
+  let currentThreadID = get['storeid']
   if (!user || !currentThreadID) {
     alert('用户ID与商家ID数据异常！')
     return false
   }
-  await Vue.http.get(
-    state.serverUrl + 'api/gxtToken?userId=' + user + '&storeId=' + currentThreadID + '&checkToken=' + checkToken,
-    { name: '这是带参测试' }, { emulateJSON: true }
+  const params = {
+    userId: user,
+    name: user,
+    token: get['token'],
+    storeId: get['storeid']
+  }
+  await Vue.http.post(
+    state.serverUrl + 'api/gxtToken',
+    params,
+    { emulateJSON: true }
   ).then(response => {
     let data = response.body
     console.log('service return:', data)
@@ -85,7 +92,8 @@ export async function getUserTokenAsync (cb, state) {
       currentThreadID = data.resultData.togw // 变更为商家信息对象
       console.log('userToken:  ' + userToken + '|||' + user + '|||' + currentThreadID)
     } else {
-      console.log(response.body)
+      alert(data)
+      console.log(data)
     }
   }, response => {
     alert('请求连接失败，请刷新页面重试！')
