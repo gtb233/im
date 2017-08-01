@@ -8,3 +8,17 @@
         <p class="time">2016-12-12</p>
     </li>
 </template>
+
+<script>
+import { mapState } from 'vuex'
+export default {
+  computed: {
+    ...mapState({
+    }),
+  }
+}
+</script>
+
+<style>
+  
+</style>

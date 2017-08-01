@@ -27,13 +27,14 @@ import { mapGetters,mapState } from 'vuex'
 
 export default {
     name: "threadSection",
-    computed:mapState({
+    computed: {
+      ...mapState({
         userInfo: state=>state.userInfo
-    }),
+      })
+    },
     components: {
         Thread,
         SearchUser,
-    },
-    
+    }
 }
 </script>
