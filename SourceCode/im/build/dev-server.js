@@ -3,7 +3,7 @@ var exec = require('child_process').execSync;
 exec('tsc', function(error, stdout, stderr) {
    console.log(error, stdout, stderr)
 });
-
+  
 require('./check-versions')()
 
 var config = require('../config')
@@ -13,12 +13,10 @@ if (!process.env.NODE_ENV) {
 
 var opn = require('opn')
 var path = require('path')
-var express = require('express')
 var webpack = require('webpack')
 var proxyMiddleware = require('http-proxy-middleware')
-var webpackConfig = process.env.NODE_ENV === 'testing'
-  ? require('./webpack.prod.conf')
-  : require('./webpack.dev.conf')
+var webpackConfig = require('./webpack.dev.conf')
+var server = require("../server/dist/server");
 
 // default port where dev server listens for incoming traffic
 var port = process.env.PORT || config.dev.port
@@ -28,14 +26,13 @@ var autoOpenBrowser = !!config.dev.autoOpenBrowser
 // https://github.com/chimurai/http-proxy-middleware
 var proxyTable = config.dev.proxyTable
 
-var app = express()
+// var app = express()
+var myServer = server.Server.bootstrap();
+var express = myServer.esp;
+
+var app = myServer.app;
+
 var compiler = webpack(webpackConfig)
-var myServer = require('../server/dist/server.js');
-
-app.get('/server', function (req, res) {
-  res.send('Hello World!'+myServer.area(10));
-});
-
 
 var devMiddleware = require('webpack-dev-middleware')(compiler, {
   publicPath: webpackConfig.output.publicPath,
@@ -93,7 +90,6 @@ devMiddleware.waitUntilValid(() => {
   }
   _resolve()
 })
-
 
 var server = app.listen(port)
 
