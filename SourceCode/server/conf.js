@@ -22,11 +22,11 @@ module.exports = {
   // N3D 密钥，用来加密所有的 Id 数字，不小于 5 位的字母数字组合
   N3D_KEY: '11EdDIaqms22123',
   // 认证 Cookie 主域名 如果没有正式域名，请修改本地 hosts 文件配置域名
-  AUTH_COOKIE_DOMAIN: 'chat.com',
+  AUTH_COOKIE_DOMAIN: '*',
   // 跨域支持所需配置的域名信息，包括请求服务器的域名和端口号，如果是 80 端口可以省略端口号。如：http://web.sealtalk.im
-  CORS_HOSTS: 'http://chat.com',
+  CORS_HOSTS: '*',
   // 本服务部署的 HTTP 端口号
-  SERVER_PORT: 8081,
+  SERVER_PORT: 8000,
   // MySQL 数据库名称
   DB_NAME: 'sealtalk',
   // MySQL 数据库用户名
