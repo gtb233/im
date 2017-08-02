@@ -6,3 +6,5 @@ export function getQueryString (name) {
 
   return null
 }
+
+export default getQueryString

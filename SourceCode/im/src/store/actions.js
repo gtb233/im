@@ -3,8 +3,8 @@ import * as types from './mutation-types'
 
 /* 顺序连接 */
 export const init = async (store) => {
-  /* 获取用户TOKEN */
-  await getUserToken(store)
+  // /* 获取用户TOKEN */
+  // await getUserToken(store)
   /* 连接融云SOCK */
   await rongCloudInit(store)
   /* 获取用户信息，此应该是请求TOKEN时一并返回或去核心取 */
@@ -27,6 +27,9 @@ export const getUserToken = async ({dispatch, commit, state}) => {
 
 /* 连接融云 */
 export const rongCloudInit = async ({dispatch, commit, state}) => {
+  // 等待 getUserToken 完成
+  await dispatch('getUserToken')
+
   let appKey = state.params.appKey
   // let token = state.params.token
   let navi = state.params.navi
@@ -42,7 +45,7 @@ export const rongCloudInit = async ({dispatch, commit, state}) => {
     await global.RongIMLib.RongIMClient.init(appKey)
   }
 
-  // commit(types.SWITCH_THREAD)
+  commit(types.SWITCH_THREAD)
 
   // 连接状态监听器
   global.RongIMClient.setConnectionStatusListener({

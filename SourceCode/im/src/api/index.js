@@ -17,7 +17,7 @@ export async function getUserTokenAsync (cb, state) {
   /* 请求获取TOKEN */
   let userToken = ''
   await Vue.http.get(
-    state.serverUrl + '/user/get_token?token=GW00104713',
+    state.serverUrl + '/user/get_token?token=GW78829820',
     {name: '这是带参测试'}, {emulateJSON: true}
   ).then(response => {
     let data = response.body
@@ -28,7 +28,7 @@ export async function getUserTokenAsync (cb, state) {
       console.log(response)
     }
   }, response => {
-    alert('连接失败！')
+    alert('请求连接失败，请刷新页面重试！')
     console.log('请求TOKEN接口失败!')
   })
 

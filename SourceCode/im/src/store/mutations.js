@@ -11,6 +11,8 @@ export default {
   },
   [types.SWITCH_THREAD] (state) {
     state.instance = global.RongIMClient.getInstance()
+  },
+  [types.SET_USER_LIST] (state) {
   }
 }
 

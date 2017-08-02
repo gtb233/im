@@ -7,7 +7,7 @@ import mutations from './mutations'
 Vue.use(Vuex)
 
 const state = {
-  serverUrl: 'http://server.chat.com', /* 请求TOKEN的服务器地址 */
+  serverUrl: 'http://localhost:8000', /* 请求TOKEN的服务器地址 */
   appkey: 'mgb7ka1nmf10g', /* 融云申请的应用KEY */
   checkToken: '', /* 商城登录后的验证TOKEN */
   userToken: '', /* 融云用户TOKEN */
@@ -17,8 +17,11 @@ const state = {
     navi: ''
   },
   instance: {}, /* 融云实例 */
-  userInfo: {},
+  userInfo: {}, /* 用户信息 */
   currentThreadID: null,
+  userList: { /* 用户列表 */
+
+  },
   threads: {
     /*
     id: {
