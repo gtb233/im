@@ -19,9 +19,14 @@ const state = {
   instance: {}, /* 融云实例 */
   userInfo: {}, /* 用户信息 */
   currentThreadID: null,
-  userList: { /* 用户列表 */
-
-  },
+  userList: [{
+    targetId: '',
+    userLogo: '',
+    userName: '',
+    lastMessage: '',
+    messagesNumber: '',
+    sendTime: ''
+  }],
   threads: {
     /*
     id: {
