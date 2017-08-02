@@ -24,10 +24,3 @@ new Vue({
 })
 
 init(store)
-
-// /* 获取用户TOKEN */
-// getUserToken(store)
-// /* 连接融云SOCK */
-// rongCloudInit(store)
-// /* 获取用户信息，此应该是请求TOKEN时一并返回或去核心取 */
-// getUserInfo(store)

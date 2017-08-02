@@ -3,21 +3,24 @@ import * as types from './mutation-types'
 
 /* 顺序连接 */
 export const init = async (store) => {
+  /* 获取用户TOKEN */
   await getUserToken(store)
-  rongCloudInit(store)
-  getUserInfo(store)
+  /* 连接融云SOCK */
+  await rongCloudInit(store)
+  /* 获取用户信息，此应该是请求TOKEN时一并返回或去核心取 */
+  await getUserInfo(store)
 }
 
 /* 取得用户信息 */
 export const getUserInfo = async ({dispatch, commit}) => {
-  api.getUserInfo(userInfo => {
+  await api.getUserInfo(userInfo => {
     commit(types.GET_USER_INFO, userInfo)
   })
 }
 
 /* 取得用户融云TOKEN */
 export const getUserToken = async ({dispatch, commit, state}) => {
-  api.getUserTokenAsync((userToken) => {
+  await api.getUserTokenAsync((userToken) => {
     commit(types.GET_USER_TOKEN, userToken)
   }, state)
 }
@@ -25,7 +28,7 @@ export const getUserToken = async ({dispatch, commit, state}) => {
 /* 连接融云 */
 export const rongCloudInit = async ({dispatch, commit, state}) => {
   let appKey = state.params.appKey
-  let token = state.params.token
+  // let token = state.params.token
   let navi = state.params.navi
 
   if (navi !== '') {
@@ -33,10 +36,10 @@ export const rongCloudInit = async ({dispatch, commit, state}) => {
       navi: navi
     }
     console.log('私有云')
-    global.RongIMLib.RongIMClient.init(appKey, null, config)
+    await global.RongIMLib.RongIMClient.init(appKey, null, config)
   } else {
     console.log('公有云')
-    global.RongIMLib.RongIMClient.init(appKey)
+    await global.RongIMLib.RongIMClient.init(appKey)
   }
 
   // commit(types.SWITCH_THREAD)
@@ -78,8 +81,8 @@ export const rongCloudInit = async ({dispatch, commit, state}) => {
   })
 
   /* 开始连接 */
-  console.log(token)
-  global.RongIMClient.connect(token, {
+  /* console.log(state.params.token) */
+  global.RongIMClient.connect(state.params.token, {
     onSuccess: function (userId) {
       // callbacks.getCurrentUser && callbacks.getCurrentUser({userId: userId})
       console.log('链接成功，用户id：' + userId)

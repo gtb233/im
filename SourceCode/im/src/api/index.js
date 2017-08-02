@@ -17,7 +17,7 @@ export async function getUserTokenAsync (cb, state) {
   /* 请求获取TOKEN */
   let userToken = ''
   await Vue.http.get(
-    state.serverUrl + '/user/get_token?token=GW78829820',
+    state.serverUrl + '/user/get_token?token=GW00104713',
     {name: '这是带参测试'}, {emulateJSON: true}
   ).then(response => {
     let data = response.body

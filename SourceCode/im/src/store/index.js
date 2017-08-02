@@ -13,11 +13,9 @@ const state = {
   userToken: '', /* 融云用户TOKEN */
   params: {
     appKey: 'mgb7ka1nmf10g',
-    token: 'qikZi+Lsv3kDhegzY3sFAjT7Xa7E7kGnu91Y1IDOAT08zh9nFHVD/0OHXHwEH8pFK437m4PgUTFYahu3SICJnx93MA3vLtSu',
+    token: '',
     navi: ''
   },
-  rongIMLibObj: global.RongIMLib, /* 融云对象，不可更改 */
-  rongIMClient: global.RongIMLib.RongIMClient, /* 融云对象 */
   instance: {}, /* 融云实例 */
   userInfo: {},
   currentThreadID: null,
