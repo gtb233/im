@@ -11,7 +11,7 @@
     
             <div class="tell-list">
                 <ul>
-                   <message></message>
+                    <message></message>
                 </ul>
             </div>
     
@@ -30,8 +30,9 @@
             </div>
             <div class="socket-input">
                 <form onsubmit="return false">
-                    <div class="input" contenteditable="true"></div>
-                    <button>发送</button>
+                    <!-- <div class="input" contenteditable="true" >{{inputMsg}}</div> -->
+                    <textarea v-model="inputMsg" ></textarea>
+                    <button @click="send()">发送</button>
                 </form>
             </div>
     
@@ -41,10 +42,23 @@
 
 <script>
 import Message from './Message.vue'
+import { mapActions } from 'vuex'
 export default {
     name: "MessageSection",
+    data() {
+        return {
+            inputMsg: '',
+        }
+    },
     components: {
         Message
+    },
+    methods: {
+        send() {
+            console.log(this.inputMsg)
+            this.$store.dispatch('sendMessage', { msg: this.inputMsg })
+            this.inputMsg = ''
+        }
     }
 }
 </script>

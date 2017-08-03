@@ -4,9 +4,11 @@ export default {
   [types.GET_USER_INFO] (state, userInfo) {
     state.userInfo = userInfo
   },
-  [types.GET_USER_TOKEN] (state, userToken) {
-    state.userToken = userToken
-    state.params.token = userToken
+  [types.GET_USER_TOKEN] (state, userobj) {
+    state.userToken = userobj.userToken
+    state.params.token = userobj.userToken
+    state.currentUserId = userobj.user
+    state.currentThreadID = userobj.currentThreadID
     // console.log(state.params)
   },
   [types.SWITCH_THREAD] (state) { /* 设置融云连接常量 */
@@ -51,6 +53,36 @@ export default {
     }, null)
   },
   [types.GET_CURRENT_USER] (state) {
+  },
+  [types.SET_USER_ID] (state, userId) {
+    state.currentUserId = userId
+  },
+  [types.SEND_MESSAGE] (state, obj) {
+    let content = {
+      // content:"hello " + encodeURIComponent('π，α，β'),
+      content: obj.msg,
+      user: {
+        'userId': state.currentUserId,
+        'name': '张三',
+        'portraitUri': 'http://rongcloud.cn/images/newVersion/log_wx.png'
+      },
+      extra: {
+        'name': 'name',
+        'age': 12
+      }
+    }
+
+    let msg = global.RongIMLib.TextMessage(content)
+    let start = new Date().getTime()
+    global.RongIMLib.sendMessage(state.conversationtype, state.currentThreadID, msg, {
+      onSuccess: function (message) {
+        console.log('发送文字消息成功', message, start)
+      },
+      onError: function (errorCode, message) {
+        console.log(errorCode)
+        console.log('发送文字消息失败', message, start)
+      }
+    })
   }
 }
 

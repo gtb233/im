@@ -1,10 +1,22 @@
-/* 取得URL参数数据 name:查询的参数名称 */
-export function getQueryString (name) {
-  let reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i')
-  let r = window.location.search.substr(1).match(reg)
-  if (r != null) return unescape(r[2])
 
-  return null
-}
-
-export default getQueryString
+/**
+ * 解析url参数
+ * @example ?id=12345&a=b
+ * @return Object {id:12345,a:b}
+ */
+export function urlParse () {
+  let url = window.location.href
+  let obj = {}
+  let reg = /[?&][^?&]+=[^?&]+/g
+  let arr = url.match(reg)
+  // ['?id=12345', '&a=b']
+  if (arr) {
+    arr.forEach((item) => {
+      let tempArr = item.substring(1).split('=')
+      let key = decodeURIComponent(tempArr[0])
+      let val = decodeURIComponent(tempArr[1])
+      obj[key] = val
+    })
+  }
+  return obj
+};

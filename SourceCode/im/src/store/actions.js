@@ -89,7 +89,7 @@ export const rongCloudInit = async ({dispatch, commit, state}) => {
   global.RongIMClient.connect(state.params.token, {
     onSuccess: function (userId) {
       // callbacks.getCurrentUser && callbacks.getCurrentUser({userId: userId})
-      commit(types.GET_CURRENT_USER, )
+      commit(types.GET_CURRENT_USER)
       console.log('链接成功，用户id：' + userId)
     },
     onTokenIncorrect: function () {
@@ -101,4 +101,9 @@ export const rongCloudInit = async ({dispatch, commit, state}) => {
       console.log(errorCode)
     }
   })
+}
+
+export const sendMessage = async ({commit, state}, obj) => {
+  console.log(obj)
+  await commit(types.SEND_MESSAGE, obj)
 }
