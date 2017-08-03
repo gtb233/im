@@ -20,14 +20,16 @@ const state = {
   instance: {}, /* 融云实例 */
   userInfo: {}, /* 用户信息 */
   currentThreadID: null,
-  userList: [{
-    targetId: '',
-    userLogo: '',
-    userName: '',
-    lastMessage: '',
-    messagesNumber: '',
-    sendTime: ''
-  }],
+  userList: {
+    'targetId': {
+      targetId: 'GW00104713', /* 目标ID */
+      userLogo: 'http://qlogo2.store.qq.com/qzone/519430301/519430301/50?1495187229', /* 头像 */
+      userName: '加载失败!', /* 商铺名称 */
+      lastMessage: '请刷新重试!', /* 最后一条消息内容 */
+      messagesNumber: '0', /* 消息数 */
+      sendTime: '2017-8-3' /* 最后一条消息时间 */
+    }
+  },
   threads: {
     /*
     id: {

@@ -7,13 +7,11 @@ import Vuex from 'vuex'
 import VueResource from 'vue-resource'
 import store from './store'
 import { init } from './store/actions'
-import * as util from './lib/util'
 
 Vue.config.productionTip = false
 
 Vue.use(Vuex)
 Vue.use(VueResource)
-Vue.prototype.util = util
 
 /* eslint-disable no-new */
 new Vue({

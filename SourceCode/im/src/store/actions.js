@@ -52,6 +52,7 @@ export const rongCloudInit = async ({dispatch, commit, state}) => {
     onChanged: function (status) {
       switch (status) {
         case global.RongIMLib.ConnectionStatus.CONNECTED:
+          commit(types.SET_USER_LIST)
           console.log('连接成功')
           break
         case global.RongIMLib.ConnectionStatus.CONNECTING:
