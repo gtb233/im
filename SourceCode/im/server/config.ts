@@ -10,7 +10,7 @@ export default {
     },
     //融云api
     rong: {
-        url:'http://api.cn.ronghub.com/',
+        url: 'http://api.cn.ronghub.com/',
         // 认证 Cookie 名称，请根据业务自行定义，如：rong_im_auth
         AUTH_COOKIE_NAME: 'rong_im_auth_test',
         // 认证 Cookie 加密密钥，请自行定义，任意字母数字组合
