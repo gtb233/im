@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { BaseRoute } from "./route";
 import * as login from '../sdk/openApi/login'
-import * as sms from '../sdk/psp/sms'
+import * as token from '../sdk/rong/token'
+
 /**
  * / route
  *
@@ -29,8 +30,9 @@ export class ApiRoute extends BaseRoute {
       new ApiRoute().login(req, res, next);
     });
 
-    router.get("/api/sms", (req: Request, res: Response, next: NextFunction) => {
-      new ApiRoute().sms(req, res, next);
+
+    router.get("/api/token", (req: Request, res: Response, next: NextFunction) => {
+      new ApiRoute().token(req, res, next);
     });
   }
   /**
@@ -59,22 +61,20 @@ export class ApiRoute extends BaseRoute {
     console.log(data)
     res.send(data);
   }
- /**
-   * 发短信
-   * @param req 
-   * @param res 
-   * @param next 
-   */
-  public async sms(req: Request, res: Response, next: NextFunction) {
-    const rst = new sms.SmsRst();
-    rst.content = '您的验证码是989988';
-    rst.mobile = '15323353829'
-    rst.type = 0;
-    const data = await sms.exec(rst);
-    console.log(data)
-    res.send(data);
-  }
-  
 
+  /**
+    * 获取token
+    * @param req 
+    * @param res 
+    * @param next 
+    */
+  public async token(req: Request, res: Response, next: NextFunction) {
+    const rst = new token.TokenRst();
+    rst.userId = req.query.userId;
+    rst.name = req.query.name
+    rst.portraitUri = req.query.portraitUri
+    const data = await token.exec(rst);
+    res.send(data)
+  }
 
 }

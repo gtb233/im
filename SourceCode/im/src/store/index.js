@@ -3,11 +3,12 @@ import Vuex from 'vuex'
 import * as getters from './getters'
 import * as actions from './actions'
 import mutations from './mutations'
+import config from '../config'
 
 Vue.use(Vuex)
 
 const state = {
-  serverUrl: 'http://localhost:8000', /* 请求TOKEN的服务器地址 */
+  serverUrl: config.serverUrl, /* 请求TOKEN的服务器地址 */
   appkey: 'mgb7ka1nmf10g', /* 融云申请的应用KEY */
   checkToken: '', /* 商城登录后的验证TOKEN */
   userToken: '', /* 融云用户TOKEN */
