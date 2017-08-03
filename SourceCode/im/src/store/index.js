@@ -19,6 +19,7 @@ const state = {
   },
   instance: {}, /* 融云实例 */
   userInfo: {}, /* 用户信息 */
+  currentUserId: null,
   currentThreadID: null,
   userList: {
     'targetId': {

@@ -49,6 +49,8 @@ export default {
         console.log(error)
       }
     }, null)
+  },
+  [types.GET_CURRENT_USER] (state) {
   }
 }
 
