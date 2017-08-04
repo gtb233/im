@@ -10473,6 +10473,7 @@ var RongIMLib;
             //"_client" in Bridge ||
             if (RongIMLib.RongIMClient._dataAccessProvider || d) {
                 for (var g = 0, e = c.arguments.length; g < e; g++) {
+                    
                     if (!new RegExp(this.getType(c.arguments[g])).test(f[g])) {
                         throw new Error("The index of " + g + " parameter was wrong type " + this.getType(c.arguments[g]) + " [" + f[g] + "] -> position:" + position);
                     }

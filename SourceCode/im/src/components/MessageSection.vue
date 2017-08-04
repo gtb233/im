@@ -30,8 +30,8 @@
             </div>
             <div class="socket-input">
                 <form onsubmit="return false">
-                    <!-- <div class="input" contenteditable="true" >{{inputMsg}}</div> -->
-                    <textarea v-model="inputMsg" ></textarea>
+                     <!-- <div class="input" contenteditable="true" >{{inputMsg}}</div>  -->
+                     <textarea class="input" contenteditable="true"  v-model="inputMsg" ></textarea> 
                     <button @click="send()">发送</button>
                 </form>
             </div>

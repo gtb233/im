@@ -9,21 +9,14 @@ Vue.use(Vuex)
 
 const state = {
   serverUrl: config.serverUrl, /* 请求TOKEN的服务器地址 */
-  appkey: 'mgb7ka1nmf10g', /* 融云申请的应用KEY */
+  appKey: 'mgb7ka1nmf10g', /* 融云申请的应用KEY */
   checkToken: '', /* 商城登录后的验证TOKEN */
   userToken: '', /* 融云用户TOKEN */
-  params: {
-    appKey: 'mgb7ka1nmf10g',
-    token: '',
-    navi: ''
-  },
-  instance: {}, /* 融云实例 */
   userInfo: {}, /* 用户信息 */
-  conversationtype: global.RongIMLib.ConversationType.PRIVATE,
   currentUserId: null,
   currentThreadID: null,
-  userList: {
-    'targetId': {
+  userList: [
+    {
       targetId: 'GW00104713', /* 目标ID */
       userLogo: 'http://qlogo2.store.qq.com/qzone/519430301/519430301/50?1495187229', /* 头像 */
       userName: '加载失败!', /* 商铺名称 */
@@ -31,7 +24,7 @@ const state = {
       messagesNumber: '0', /* 消息数 */
       sendTime: '2017-8-3' /* 最后一条消息时间 */
     }
-  },
+  ],
   threads: {
     /*
     id: {
