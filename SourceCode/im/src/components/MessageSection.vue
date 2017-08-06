@@ -11,16 +11,17 @@
     
             <div class="tell-list">
                 <ul>
-                    <message></message>
+                    <message :own="message.senderUserId == currentUserId"
+                        :message="message"
+                        v-for="(message, key) of messageList" :key="message.targetId">
+                    ></message>
                 </ul>
             </div>
-    
         </div>
         <div class="socket-send">
             <div class="socket-face">
                 <div class="face-box">
                     <ul>
-    
                     </ul>
                 </div>
                 <span class="face socket-icon"></span>
@@ -30,25 +31,32 @@
             </div>
             <div class="socket-input">
                 <form onsubmit="return false">
-                     <!-- <div class="input" contenteditable="true" >{{inputMsg}}</div>  -->
-                     <textarea class="input" contenteditable="true"  v-model="inputMsg" ></textarea> 
+                    <textarea class="input send-message" contenteditable="true" v-model.lazy.trim="inputMsg">
+                    </textarea>
                     <button @click="send()">发送</button>
                 </form>
             </div>
-    
         </div>
     </div>
 </template>
 
 <script>
 import Message from './Message.vue'
-import { mapActions } from 'vuex'
+import { mapActions, mapState, mapGetters } from 'vuex'
 export default {
     name: "MessageSection",
     data() {
         return {
             inputMsg: '',
         }
+    },
+    computed: {
+      ...mapState({
+        currentUserId: state=>state.currentUserId
+      }),
+      ...mapGetters({
+        messageList: 'getCurrentUserMessage'
+      })
     },
     components: {
         Message

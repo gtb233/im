@@ -14,7 +14,6 @@ export default {
     // state.instance = global.RongIMClient.getInstance()
   },
   [types.SET_USER_LIST] (state, obj) { /* 根据融云返回信息设置用户列表 */
-    // 获取列表，待改为保存到本地设置一定过期时间
     state.userList = obj.userList
   },
   [types.GET_CURRENT_USER] (state) {
@@ -25,6 +24,10 @@ export default {
   // 发送消息
   [types.SEND_MESSAGE] (state, obj) {
     console.log(types.SEND_MESSAGE, obj)
+  },
+  /* 连接成功初始处理 */
+  [types.SET_INIT_WINDOW] (state) {
+    // 初始发送一条信息给用户或列表添加提示信息（此为本地信息）
   }
 }
 

@@ -14,7 +14,11 @@
             
         <div class="socket-list">
             <ul>
-                <thread></thread>
+                <thread :active="value.active == 'active'"
+                        :value="value"
+                        @switch-thread="navClickEvent(value.targetId)"
+                        v-for="(value, key) of userList" :key="value.targetId">
+                </thread>
             </ul>
         </div>
     </div>
@@ -29,12 +33,20 @@ export default {
     name: "threadSection",
     computed: {
       ...mapState({
-        userInfo: state=>state.userInfo
+        userInfo: state=>state.userInfo,
+        userList: state => state.userList
       })
     },
     components: {
         Thread,
         SearchUser,
+    },
+    methods: {
+      navClickEvent: function(targetId) {
+        //变更聊天窗显示数据与用户
+        //this.$store.commit()
+        console.log(targetId)
+      }
     }
 }
 </script>

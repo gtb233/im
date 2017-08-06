@@ -5,3 +5,7 @@ export const currentThread = state => {
     ? state.threads[state.currentThreadID]
     : {}
 }
+
+export const getCurrentUserMessage = state => {
+  return state.messages.storeid
+}

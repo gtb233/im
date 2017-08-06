@@ -113,3 +113,7 @@ a:hover{color:#C20005; text-decoration:none;}
 .not-tell{text-align: center;font-size: 14px;color: #8c8c8c;padding-top: 20px;margin-top: 110px;}
 .not-tell span{height:80px;width:96px;background-position: 0 -95px;display: block;margin:auto;margin-bottom: 20px;}
 .not-tell.none{display: none}
+.send-message{
+  width: 100%;
+  display: block;
+}

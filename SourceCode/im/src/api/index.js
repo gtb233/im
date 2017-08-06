@@ -19,8 +19,10 @@ export function getUserInfo (cb) {
     LATENCY
   )
 }
+
 // 获取回话列表
-let getUserList = function (cb) {
+let getUserList = function (cb, state) {
+  // 待考虑做缓存
   RongIMClient.getInstance().getConversationList({
     onSuccess: function (list) {
       let userList = []
@@ -38,6 +40,10 @@ let getUserList = function (cb) {
         userInfo.targetId = _targetId
         userInfo.sentTime = newDate.toLocaleDateString()
         userInfo.lastMessage = info.latestMessage.content.content
+        userInfo.active = ''
+        if (state.currentThreadID === _targetId) {
+          userInfo.active = 'active'
+        }
         /* 以下待修改成正确参数 */
         userInfo.userLogo = info.latestMessage.content.user.portraitUri
         userInfo.userName = info.targetId
@@ -58,6 +64,10 @@ export async function getUserTokenAsync (cb, state) {
   let userToken = ''
   const user = tool.urlParse()['user']
   const currentThreadID = tool.urlParse()['storeid']
+  if (!user || !currentThreadID) {
+    alert('用户ID与商家ID数据异常！')
+    return false
+  }
   await Vue.http.get(
     state.serverUrl + 'api/token?userId=' + user + '&name=' + user + '&portraitUri=gemall_20170718171031_82ee053d-dbbb-42a9-a1c3-f12247df36b0.jpg',
     { name: '这是带参测试' }, { emulateJSON: true }
@@ -75,6 +85,7 @@ export async function getUserTokenAsync (cb, state) {
   })
   await cb({ userToken, user, currentThreadID })
 }
+
 /**
  * 融云初始化
  *
@@ -96,12 +107,12 @@ export async function rongCloudInit (cb, state) {
     onChanged: function (status) {
       switch (status) {
         case RongIMLib.ConnectionStatus.CONNECTED:
+          result.connect = true // 前置防止异步超前
           getUserList((userList) => {
             result.userList = userList
-            cb(result)
-          })
-          result.connect = true
-          cb(result)
+            cb(result, 'connect')
+          }, state)
+          cb(result, 'connect')
           break
         case RongIMLib.ConnectionStatus.CONNECTING:
           console.log('正在链接')
@@ -128,7 +139,7 @@ export async function rongCloudInit (cb, state) {
       // 判断消息类型
       console.log('新消息: ' + message.targetId)
       result.msg = message
-      cb(result)
+      cb(result, 'newMsg')
       console.log(message)
       // callbacks.receiveNewMessage && callbacks.receiveNewMessage(message);
     }

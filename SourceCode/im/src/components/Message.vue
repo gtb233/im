@@ -1,6 +1,15 @@
 <template>
-    <li class="own">
-        <span>你好dd!</span>
-        <!-- <router-link to="/server">Go to server</router-link> -->
+    <li :class="{ own: own }">
+        <span>{{message.content.content}}</span>
     </li>
 </template>
+
+<script>
+export default {
+    name: "message",
+    props: {
+      message: Object,
+      own: Boolean
+    }
+}
+</script>
