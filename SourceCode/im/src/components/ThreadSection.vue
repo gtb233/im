@@ -17,7 +17,7 @@
                 <thread :active="value.active == 'active'"
                         :value="value"
                         @switch-thread="navClickEvent(value.targetId)"
-                        v-for="(value, key) of userList" :key="value.targetId">
+                        v-for="(value, key) of userList" :key="value.messageId">
                 </thread>
             </ul>
         </div>
@@ -43,8 +43,10 @@ export default {
     },
     methods: {
       navClickEvent: function(targetId) {
-        //变更聊天窗显示数据与用户
+        //变更聊天窗显示数据
         this.$store.dispatch('changeCurrentThreadID', { 'targetId': targetId })
+        //变更列表数据，DON处理
+
         console.log(targetId)
       }
     }

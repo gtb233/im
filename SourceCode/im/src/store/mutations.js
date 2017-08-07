@@ -46,8 +46,8 @@ export default {
     let messageInfo = {
       senderUserId: state.currentUserId, /* 以此参数为判断谁发的 */
       targetId: state.currentThreadID,
-      sentTime: new Date().getTime(),
-      messageId: '',
+      sentTime: state.currentThreadID + new Date().getTime(),
+      messageId: Math.random(),
       content: {content: obj.msg},
       messageType: '',
       messageUId: ''
