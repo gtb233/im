@@ -27,7 +27,7 @@ let getUserList = function (cb, state) {
     onSuccess: function (list) {
       let userList = []
       // 获取成功
-      console.log('userList:' + list)
+      console.log('userList:', list)
 
       let newDate = new Date()
 

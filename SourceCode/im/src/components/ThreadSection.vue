@@ -44,7 +44,7 @@ export default {
     methods: {
       navClickEvent: function(targetId) {
         //变更聊天窗显示数据与用户
-        //this.$store.commit()
+        this.$store.dispatch('changeCurrentThreadID', { 'targetId': targetId })
         console.log(targetId)
       }
     }

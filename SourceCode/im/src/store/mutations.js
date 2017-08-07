@@ -9,8 +9,7 @@ export default {
     state.userToken = userobj.userToken
     state.currentUserId = userobj.user
     state.currentThreadID = userobj.currentThreadID
-    state.currentThreadName = userobj.currentThreadID
-    // console.log(state.params)
+    state.currentThreadName = userobj.currentThreadID // 待改为从列表获取
   },
   /* 根据融云返回信息设置用户列表 */
   [types.SET_USER_LIST] (state, obj) {
@@ -27,9 +26,17 @@ export default {
   /*  */
   [types.GET_CURRENT_USER] (state) {
   },
-  /*  */
-  [types.SET_USER_ID] (state, userId) {
-    state.currentUserId = userId
+  /* 改变聊天用户 */
+  [types.CHANGE_CURRENT_THREAD_INFO] (state, obj) {
+    state.currentThreadID = obj.targetId
+    state.currentThreadName = obj.targetId // 待改为从列表获取
+    // 改变列表高亮
+    state.userList.forEach(function (el) {
+      el.active = ''
+      if (el.targetId === obj.targetId) {
+        el.active = 'active'
+      }
+    })
   },
   // 发送消息
   [types.SEND_MESSAGE] (state, obj) {

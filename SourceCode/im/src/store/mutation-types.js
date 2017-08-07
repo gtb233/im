@@ -5,6 +5,6 @@ export const GET_USER_INFO = 'get_user_info'
 export const GET_USER_TOKEN = 'get_user_token'
 export const SET_USER_LIST = 'set_user_list'
 export const GET_CURRENT_USER = 'get_current_user'
-export const SET_USER_ID = 'set_user_id'
+export const CHANGE_CURRENT_THREAD_INFO = 'change_current_thread_info' // 改变当前用户
 export const SEND_MESSAGE = 'send_message'
 export const SET_INIT_WINDOW = 'set_init_window'

@@ -69,3 +69,8 @@ export const sendMessage = async ({ commit, state }, obj) => {
     commit(types.SEND_MESSAGE, obj)
   }, state, obj)
 }
+
+/* 改变当前对话用户 */
+export const changeCurrentThreadID = ({commit, state}, obj) => {
+  commit(types.CHANGE_CURRENT_THREAD_INFO, obj)
+}

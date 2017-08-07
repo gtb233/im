@@ -8,7 +8,7 @@ export const currentThread = state => {
 
 export const getCurrentUserMessage = state => {
   if (!state.messages[state.currentThreadID]) {
-    return state.messages['storeid']
+    return state.messages['storeid'] // 默认内容
   } else {
     return state.messages[state.currentThreadID]
   }
