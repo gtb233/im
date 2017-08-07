@@ -1,6 +1,6 @@
 <template>
     <div class="socket-right">
-        <div class="socket-name">店铺一</div>
+        <div class="socket-name">{{currentThreadName}}</div>
         <div class="socket-info">
     
             <!--没有选中店铺时显示-->
@@ -52,7 +52,8 @@ export default {
     },
     computed: {
       ...mapState({
-        currentUserId: state=>state.currentUserId
+        currentUserId: state=>state.currentUserId,
+        currentThreadName : state => state.currentThreadName
       }),
       ...mapGetters({
         messageList: 'getCurrentUserMessage'
@@ -63,7 +64,6 @@ export default {
     },
     methods: {
         send() {
-            console.log(this.inputMsg)
             this.$store.dispatch('sendMessage', { msg: this.inputMsg })
             this.inputMsg = ''
         }

@@ -22,15 +22,17 @@ const state = {
   }, /* 用户信息 */
   currentUserId: null,
   currentThreadID: null,
-  userList: [{
-    targetId: '', /* 目标ID */
-    userLogo: '', /* 头像 */
-    userName: '加载中...!', /* 商铺名称 */
-    lastMessage: '若失败，请刷新重试!', /* 最后一条消息内容 */
-    messagesNumber: '0', /* 消息数 */
-    sendTime: '', /* 最后一条消息时间 */
-    active: 'active'
-  }],
+  currentThreadName: '连接中...',
+  userList: {
+    'targetId': {
+      targetId: '', /* 目标ID */
+      userLogo: '', /* 头像 */
+      userName: '加载中...!', /* 商铺名称 */
+      lastMessage: '若失败，请刷新重试!', /* 最后一条消息内容 */
+      messagesNumber: '0', /* 消息数 */
+      sendTime: '', /* 最后一条消息时间 */
+      active: 'active'
+    }},
   threads: {
     /*
     id: {

@@ -168,14 +168,14 @@ export async function sendMsg (cb, state, obj) {
   var content = {
     // content:"hello " + encodeURIComponent('π，α，β'),
     content: obj.msg,
-    user: {
-      'userId': state.currentThreadID,
-      'name': '张三',
-      'portraitUri': 'http://rongcloud.cn/images/newVersion/log_wx.png'
+    user: { // 暂定发送用户信息
+      'userId': state.currentUserId,
+      'name': state.userInfo.username,
+      'portraitUri': state.userInfo.thumb
     },
-    extra: {
-      'name': 'name',
-      'age': 12
+    extra: {// 接收方信息
+      'name': state.currentThreadName,
+      'userId': state.currentThreadID
     }
   }
 

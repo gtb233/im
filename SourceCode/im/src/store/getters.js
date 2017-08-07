@@ -7,5 +7,9 @@ export const currentThread = state => {
 }
 
 export const getCurrentUserMessage = state => {
-  return state.messages.storeid
+  if (!state.messages[state.currentThreadID]) {
+    return state.messages['storeid']
+  } else {
+    return state.messages[state.currentThreadID]
+  }
 }
