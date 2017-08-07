@@ -46,12 +46,13 @@ export default {
     let messageInfo = {
       senderUserId: state.currentUserId, /* 以此参数为判断谁发的 */
       targetId: state.currentThreadID,
-      sentTime: state.currentThreadID + new Date().getTime(),
-      messageId: Math.random(),
+      sentTime: new Date().getTime(),
+      messageId: state.currentThreadID + parseInt(Math.random() * 1000000 + 10),
       content: {content: obj.msg},
       messageType: '',
       messageUId: ''
     }
+    console.log(messageInfo)
     if (messageList) {
       messageList.push(messageInfo)
       state.messages[state.currentThreadID] = messageList
