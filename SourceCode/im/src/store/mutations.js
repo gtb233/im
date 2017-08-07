@@ -24,8 +24,33 @@ export default {
       }
     }
   },
-  /*  */
-  [types.GET_CURRENT_USER] (state) {
+  /* 获取历史消息 */
+  [types.GET_HISTORY_MESSAGE] (state, obj) {
+    // console.log(obj)
+    // 添加消息内容到消息列表
+    for (let info of obj.list) {
+      let messageList = state.messages[state.currentThreadID]
+      let messageInfo = {
+        senderUserId: info.senderUserId, /* 以此参数为判断谁发的 */
+        targetId: state.currentThreadID, /* 历史消息与发送与接收设置的都不同，注意区分 */
+        sentTime: info.sentTime,
+        messageId: info.messageId,
+        content: info.content, // 此为对象，注意
+        messageType: info.messageType,
+        messageUId: info.messageUId
+      }
+      if (messageList) {
+        messageList.push(messageInfo)
+        state.messages[state.currentThreadID] = messageList
+      } else {
+        let storeMsg = {
+          [state.currentThreadID]: [messageInfo]
+        }
+        Object.assign(state.messages, storeMsg)
+      }
+    }
+    state.messages = {...state.messages}
+    // console.log(state)
   },
   /* 改变聊天用户 */
   [types.CHANGE_CURRENT_THREAD_INFO] (state, obj) {

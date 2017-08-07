@@ -45,7 +45,7 @@ export default {
       navClickEvent: function(targetId) {
         //变更聊天窗显示数据
         this.$store.dispatch('changeCurrentThreadID', { 'targetId': targetId })
-        //变更列表数据，DON处理
+        //变更列表数据(本地替换最后信息，消息数，发送时间)
 
         console.log(targetId)
       }

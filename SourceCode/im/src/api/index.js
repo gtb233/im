@@ -12,6 +12,7 @@ let RongIMClient = global.RongIMLib.RongIMClient
 Vue.use(VueResource)
 
 const LATENCY = 16
+const conversationtype = RongIMLib.ConversationType.PRIVATE
 
 export function getUserInfo (cb) {
   setTimeout(
@@ -182,7 +183,6 @@ export async function sendMsg (cb, state, obj) {
 
   let msg = new RongIMLib.TextMessage(content)
   let start = new Date().getTime()
-  const conversationtype = RongIMLib.ConversationType.PRIVATE
   RongIMClient.getInstance().sendMessage(conversationtype, state.currentThreadID, msg, {
     onSuccess: function (message) {
       console.log('发送文字消息成功', message, start)
@@ -191,6 +191,47 @@ export async function sendMsg (cb, state, obj) {
     onError: function (errorCode, message) {
       console.log(errorCode)
       console.log('发送文字消息失败', message, start)
+    }
+  })
+}
+
+/* 获取历史消息，初始化时延迟一秒执行 */
+export function getHistoryMsgAsync (cb, state) {
+  /*
+    注意事项：
+      1：一定一定一定要先开通 历史消息云存储 功能，本服务收费，测试环境可免费开通
+      2：timestrap第二次拉取必须为null才能实现循环拉取
+  */
+  setTimeout(() => {
+    getHistoryMsg(cb, state)
+  }, 1000)
+}
+
+/* 获取历史消息，实时 */
+export const getHistoryMsg = (cb, state) => {
+  const count = 10  // 2 <= count <= 20
+  const timestrap = null // 0, 1483950413013
+
+  let start = new Date().getTime()
+  let result = {
+    list: [],
+    hasMsg: false
+  }
+  console.log(state)
+  RongIMClient.getInstance().getHistoryMessages(conversationtype, state.currentThreadID, timestrap, count, {
+    onSuccess: function (list, hasMsg) {
+      // hasMsg为boolean值，如果为true则表示还有剩余历史消息可拉取，为false的话表示没有剩余历史消息可供拉取。
+      // 可通过sort订制其他顺序
+      // list.sort(function (a, b) {
+      //   return a.sentTime < b.sentTime
+      // })
+      console.log('历史消息', list)
+      result.list = list
+      result.hasMsg = hasMsg
+      cb(result)
+    },
+    onError: function (error) {
+      console.log('获取历史消息失败！', error, start)
     }
   })
 }
