@@ -30,8 +30,13 @@ export const rongCloudInit = async ({ dispatch, commit, state }) => {
   // 等待 getUserToken 完成
   await dispatch('getUserToken')
   await api.rongCloudInit((obj, action) => {
-    if (action === 'connect') {
-      commit(types.SET_USER_LIST, obj)
+    switch (action) {
+      case 'connect':
+        commit(types.SET_USER_LIST, obj)
+        break
+      case 'newMsg':
+        commit(types.RECEIVE_MESSAGE, obj)
+        break
     }
   }, state)
 }

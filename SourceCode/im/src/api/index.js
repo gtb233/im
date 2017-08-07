@@ -107,7 +107,7 @@ export async function rongCloudInit (cb, state) {
     onChanged: function (status) {
       switch (status) {
         case RongIMLib.ConnectionStatus.CONNECTED:
-          result.connect = true // 前置防止异步超前
+          result.connect = true // 改为使用额外参数，防止重复调用
           getUserList((userList) => {
             result.userList = userList
             cb(result, 'connect')
@@ -137,11 +137,8 @@ export async function rongCloudInit (cb, state) {
     // 接收到的消息
     onReceived: function (message) {
       // 判断消息类型
-      console.log('新消息: ' + message.targetId)
       result.msg = message
       cb(result, 'newMsg')
-      console.log(message)
-      // callbacks.receiveNewMessage && callbacks.receiveNewMessage(message);
     }
   })
 

@@ -1,6 +1,7 @@
 import * as types from './mutation-types'
 
 export default {
+  /* 获取用户信息 */
   [types.GET_USER_INFO] (state, userInfo) {
     state.userInfo = userInfo
   },
@@ -52,7 +53,6 @@ export default {
       messageType: '',
       messageUId: ''
     }
-    console.log(messageInfo)
     if (messageList) {
       messageList.push(messageInfo)
       state.messages[state.currentThreadID] = messageList
@@ -67,6 +67,32 @@ export default {
   /* 连接成功初始处理 */
   [types.SET_INIT_WINDOW] (state) {
     // 初始发送一条信息给用户或列表添加提示信息（此为本地信息）
+  },
+  /* 接收消息 */
+  [types.RECEIVE_MESSAGE] (state, obj) {
+    // 添加发送内容到消息列表
+    obj = obj.msg
+    let messageList = state.messages[obj.senderUserId]
+    let messageInfo = {
+      senderUserId: obj.currentUserId, /* 以此参数为判断谁发的 */
+      targetId: state.currentUserId,
+      sentTime: obj.sentTime,
+      messageId: obj.messageId,
+      content: obj.content,
+      messageType: obj.messageType,
+      messageUId: obj.messageUId
+    }
+    if (messageList) {
+      messageList.push(messageInfo)
+      state.messages[obj.senderUserId] = messageList
+    } else {
+      let storeMsg = {
+        [obj.senderUserId]: [messageInfo]
+      }
+      Object.assign(state.messages, storeMsg)
+      state.messages = {...state.messages}
+    }
+    // console.log(state)
   }
 }
 
