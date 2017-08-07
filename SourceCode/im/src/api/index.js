@@ -162,6 +162,9 @@ export async function rongCloudInit (cb, state) {
 
 // 发送消息
 export async function sendMsg (cb, state, obj) {
+  if (obj.msg == null || obj.msg === '' || obj.msg === undefined) {
+    return false
+  }
   var content = {
     // content:"hello " + encodeURIComponent('π，α，β'),
     content: obj.msg,
@@ -172,7 +175,8 @@ export async function sendMsg (cb, state, obj) {
     },
     extra: {// 接收方信息
       'name': state.currentThreadName,
-      'userId': state.currentThreadID
+      'userId': state.currentThreadID,
+      'portraitUri': state.userInfo.thumb
     }
   }
 

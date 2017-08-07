@@ -65,8 +65,7 @@ export default {
     }
   },
   /* 连接成功初始处理 */
-  [types.SET_INIT_WINDOW] (state) {
-    // 初始发送一条信息给用户或列表添加提示信息（此为本地信息）
+  [types.INIT_WINDOW] (state) {
   },
   /* 接收消息 */
   [types.RECEIVE_MESSAGE] (state, obj) {

@@ -31,8 +31,8 @@
             </div>
             <div class="socket-input">
                 <form onsubmit="return false">
-                    <textarea class="input send-message" contenteditable="true" v-model.lazy.trim="inputMsg">
-                    </textarea>
+                    <textarea  v-model.trim="inputMsg" @keydown.enter.prevent.self="send()" class="input send-message" contenteditable="true">
+                    </textarea>快捷发送 ENTER
                     <button @click="send()">发送</button>
                 </form>
             </div>
@@ -64,6 +64,7 @@ export default {
     },
     methods: {
         send() {
+            // console.log(this.inputMsg)
             this.$store.dispatch('sendMessage', { msg: this.inputMsg })
             this.inputMsg = ''
         }
