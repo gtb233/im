@@ -97,11 +97,15 @@ export async function rongCloudInit (cb, state) {
   let appKey = state.appKey
   console.log('公有云:' + appKey)
   await RongIMLib.RongIMClient.init(appKey)
+  await global.RongIMLib.RongIMEmoji.init() // 表情初始化
+  await global.RongIMLib.RongIMVoice.init() // 声音初始化
+
   // 返回数据
   let result = {
     connect: false,
     newMsg: null,
-    userList: null
+    userList: null,
+    emojis: []
   }
   // 连接状态监听器
   RongIMClient.setConnectionStatusListener({
@@ -113,6 +117,8 @@ export async function rongCloudInit (cb, state) {
             result.userList = userList
             cb(result, 'connect')
           }, state)
+          // 返回表情 此处回调处理时间会早于用于列表
+          result.emojis = RongIMLib.RongIMEmoji.emojis
           cb(result, 'connect')
           break
         case RongIMLib.ConnectionStatus.CONNECTING:
@@ -134,20 +140,20 @@ export async function rongCloudInit (cb, state) {
     }
   })
 
+  // 接收消息
   RongIMClient.setOnReceiveMessageListener({
-    // 接收到的消息
     onReceived: function (message) {
+      console.log(message)
       // 判断消息类型
       result.msg = message
+      result.msg.content.content = RongIMLib.RongIMEmoji.emojiToHTML(message.content.content) // unicode EMOJI转为HTML
       cb(result, 'newMsg')
     }
   })
 
   /* 开始连接 */
-  /* console.log(state.params.token) */
   RongIMClient.connect(state.userToken, {
     onSuccess: function (userId) {
-      // callbacks.getCurrentUser && callbacks.getCurrentUser({userId: userId})
       console.log('链接成功，用户id：' + userId)
     },
     onTokenIncorrect: function () {
@@ -168,13 +174,14 @@ export async function sendMsg (cb, state, obj) {
   }
   var content = {
     // content:"hello " + encodeURIComponent('π，α，β'),
-    content: obj.msg,
+    content: RongIMLib.RongIMEmoji.symbolToEmoji(obj.msg), // 名称 转 Emoji 消息体里必须使用原生 Emoji 字符
+    // content: obj.msg,
     user: { // 暂定发送用户信息
       'userId': state.currentUserId,
       'name': state.userInfo.username,
       'portraitUri': state.userInfo.thumb
     },
-    extra: {// 接收方信息
+    extra: { // 接收方信息
       'name': state.currentThreadName,
       'userId': state.currentThreadID,
       'portraitUri': state.userInfo.thumb
@@ -186,6 +193,7 @@ export async function sendMsg (cb, state, obj) {
   RongIMClient.getInstance().sendMessage(conversationtype, state.currentThreadID, msg, {
     onSuccess: function (message) {
       console.log('发送文字消息成功', message, start)
+      obj.msg = RongIMLib.RongIMEmoji.symbolToHTML(obj.msg) // 列表展示数据处理
       cb(obj)
     },
     onError: function (errorCode, message) {
@@ -226,6 +234,14 @@ export const getHistoryMsg = (cb, state) => {
       //   return a.sentTime < b.sentTime
       // })
       console.log('历史消息', list)
+      // 数据处理 RongIMLib.RongIMEmoji.emojiToHTML(message) unicode EMOJI转为HTML
+      for (let key in list) {
+        // HTML形式 效果好，感觉不安全
+        list[key].content.content = RongIMLib.RongIMEmoji.emojiToHTML(list[key].content.content)
+        // 原生EMOJI 兼容性有问题
+        // list[key].content.content = RongIMLib.RongIMEmoji.emojiToSymbol(list[key].content.content)
+        // list[key].content.content = RongIMLib.RongIMEmoji.symbolToEmoji(list[key].content.content)
+      }
       result.list = list
       result.hasMsg = hasMsg
       cb(result)

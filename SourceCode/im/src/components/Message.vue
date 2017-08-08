@@ -1,6 +1,7 @@
 <template>
     <li :class="{ own: own }">
-        <span>{{message.content.content}}</span>
+        <span  v-html="message.content.content"></span>
+        <slot></slot>
     </li>
 </template>
 

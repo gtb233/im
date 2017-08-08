@@ -48,8 +48,6 @@ export const getHistoryMessage = async ({state, commit}) => {
   }, state)
 }
 
-/* 获取实时历史消息 */
-
 /* 发送消息 */
 export const sendMessage = async ({ dispatch, commit, state }, obj) => {
   await api.sendMsg(() => {

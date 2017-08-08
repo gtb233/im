@@ -12,14 +12,15 @@ const state = {
   appKey: 'mgb7ka1nmf10g', /* 融云申请的应用KEY */
   checkToken: '', /* 商城登录后的验证TOKEN */
   userToken: '', /* 融云用户TOKEN */
-  userInfo: {
+  userInfo: { /* 用户信息 */
     userId: '1',
     username: '测试用户',
     gaiNumber: 'GW123456',
     thumb: 'http://qlogo2.store.qq.com/qzone/519430301/519430301/50?1495187229',
     token: 'fgfdhdfhdfgh4564dg54sdg',
     userLevel: '正式会员'
-  }, /* 用户信息 */
+  },
+  emojis: [],
   currentUserId: null,
   currentThreadID: null,
   currentThreadName: '连接中...',

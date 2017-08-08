@@ -14,8 +14,9 @@ export default {
   },
   /* 根据融云返回信息设置用户列表 */
   [types.SET_USER_LIST] (state, obj) {
+    state.emojis = obj.emojis
     state.userList = obj.userList
-    // 设置初始对话用户展示名
+    // 设置初始对话框用户名
     if (state.userList) {
       for (let info of state.userList) {
         if (info.targetId === state.currentThreadID) {
@@ -64,7 +65,7 @@ export default {
       }
     })
   },
-  // 发送消息
+  // 发送消息-文本和EMOJI部分
   [types.SEND_MESSAGE] (state, obj) {
     // 添加发送内容到消息列表
     let firstMessage = state.messages['storeid'][0]

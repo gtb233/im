@@ -13,18 +13,25 @@
                 <ul>
                     <message :own="message.senderUserId == currentUserId"
                         :message="message"
-                        v-for="(message, key) of messageList" :key="message.targetId">
-                    ></message>
+                        v-for="(message, key) of messageList" :key="message.targetId"
+                    >
+                    </message>
                 </ul>
             </div>
         </div>
         <div class="socket-send">
             <div class="socket-face">
-                <div class="face-box">
+                <div class="face-box" v-bind:style="{ display: isDisplay}">
                     <ul>
+                        <li v-for="(emoji, keyid) of emojis" :key="emoji.children[0].getAttribute('name')"
+                            v-html="emoji.innerHTML"
+                            @click="addContent(emoji.children[0].getAttribute('name'))"
+                            :title="emoji.children[0].getAttribute('name')"
+                        >
+                        </li>
                     </ul>
                 </div>
-                <span class="face socket-icon"></span>
+                <span class="face socket-icon"  @click="showEmoji()"></span>
                 <span class="price socket-icon">
                     <input type="file" id="img_upload" />
                 </span>
@@ -48,12 +55,14 @@ export default {
     data() {
         return {
             inputMsg: '',
+            isDisplay: 'none'
         }
     },
     computed: {
       ...mapState({
         currentUserId: state=>state.currentUserId,
-        currentThreadName : state => state.currentThreadName
+        currentThreadName : state => state.currentThreadName,
+        emojis: state => state.emojis
       }),
       ...mapGetters({
         messageList: 'getCurrentUserMessage'
@@ -67,6 +76,17 @@ export default {
             // console.log(this.inputMsg)
             this.$store.dispatch('sendMessage', { msg: this.inputMsg })
             this.inputMsg = ''
+        },
+        showEmoji () {
+            if (this.isDisplay == 'block'){
+                this.isDisplay = ''
+            } else {
+                this.isDisplay = 'block'
+            }
+        },
+        addContent (emojiNmae) {
+            this.inputMsg += emojiNmae
+            this.isDisplay = ''
         }
     }
 }
