@@ -37,7 +37,7 @@ export const rongCloudInit = async ({ dispatch, commit, state }) => {
         break
     }
   }, state)
-  /* 获取此对话历史消息 */
+  /* 获取此对话历史消息,延迟一秒让主程序加载完 */
   await dispatch('getHistoryMessage')
 }
 
@@ -48,6 +48,8 @@ export const getHistoryMessage = async ({state, commit}) => {
   }, state)
 }
 
+/* 获取实时历史消息 */
+
 /* 发送消息 */
 export const sendMessage = async ({ dispatch, commit, state }, obj) => {
   await api.sendMsg(() => {
@@ -55,7 +57,11 @@ export const sendMessage = async ({ dispatch, commit, state }, obj) => {
   }, state, obj)
 }
 
-/* 改变当前对话用户 */
-export const changeCurrentThreadID = ({commit, state}, obj) => {
-  commit(types.CHANGE_CURRENT_THREAD_INFO, obj)
+/* 改变当前对话用户-列表单击事件触发 */
+export const changeCurrentThreadID = async ({commit, state}, obj) => {
+  await commit(types.CHANGE_CURRENT_THREAD_INFO, obj)
+  // 实时列表
+  await api.getHistoryMsg((obj) => {
+    commit(types.GET_HISTORY_MESSAGE, obj)
+  }, state)
 }

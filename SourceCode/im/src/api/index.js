@@ -217,7 +217,7 @@ export const getHistoryMsg = (cb, state) => {
     list: [],
     hasMsg: false
   }
-  console.log(state)
+  // 待考虑是否做成缓存
   RongIMClient.getInstance().getHistoryMessages(conversationtype, state.currentThreadID, timestrap, count, {
     onSuccess: function (list, hasMsg) {
       // hasMsg为boolean值，如果为true则表示还有剩余历史消息可拉取，为false的话表示没有剩余历史消息可供拉取。
