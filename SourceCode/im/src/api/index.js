@@ -145,8 +145,8 @@ export async function rongCloudInit (cb, state) {
     onReceived: function (message) {
       console.log(message)
       // 判断消息类型
+      message = filterMessage(message)
       result.msg = message
-      result.msg.content.content = RongIMLib.RongIMEmoji.emojiToHTML(message.content.content) // unicode EMOJI转为HTML
       cb(result, 'newMsg')
     }
   })
@@ -167,7 +167,7 @@ export async function rongCloudInit (cb, state) {
   })
 }
 
-// 发送消息
+// 发送文本消息
 export async function sendMsg (cb, state, obj) {
   if (obj.msg == null || obj.msg === '' || obj.msg === undefined) {
     return false
@@ -236,11 +236,8 @@ export const getHistoryMsg = (cb, state) => {
       console.log('历史消息', list)
       // 数据处理 RongIMLib.RongIMEmoji.emojiToHTML(message) unicode EMOJI转为HTML
       for (let key in list) {
-        // HTML形式 效果好，感觉不安全
-        list[key].content.content = RongIMLib.RongIMEmoji.emojiToHTML(list[key].content.content)
-        // 原生EMOJI 兼容性有问题
-        // list[key].content.content = RongIMLib.RongIMEmoji.emojiToSymbol(list[key].content.content)
-        // list[key].content.content = RongIMLib.RongIMEmoji.symbolToEmoji(list[key].content.content)
+        // list[key].content.content = RongIMLib.RongIMEmoji.emojiToHTML(list[key].content.content)
+        list[key] = filterMessage(list[key])
       }
       result.list = list
       result.hasMsg = hasMsg
@@ -250,4 +247,65 @@ export const getHistoryMsg = (cb, state) => {
       console.log('获取历史消息失败！', error, start)
     }
   })
+}
+
+/* 消息过滤、处理 分为：文本（带表情）、音频、文件图片 */
+let filterMessage = (message) => {
+  // let result = {
+  //   message: message,
+  //   action: message.messageType
+  // }
+  switch (message.messageType) {
+    /* 文本消息（带原生Emoji） */
+    case RongIMClient.MessageType.TextMessage:
+      // HTML形式 效果好，感觉不安全
+      message.content.content = RongIMLib.RongIMEmoji.emojiToHTML(message.content.content)
+      // 处理成原生EMOJI 兼容性有问题
+      // message.content.content = RongIMLib.RongIMEmoji.emojiToSymbol(message.content.content)
+      // message.content.content = RongIMLib.RongIMEmoji.symbolToEmoji(message.content.content)
+      break
+
+    /* 音频 */
+    case RongIMClient.MessageType.VoiceMessage:
+      // let audio = message.content.content // 格式为 AMR 格式的 base64 码
+      // let duration = message.content.duration
+      // RongIMLib.RongIMVoice.preLoaded(audio, function () {
+      //   RongIMLib.RongIMVoice.play(audio, duration)
+      // })
+      break
+
+    /* 文件（图片） */
+    case RongIMClient.MessageType.ImageMessage:
+      // message.content.content => 图片缩略图 base64。
+      // message.content.imageUri => 原图 URL。
+      // 具体待处理
+      break
+
+    /* 图文 */
+    case RongIMClient.MessageType.RichContentMessage:
+      // message.content.content => 文本消息内容。
+      // message.content.imageUri => 图片 base64。
+      // message.content.url => 原图 URL。
+      break
+    case RongIMClient.MessageType.InformationNotificationMessage:
+        // do something...
+      break
+    case RongIMClient.MessageType.ContactNotificationMessage:
+        // do something...
+      break
+    case RongIMClient.MessageType.ProfileNotificationMessage:
+        // do something...
+      break
+    case RongIMClient.MessageType.CommandNotificationMessage:
+        // do something...
+      break
+    case RongIMClient.MessageType.CommandMessage:
+        // do something...
+      break
+    case RongIMClient.MessageType.UnknownMessage:
+        // do something...
+      break
+    default:
+  }
+  return message
 }
