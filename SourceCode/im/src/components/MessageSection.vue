@@ -22,7 +22,7 @@
         </div>
         <div class="socket-send">
             <div class="socket-face">
-                <div class="face-box" v-bind:style="{ display: isDisplay}">
+                <div class="face-box" v-if="isShow">
                     <ul>
                         <li v-for="(emoji, keyid) of emojis" :key="emoji.children[0].getAttribute('name')"
                             v-html="emoji.innerHTML"
@@ -32,7 +32,7 @@
                         </li>
                     </ul>
                 </div>
-                <span class="face socket-icon"  @click="showEmoji()"></span>
+                <span class="face socket-icon"  @click="isShow = !isShow"></span>
                 <span class="price socket-icon">
                     <input type="file" id="img_upload" />
                 </span>
@@ -56,7 +56,7 @@ export default {
     data() {
         return {
             inputMsg: '',
-            isDisplay: 'none',
+            isShow: false,
         }
     },
     computed: {
@@ -78,21 +78,14 @@ export default {
             this.$store.dispatch('sendMessage', { msg: this.inputMsg })
             this.inputMsg = ''
         },
-        showEmoji () {
-            if (this.isDisplay == 'block'){
-                this.isDisplay = ''
-            } else {
-                this.isDisplay = 'block'
-            }
-        },
         addContent (emojiNmae) {
             this.inputMsg += emojiNmae
             this.isDisplay = ''
         },
         play(singleMsg) {
-            // if (singleMsg.messageType === 'VoiceMessage') {
+            if (singleMsg.messageType === 'VoiceMessage') {
               this.$store.dispatch('play', { messageId: singleMsg.messageId})
-            // }
+            }
         }
     }
 }
