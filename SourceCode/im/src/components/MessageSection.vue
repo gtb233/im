@@ -1,7 +1,7 @@
 <template>
     <div class="socket-right">
         <div class="socket-name">{{currentThreadName}}</div>
-        <div class="socket-info">
+        <div class="socket-info" :scroll-top.prop="setScrollTop()">
     
             <!--没有选中店铺时显示-->
             <div class="not-tell none">
@@ -80,12 +80,15 @@ export default {
         },
         addContent (emojiNmae) {
             this.inputMsg += emojiNmae
-            this.isDisplay = ''
+            this.isShow = false
         },
         play(singleMsg) {
             if (singleMsg.messageType === 'VoiceMessage') {
               this.$store.dispatch('play', { messageId: singleMsg.messageId})
             }
+        },
+        setScrollTop() {
+            return 1000
         }
     }
 }
