@@ -49,8 +49,12 @@ const state = {
       targetId: '',
       sentTime: '',
       messageId: '',
-      content: {content: '你好，有什么可能帮你的吗？'},
-      messageType: '',
+      content: {
+        content: '你好，有什么可能帮你的吗？',
+        content_back: '', // 用于保存音频图片之类的原始文件数据
+        messageName: 'TextMessage'
+      },
+      messageType: 'TextMessage',
       messageUId: ''
     }]
   }

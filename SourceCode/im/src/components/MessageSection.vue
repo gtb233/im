@@ -13,7 +13,8 @@
                 <ul>
                     <message :own="message.senderUserId == currentUserId"
                         :message="message"
-                        v-for="(message, key) of messageList" :key="message.targetId"
+                        @play="play(message)"
+                        v-for="(message, key) of messageList" :key="message.messageId"
                     >
                     </message>
                 </ul>
@@ -55,7 +56,7 @@ export default {
     data() {
         return {
             inputMsg: '',
-            isDisplay: 'none'
+            isDisplay: 'none',
         }
     },
     computed: {
@@ -87,6 +88,11 @@ export default {
         addContent (emojiNmae) {
             this.inputMsg += emojiNmae
             this.isDisplay = ''
+        },
+        play(singleMsg) {
+            // if (singleMsg.messageType === 'VoiceMessage') {
+              this.$store.dispatch('play', { messageId: singleMsg.messageId})
+            // }
         }
     }
 }

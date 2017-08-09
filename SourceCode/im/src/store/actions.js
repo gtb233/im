@@ -63,3 +63,9 @@ export const changeCurrentThreadID = async ({commit, state}, obj) => {
     commit(types.GET_HISTORY_MESSAGE, obj)
   }, state)
 }
+
+/* 播放语音 */
+export const play = ({commit, state}, obj) => {
+  api.playVoice(() => {
+  }, state, obj)
+}
