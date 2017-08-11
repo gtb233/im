@@ -217,10 +217,10 @@ export function getHistoryMsgAsync (cb, state) {
 
 /* 获取历史消息，实时 */
 export const getHistoryMsg = (cb, state) => {
+  // 最新十条
   const count = 10  // 2 <= count <= 20
-  const timestrap = null // 0, 1483950413013
-
-  let start = new Date().getTime()
+  const timestrap = new Date().getTime() // 0, 1483950413013 //null 时第二次加载是遍历查询
+  console.log(timestrap)
   let result = {
     list: [],
     hasMsg: false
@@ -231,12 +231,11 @@ export const getHistoryMsg = (cb, state) => {
       // hasMsg为boolean值，如果为true则表示还有剩余历史消息可拉取，为false的话表示没有剩余历史消息可供拉取。
       // 可通过sort订制其他顺序
       // list.sort(function (a, b) {
-      //   return a.sentTime < b.sentTime
+      //   return a.sentTime > b.sentTime
       // })
       console.log('历史消息', list)
       // 数据处理 RongIMLib.RongIMEmoji.emojiToHTML(message) unicode EMOJI转为HTML
       for (let key in list) {
-        // list[key].content.content = RongIMLib.RongIMEmoji.emojiToHTML(list[key].content.content)
         list[key] = filterMessage(list[key])
       }
       result.list = list
@@ -244,7 +243,7 @@ export const getHistoryMsg = (cb, state) => {
       cb(result)
     },
     onError: function (error) {
-      console.log('获取历史消息失败！', error, start)
+      console.log('获取历史消息失败！', error, timestrap)
     }
   })
 }
@@ -275,7 +274,7 @@ export const playVoice = (cb, state, obj) => {
   }
 }
 
-/* 消息处理 分为：文本（带表情）、音频、文件图片 */
+/* 消息处理用于消息框展示 分为：文本（带表情）、音频、文件图片 */
 let filterMessage = (message) => {
   // let result = {
   //   message: message,

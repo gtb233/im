@@ -27,7 +27,8 @@ export default {
   },
   /* 获取历史消息 */
   [types.GET_HISTORY_MESSAGE] (state, obj) {
-    // console.log(obj)
+    // 初始化用户消息框数据
+    state.messages[state.currentThreadID] = []
     // 添加消息内容到消息列表
     for (let info of obj.list) {
       let messageList = state.messages[state.currentThreadID]
@@ -51,7 +52,6 @@ export default {
       }
     }
     state.messages = {...state.messages}
-    // console.log(state)
   },
   /* 改变聊天用户 */
   [types.CHANGE_CURRENT_THREAD_INFO] (state, obj) {

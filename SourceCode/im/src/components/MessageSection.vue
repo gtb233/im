@@ -1,7 +1,7 @@
 <template>
     <div class="socket-right">
         <div class="socket-name">{{currentThreadName}}</div>
-        <div class="socket-info">
+        <div class="socket-info"  @mouseout="isShow = false">
     
             <!--没有选中店铺时显示-->
             <div class="not-tell none">
@@ -37,7 +37,7 @@
                     <input type="file" id="img_upload" />
                 </span>
             </div>
-            <div class="socket-input">
+            <div class="socket-input"  @mousemove="isShow = false">
                 <form onsubmit="return false">
                     <textarea  v-model.trim="inputMsg" @keydown.enter.prevent.self="send()" class="input send-message" contenteditable="true">
                     </textarea>快捷发送 ENTER
@@ -57,7 +57,7 @@ export default {
     data() {
         return {
             inputMsg: '',
-            isShow: false,
+            isShow: false
         }
     },
     computed: {
@@ -76,9 +76,7 @@ export default {
     methods: {
         send() {
             // console.log(this.inputMsg)
-            this.$store.dispatch('sendMessage', { msg: this.inputMsg }).then(
-              $(".socket-info").scrollTop($(".socket-info")[0].offsetHeight)
-            )
+            this.$store.dispatch('sendMessage', { msg: this.inputMsg })
             this.inputMsg = ''
         },
         addContent (emojiNmae) {
@@ -90,6 +88,10 @@ export default {
               this.$store.dispatch('play', { messageId: singleMsg.messageId})
             }
         }
+    },
+    updated: function() {
+        //数据更新后
+        $(".socket-info").scrollTop($(".socket-info")[0].offsetHeight)
     }
 }
 </script>
