@@ -69,3 +69,8 @@ export const play = ({commit, state}, obj) => {
   api.playVoice(() => {
   }, state, obj)
 }
+
+/* 搜索 */
+export const changeSearchName = ({commit, state}, obj) => {
+  commit(types.SET_SEARCH_NAME, obj)
+}

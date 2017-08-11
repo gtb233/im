@@ -118,6 +118,10 @@ export default {
       state.messages = {...state.messages}
     }
     // console.log(state)
+  },
+  /* 修改搜索字段 */
+  [types.SET_SEARCH_NAME] (state, obj) {
+    state.searchName = obj.val
   }
 }
 

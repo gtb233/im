@@ -220,7 +220,6 @@ export const getHistoryMsg = (cb, state) => {
   // 最新十条
   const count = 10  // 2 <= count <= 20
   const timestrap = new Date().getTime() // 0, 1483950413013 //null 时第二次加载是遍历查询
-  console.log(timestrap)
   let result = {
     list: [],
     hasMsg: false

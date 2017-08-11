@@ -10,8 +10,12 @@
         </div>
 
         <!-- 搜索会话用户 -->
-        <search-user></search-user>
-            
+        <!-- <search-user></search-user> -->
+        <div class="socket-search">
+            <input v-model.trim="searchName" type="text" name="">
+            <button class="socket-icon"></button>
+        </div>
+
         <div class="socket-list">
             <ul>
                 <thread :active="value.active == 'active'"
@@ -26,27 +30,37 @@
 
 <script>
 import Thread from './Thread.vue'
-import SearchUser from './SearchUser.vue'
 import { mapGetters,mapState } from 'vuex'
 
 export default {
     name: "threadSection",
+    data () {
+      return {
+        searchName: ''
+      }
+    },
     computed: {
+      ...mapGetters({
+        userList: 'getUserList'
+      }),
       ...mapState({
-        userInfo: state=>state.userInfo,
-        userList: state => state.userList
+        userInfo: state=>state.userInfo
+        // userList: state => state.userList
       })
     },
+    watch: {
+        searchName: function (val) {
+          this.$store.dispatch('changeSearchName', { 'val': val })
+        }
+    },
     components: {
-        Thread,
-        SearchUser,
+        Thread
     },
     methods: {
       navClickEvent: function(targetId) {
         //变更聊天窗显示数据
         this.$store.dispatch('changeCurrentThreadID', { 'targetId': targetId })
         //变更列表数据(本地替换最后信息，消息数，发送时间)
-
         console.log(targetId)
       }
     }

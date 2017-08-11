@@ -9,3 +9,4 @@ export const CHANGE_CURRENT_THREAD_INFO = 'change_current_thread_info' // 改变
 export const SEND_MESSAGE = 'send_message'
 export const INIT_WINDOW = 'init_window'
 export const GET_HISTORY_MESSAGE = 'get_history_message'
+export const SET_SEARCH_NAME = 'set_search_name'
