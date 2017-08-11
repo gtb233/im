@@ -50,8 +50,9 @@ export const getHistoryMessage = async ({state, commit}) => {
 
 /* 发送消息 */
 export const sendMessage = async ({ dispatch, commit, state }, obj) => {
-  await api.sendMsg(() => {
+  await api.sendMsg((obj) => {
     commit(types.SEND_MESSAGE, obj)
+    commit(types.UPDATE_USERLIST_INFO, obj)
   }, state, obj)
 }
 

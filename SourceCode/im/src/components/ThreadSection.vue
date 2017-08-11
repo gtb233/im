@@ -45,7 +45,6 @@ export default {
       }),
       ...mapState({
         userInfo: state=>state.userInfo
-        // userList: state => state.userList
       })
     },
     watch: {

@@ -172,9 +172,11 @@ export async function sendMsg (cb, state, obj) {
   if (obj.msg == null || obj.msg === '' || obj.msg === undefined) {
     return false
   }
-  var content = {
+  let msgContent = RongIMLib.RongIMEmoji.symbolToEmoji(obj.msg) // 用于发送的注意保持干净
+  let currentThreadID = state.currentThreadID
+  let content = {
     // content:"hello " + encodeURIComponent('π，α，β'),
-    content: RongIMLib.RongIMEmoji.symbolToEmoji(obj.msg), // 名称 转 Emoji 消息体里必须使用原生 Emoji 字符
+    content: msgContent, // 名称 转 Emoji 消息体里必须使用原生 Emoji 字符
     // content: obj.msg,
     user: { // 暂定发送用户信息
       'userId': state.currentUserId,
@@ -183,17 +185,19 @@ export async function sendMsg (cb, state, obj) {
     },
     extra: { // 接收方信息
       'name': state.currentThreadName,
-      'userId': state.currentThreadID,
+      'userId': currentThreadID,
       'portraitUri': state.userInfo.thumb
     }
   }
 
   let msg = new RongIMLib.TextMessage(content)
   let start = new Date().getTime()
-  RongIMClient.getInstance().sendMessage(conversationtype, state.currentThreadID, msg, {
+  RongIMClient.getInstance().sendMessage(conversationtype, currentThreadID, msg, {
     onSuccess: function (message) {
       console.log('发送文字消息成功', message, start)
       obj.msg = RongIMLib.RongIMEmoji.symbolToHTML(obj.msg) // 列表展示数据处理
+      obj.msgContent = msgContent
+      obj.currentThreadID = currentThreadID
       cb(obj)
     },
     onError: function (errorCode, message) {

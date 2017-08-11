@@ -122,6 +122,17 @@ export default {
   /* 修改搜索字段 */
   [types.SET_SEARCH_NAME] (state, obj) {
     state.searchName = obj.val
+  },
+  /* 更新侧边栏消息提示数据 */
+  [types.UPDATE_USERLIST_INFO] (state, obj) {
+    let newDate = new Date()
+    newDate.setTime(newDate.getTime())
+    state.userList.forEach(function (el) {
+      if (el.targetId === obj.currentThreadID) {
+        el.lastMessage = obj.msgContent
+        el.sendTime = newDate.toLocaleDateString()
+      }
+    })
   }
 }
 

@@ -75,7 +75,6 @@ export default {
     },
     methods: {
         send() {
-            // console.log(this.inputMsg)
             this.$store.dispatch('sendMessage', { msg: this.inputMsg })
             this.inputMsg = ''
         },
@@ -90,7 +89,6 @@ export default {
         }
     },
     updated: function() {
-        //数据更新后
         $(".socket-info").scrollTop($(".socket-info")[0].offsetHeight)
     }
 }
