@@ -2,6 +2,7 @@ var path = require('path')
 var utils = require('./utils')
 var config = require('../config')
 var vueLoaderConfig = require('./vue-loader.conf')
+var webpack = require('webpack')
 
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
@@ -22,6 +23,7 @@ module.exports = {
     extensions: ['.ts','.js', '.vue', '.json'],
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
+      'jquery': 'jquery',
       '@': resolve('src')
     }
   },
@@ -62,5 +64,12 @@ module.exports = {
         }
       }
     ]
-  }
+  },
+  // 增加一个plugins
+  plugins: [
+    new webpack.ProvidePlugin({
+        $: "jquery",
+        jQuery: "jquery"
+    })
+ ],
 }

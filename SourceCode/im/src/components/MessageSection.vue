@@ -1,7 +1,7 @@
 <template>
     <div class="socket-right">
         <div class="socket-name">{{currentThreadName}}</div>
-        <div class="socket-info" :scroll-top.prop="setScrollTop()">
+        <div class="socket-info">
     
             <!--没有选中店铺时显示-->
             <div class="not-tell none">
@@ -50,6 +50,7 @@
 
 <script>
 import Message from './Message.vue'
+import $ from 'jquery'
 import { mapActions, mapState, mapGetters } from 'vuex'
 export default {
     name: "MessageSection",
@@ -75,7 +76,9 @@ export default {
     methods: {
         send() {
             // console.log(this.inputMsg)
-            this.$store.dispatch('sendMessage', { msg: this.inputMsg })
+            this.$store.dispatch('sendMessage', { msg: this.inputMsg }).then(
+              $(".socket-info").scrollTop($(".socket-info")[0].offsetHeight)
+            )
             this.inputMsg = ''
         },
         addContent (emojiNmae) {
@@ -86,9 +89,6 @@ export default {
             if (singleMsg.messageType === 'VoiceMessage') {
               this.$store.dispatch('play', { messageId: singleMsg.messageId})
             }
-        },
-        setScrollTop() {
-            return 1000
         }
     }
 }

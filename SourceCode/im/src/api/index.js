@@ -302,6 +302,7 @@ let filterMessage = (message) => {
       // message.content.content => 图片缩略图 base64。
       // message.content.imageUri => 原图 URL。
       // 具体待处理
+      message.content.content = '<img src="' + message.content.content + '" />'
       break
 
     /* 图文 */
