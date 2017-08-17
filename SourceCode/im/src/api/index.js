@@ -144,7 +144,7 @@ export async function rongCloudInit (cb, state) {
   // 接收消息
   RongIMClient.setOnReceiveMessageListener({
     onReceived: function (message) {
-      console.log('接收到的消息' + message)
+      console.log('接收到的消息', message)
       message = filterMessage(message)
       result.msg = message
       cb(result, 'newMsg')
@@ -277,7 +277,7 @@ export const playVoice = (cb, state, obj) => {
   }
 }
 
-/* 消息处理用于消息框展示 分为：文本（带表情）、音频、文件图片 */
+/* 消息处理用于消息框展示 分为：文本（带表情）、音频（展示图片可点击）、文件图片（展示图片） */
 let filterMessage = (message) => {
   // let result = {
   //   message: message,
@@ -304,10 +304,11 @@ let filterMessage = (message) => {
       // message.content.content => 图片缩略图 base64。
       // message.content.imageUri => 原图 URL。
       // 具体待处理
-      message.content.content = '<img src="' + message.content.content + '" />'
+      message.content.content_back = message.content.content
+      message.content.content = '<img src="' + message.content.imageUri + '" />'
       break
 
-    /* 图文 */
+    /* 图文(未知) */
     case RongIMClient.MessageType.RichContentMessage:
       // message.content.content => 文本消息内容。
       // message.content.imageUri => 图片 base64。

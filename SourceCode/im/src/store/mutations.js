@@ -62,6 +62,7 @@ export default {
       el.active = ''
       if (el.targetId === obj.targetId) {
         el.active = 'active'
+        el.messagesNumber = 0
       }
     })
   },
@@ -95,8 +96,35 @@ export default {
   },
   /* 接收消息 */
   [types.RECEIVE_MESSAGE] (state, obj) {
-    // 添加发送内容到消息列表
+    // 添加发送内容到消息列表 存在
     obj = obj.msg
+    let newDate = new Date()
+    let isExist = 0
+    // 更新列表数据,并在列表无此用户时添加用户到列表
+    newDate.setTime(obj.sentTime)
+    state.userList.forEach(function (el) {
+      if (el.targetId === obj.senderUserId) {
+        el.lastMessage = obj.content.content  // 设置内容，非对象结构
+        el.sentTime = newDate.toLocaleDateString()
+        if (el.targetId !== state.currentThreadID) {
+          el.messagesNumber += 1
+        }
+        isExist = 1
+      }
+      if (!isExist) {
+        let user = {
+          targetId: obj.senderUserId, /* 目标ID */
+          userLogo: '', /* 头像 */
+          userName: obj.senderUserId, /* 商铺名称 */
+          lastMessage: obj.content.content, /* 最后一条消息内容 */
+          messagesNumber: 1, /* 消息数 */
+          sendTime: newDate.toLocaleDateString(), /* 最后一条消息时间 */
+          active: ''
+        }
+        state.userList.push(user)
+      }
+    })
+    // 更新对话框内容
     let messageList = state.messages[obj.senderUserId]
     let messageInfo = {
       senderUserId: obj.currentUserId, /* 以此参数为判断谁发的 */
@@ -130,7 +158,7 @@ export default {
     state.userList.forEach(function (el) {
       if (el.targetId === obj.currentThreadID) {
         el.lastMessage = obj.msgContent
-        el.sendTime = newDate.toLocaleDateString()
+        el.sentTime = newDate.toLocaleDateString()
       }
     })
   }
