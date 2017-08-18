@@ -100,30 +100,6 @@ export default {
     obj = obj.msg
     let newDate = new Date()
     let isExist = 0
-    // 更新列表数据,并在列表无此用户时添加用户到列表
-    newDate.setTime(obj.sentTime)
-    state.userList.forEach(function (el) {
-      if (el.targetId === obj.senderUserId) {
-        el.lastMessage = obj.content.content  // 设置内容，非对象结构
-        el.sentTime = newDate.toLocaleDateString()
-        if (el.targetId !== state.currentThreadID) {
-          el.messagesNumber += 1
-        }
-        isExist = 1
-      }
-      if (!isExist) {
-        let user = {
-          targetId: obj.senderUserId, /* 目标ID */
-          userLogo: '', /* 头像 */
-          userName: obj.senderUserId, /* 商铺名称 */
-          lastMessage: obj.content.content, /* 最后一条消息内容 */
-          messagesNumber: 1, /* 消息数 */
-          sendTime: newDate.toLocaleDateString(), /* 最后一条消息时间 */
-          active: ''
-        }
-        state.userList.push(user)
-      }
-    })
     // 更新对话框内容
     let messageList = state.messages[obj.senderUserId]
     let messageInfo = {
@@ -145,7 +121,32 @@ export default {
       Object.assign(state.messages, storeMsg)
       state.messages = {...state.messages}
     }
-    // console.log(state)
+    // 防此初始化时过快处理报错，延迟执行。更新列表数据,并在列表无此用户时添加用户到列表
+    newDate.setTime(obj.sentTime)
+    setTimeout(() => {
+      state.userList.forEach(function (el) {
+        if (el.targetId === obj.targetId) {
+          el.lastMessage = obj.content.content  // 设置内容，非对象结构
+          el.sentTime = newDate.toLocaleDateString()
+          if (el.targetId !== state.currentThreadID) {
+            el.messagesNumber += 1
+          }
+          isExist = 1
+        }
+        if (!isExist) {
+          let user = {
+            targetId: obj.senderUserId, /* 目标ID */
+            userLogo: '', /* 头像 */
+            userName: obj.senderUserId, /* 商铺名称 */
+            lastMessage: obj.content.content, /* 最后一条消息内容 */
+            messagesNumber: 1, /* 消息数 */
+            sendTime: newDate.toLocaleDateString(), /* 最后一条消息时间 */
+            active: ''
+          }
+          state.userList.push(user)
+        }
+      })
+    }, 200)
   },
   /* 修改搜索字段 */
   [types.SET_SEARCH_NAME] (state, obj) {

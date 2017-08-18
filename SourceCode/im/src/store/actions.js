@@ -1,7 +1,7 @@
 import * as api from '../api'
 import * as types from './mutation-types'
 
-/* 顺序连接 */
+/* 初始连接 */
 export const init = async (store) => {
   /* 连接融云SOCK */
   await rongCloudInit(store)

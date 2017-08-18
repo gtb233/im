@@ -89,7 +89,7 @@ export default {
         }
     },
     updated: function() {
-        $(".socket-info").scrollTop($(".socket-info")[0].offsetHeight)
+        $(".socket-info").scrollTop($(".socket-info").scrollTop()+300)
     }
 }
 </script>
