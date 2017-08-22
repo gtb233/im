@@ -34,7 +34,8 @@
                 </div>
                 <span class="face socket-icon"  @click="isShow = !isShow"></span>
                 <span class="price socket-icon">
-                    <input type="file" id="img_upload" />
+                    <!-- 目前只上传图片 -->
+                    <input type="file" id="img_upload" @change="sendImage()" accept=".gif,.jpg,.jpeg"/>
                 </span>
             </div>
             <div class="socket-input"  @mousemove="isShow = false">
@@ -86,6 +87,10 @@ export default {
             if (singleMsg.messageType === 'VoiceMessage') {
               this.$store.dispatch('play', { messageId: singleMsg.messageId})
             }
+        },
+        sendImage(){
+            let _file = $("#img_upload")[0].files[0];
+            this.$store.dispatch('uploadImg', { _file: _file})
         }
     },
     updated: function() {

@@ -2,6 +2,8 @@ import * as data from './mock-data'
 import Vue from 'vue'
 import VueResource from 'vue-resource'
 import * as tool from '../lib/util'
+import UploadClient from '../lib/init'
+
 /**
  * 各种api链接
  */
@@ -274,6 +276,132 @@ export const playVoice = (cb, state, obj) => {
         })
       }
     }
+  }
+}
+
+/* 发送图片 */
+export const uploadFile = (cb, state, obj) => {
+  // 配置
+  let config = {
+    domain: 'http://upload.qiniu.com',
+    fileType: RongIMLib.FileType.IMAGE,
+    getToken: function (callback) { // 上传文件TOKEN，具体用处未知
+      RongIMClient.getInstance().getFileToken(this.fileType, {
+        onSuccess: function (data) {
+          callback(data.token)
+        },
+        onError: function (error) {
+          console.log('getFileToken error:' + error)
+        }
+      })
+    }
+  }
+  // 定义上传回调
+  let callback = {
+    onError: function (errorCode) {
+      // 上传失败处理
+      console.log('upload error!', errorCode)
+    },
+    onProgress: function (loaded, total) {
+      // 进行中
+      console.log(total + 'total上传中：' + loaded)
+    },
+    onCompleted: function (data) {
+      // 成功处理
+      sendImage(data, state)
+    }
+  }
+
+  let initType = {
+    file: function (_file) {
+      config.fileType = RongIMLib.FileType.FILE
+      UploadClient.initFile(config, function (uploadFile) {
+        uploadFile.upload(_file, callback)
+      })
+    },
+    image: function (_file) {
+      UploadClient.initImage(config, function (uploadFile) {
+        uploadFile.upload(_file, callback)
+      })
+    }
+  }
+
+  // 上传
+  initType[getFileType(obj._file.name)](obj._file)
+}
+
+/* 上传完成处理 */
+const sendImage = async (data, state) => {
+  data.fileType = getFileType(data.name)
+  await urlItem[data.fileType](data)
+
+  let currentThreadID = state.currentThreadID
+
+  // 暂时延迟一秒，await 不起作用
+  setTimeout(() => {
+    var content = {
+      imageUri: data.downloadUrl,
+      content: data.thumbnail,
+      user: { // 暂定发送用户信息
+        'userId': state.currentUserId,
+        'name': state.userInfo.username,
+        'portraitUri': state.userInfo.thumb
+      },
+      extra: { // 接收方信息
+        'name': state.currentThreadName,
+        'userId': currentThreadID,
+        'portraitUri': state.userInfo.thumb
+      }
+    }
+    var msg = new RongIMLib.ImageMessage(content)
+
+    RongIMClient.getInstance().sendMessage(conversationtype, currentThreadID, msg, {
+      onSuccess: function (message) {
+        console.log(message)
+      },
+      onError: function (errorCode, message) {
+        console.log('图片发送失败！')
+      }
+    })
+  }, 1000)
+}
+/* 检查上传文件类型 */
+let getFileType = function (filename) {
+  // 默认支持两种图片格式，可自行扩展
+  let imageType = {
+    'jpg': 1,
+    'png': 2
+  }
+  let index = filename.lastIndexOf('.') + 1
+  let type = filename.substring(index)
+  return type in imageType ? 'image' : 'file'
+}
+/* 获取上传后的图片地址 */
+let urlItem = {
+  file: function (data) {
+    var fileType = RongIMLib.FileType.FILE
+    RongIMClient.getInstance().getFileUrl(fileType, data.filename, data.name, {
+      onSuccess: function (result) {
+        data.downloadUrl = result.downloadUrl
+        return data
+      },
+      onError: function (error) {
+        console.log(error)
+      }
+    })
+  },
+  image: function (data) {
+    var fileType = RongIMLib.FileType.IMAGE
+    RongIMClient.getInstance().getFileUrl(fileType, data.filename, null, {
+      onSuccess: function (result) {
+        data.downloadUrl = result.downloadUrl
+        console.log(data)
+        return data
+      },
+      onError: function (error) {
+        console.log(error)
+      }
+    })
   }
 }
 

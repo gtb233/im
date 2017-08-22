@@ -75,3 +75,10 @@ export const play = ({commit, state}, obj) => {
 export const changeSearchName = ({commit, state}, obj) => {
   commit(types.SET_SEARCH_NAME, obj)
 }
+
+/* 上传图片 */
+export const uploadImg = ({commit, state}, obj) => {
+  api.uploadFile((result) => {
+    commit(types.SEND_IMAGE, result)
+  }, state, obj)
+}

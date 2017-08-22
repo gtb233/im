@@ -162,6 +162,10 @@ export default {
         el.sentTime = newDate.toLocaleDateString()
       }
     })
+  },
+  /* 发送图片 */
+  [types.SEND_IMAGE] (state, obj) {
+    console.log(obj)
   }
 }
 
