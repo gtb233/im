@@ -1,8 +1,0 @@
-export const SWITCH_THREAD = 'SWITCH_THREAD'
-export const RECEIVE_ALL = 'RECEIVE_ALL'
-export const RECEIVE_MESSAGE = 'RECEIVE_MESSAGE'
-export const GET_USER_INFO = 'get_user_info'
-export const GET_USER_TOKEN = 'get_user_token'
-export const SET_USER_LIST = 'set_user_list'
-export const SET_INIT_WINDOW = 'set_init_window'
-export const SEND_MESSAGE = 'send_message'
