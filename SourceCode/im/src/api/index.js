@@ -347,7 +347,7 @@ const sendImage = async (data, state) => {
         'name': state.userInfo.username,
         'portraitUri': state.userInfo.thumb
       },
-      extra: { // 接收方信息
+      extra: { // 接收方信123息
         'name': state.currentThreadName,
         'userId': currentThreadID,
         'portraitUri': state.userInfo.thumb
