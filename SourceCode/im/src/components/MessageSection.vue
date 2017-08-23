@@ -94,7 +94,7 @@ export default {
         }
     },
     updated: function() {
-        $(".socket-info").scrollTop($(".socket-info").scrollTop()+300)
+        $(".socket-info").scrollTop($(".socket-info").scrollTop()+1000)
     }
 }
 </script>

@@ -79,6 +79,6 @@ export const changeSearchName = ({commit, state}, obj) => {
 /* 上传图片 */
 export const uploadImg = ({commit, state}, obj) => {
   api.uploadFile((result) => {
-    commit(types.SEND_IMAGE, result)
+    commit(types.SEND_MESSAGE, result)
   }, state, obj)
 }

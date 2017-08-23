@@ -308,7 +308,7 @@ export const uploadFile = (cb, state, obj) => {
     },
     onCompleted: function (data) {
       // 成功处理
-      sendImage(data, state)
+      sendImage(data, state, cb)
     }
   }
 
@@ -331,7 +331,7 @@ export const uploadFile = (cb, state, obj) => {
 }
 
 /* 上传完成处理 */
-const sendImage = async (data, state) => {
+const sendImage = async (data, state, cb) => {
   data.fileType = getFileType(data.name)
   await urlItem[data.fileType](data)
 
@@ -339,7 +339,7 @@ const sendImage = async (data, state) => {
 
   // 暂时延迟一秒，await 不起作用
   setTimeout(() => {
-    var content = {
+    let content = {
       imageUri: data.downloadUrl,
       content: data.thumbnail,
       user: { // 暂定发送用户信息
@@ -347,17 +347,21 @@ const sendImage = async (data, state) => {
         'name': state.userInfo.username,
         'portraitUri': state.userInfo.thumb
       },
-      extra: { // 接收方信123息
+      extra: { // 接收方信息
         'name': state.currentThreadName,
         'userId': currentThreadID,
         'portraitUri': state.userInfo.thumb
       }
     }
-    var msg = new RongIMLib.ImageMessage(content)
-
+    let msg = new RongIMLib.ImageMessage(content)
+    let obj = {}
     RongIMClient.getInstance().sendMessage(conversationtype, currentThreadID, msg, {
-      onSuccess: function (message) {
-        console.log(message)
+      onSuccess: async function (message) {
+        console.log('sendImag', message)
+        // 添加 到消息框
+        message = await filterMessage(message)
+        obj.msg = message.content.content
+        await cb(obj)
       },
       onError: function (errorCode, message) {
         console.log('图片发送失败！')
@@ -379,7 +383,7 @@ let getFileType = function (filename) {
 /* 获取上传后的图片地址 */
 let urlItem = {
   file: function (data) {
-    var fileType = RongIMLib.FileType.FILE
+    let fileType = RongIMLib.FileType.FILE
     RongIMClient.getInstance().getFileUrl(fileType, data.filename, data.name, {
       onSuccess: function (result) {
         data.downloadUrl = result.downloadUrl
@@ -391,7 +395,7 @@ let urlItem = {
     })
   },
   image: function (data) {
-    var fileType = RongIMLib.FileType.IMAGE
+    let fileType = RongIMLib.FileType.IMAGE
     RongIMClient.getInstance().getFileUrl(fileType, data.filename, null, {
       onSuccess: function (result) {
         data.downloadUrl = result.downloadUrl
@@ -424,7 +428,7 @@ let filterMessage = (message) => {
     /* 音频 */
     case RongIMClient.MessageType.VoiceMessage:
       message.content.content_back = message.content.content
-      message.content.content = '<img src="http://mu6.bdstatic.com/static/images/page/index/icon-fm.png" />'
+      message.content.content = '<img src="http://mu6.bdstatic.com/static/images/page/index/icon-fm.png" />' // 待修改成自己的
       break
 
     /* 文件（图片） */
@@ -432,7 +436,7 @@ let filterMessage = (message) => {
       // message.content.content => 图片缩略图 base64。
       // message.content.imageUri => 原图 URL。
       // 具体待处理
-      message.content.content_back = message.content.content
+      message.content.content_back = message.content.content // 暂存缩略图 base64, 未做放大，直接使用原图
       message.content.content = '<img src="' + message.content.imageUri + '" />'
       break
 

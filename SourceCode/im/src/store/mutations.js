@@ -66,7 +66,7 @@ export default {
       }
     })
   },
-  // 发送消息-文本和EMOJI部分
+  // 发送消息-文本和EMOJI，发送图片也使用此
   [types.SEND_MESSAGE] (state, obj) {
     // 添加发送内容到消息列表
     let firstMessage = state.messages['storeid'][0]
@@ -162,10 +162,6 @@ export default {
         el.sentTime = newDate.toLocaleDateString()
       }
     })
-  },
-  /* 发送图片 */
-  [types.SEND_IMAGE] (state, obj) {
-    console.log(obj)
   }
 }
 
