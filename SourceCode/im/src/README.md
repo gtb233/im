@@ -1,7 +1,7 @@
-请求示例：http://localhost:8081/#/?user=GW78829820&storeid=GW00104713&token=sdfsdfdsfds
+请求示例：http://localhost:8081/#/?user=GW87209993&store=GW50326071&token=123
 
-盖讯能测试地址：http://172.18.7.64:8080/backji/gmall/userInfoForMall 
-测试账号：GET请求，POST没成功
+盖讯能测试地址：http://172.18.7.64:8080/backji/gmall/userInfoForMall
+测试账号:
 GW87209993   123456
 GW50326071   123456
 

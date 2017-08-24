@@ -10,7 +10,7 @@ export default {
     },
     //盖讯通
     gxt: {
-        url: 'http://172.18.7.64:8080/backji/gmall/userInfoForMall'
+        url: 'http://172.18.7.64:8080/'
     },
     //融云api
     rong: {

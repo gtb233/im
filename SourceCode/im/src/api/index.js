@@ -67,19 +67,21 @@ export async function getUserTokenAsync (cb, state) {
   /* 请求获取TOKEN */
   let userToken = ''
   const user = tool.urlParse()['user']
-  const currentThreadID = tool.urlParse()['storeid']
+  const currentThreadID = tool.urlParse()['store']
+  const checkToken = tool.urlParse()['token']
   if (!user || !currentThreadID) {
     alert('用户ID与商家ID数据异常！')
     return false
   }
   await Vue.http.get(
-    state.serverUrl + 'api/token?userId=' + user + '&name=' + user + '&portraitUri=gemall_20170718171031_82ee053d-dbbb-42a9-a1c3-f12247df36b0.jpg',
+    state.serverUrl + 'api/gxtToken?userId=' + user + '&storeId=' + currentThreadID + '&checkToken=' + checkToken,
     { name: '这是带参测试' }, { emulateJSON: true }
   ).then(response => {
     let data = response.body
-    if (data.code === 200) {
-      userToken = data.token
-      console.log('userToken:  ' + userToken + '|||' + user)
+    console.log('service return:', data)
+    if (data.resultCode === '200') {
+      userToken = data.resultData.rongToken
+      console.log('userToken:  ' + userToken + '|||' + user + '|||' + currentThreadID)
     } else {
       console.log(response)
     }

@@ -2,6 +2,7 @@ import { NextFunction, Request, Response, Router } from "express";
 import { BaseRoute } from "./route";
 import * as login from '../sdk/openApi/login'
 import * as token from '../sdk/rong/token'
+import * as gxtToken from '../sdk/gxt/token'
 
 /**
  * / route
@@ -30,9 +31,12 @@ export class ApiRoute extends BaseRoute {
       new ApiRoute().login(req, res, next);
     });
 
-
     router.get("/api/token", (req: Request, res: Response, next: NextFunction) => {
       new ApiRoute().token(req, res, next);
+    });
+
+    router.get("/api/gxtToken", (req: Request, res: Response, next: NextFunction) => {
+      new ApiRoute().gxtToken(req, res, next);
     });
   }
   /**
@@ -77,4 +81,27 @@ export class ApiRoute extends BaseRoute {
     res.send(data)
   }
 
+  /**
+   * 获取盖讯通TOKEN与用户信息
+    * @param req 
+    * @param res 
+    * @param next 
+   */
+  public async gxtToken(req: Request, res: Response, next: NextFunction){
+    //验证来源
+    let checkToken = req.query.checkToken;
+    // if (!checkToken) {
+    //   res.send('error') // 待改成具体错误参数
+    // }
+    let newToken = ''; // 通过统一算法计算取得，待补充
+    // if (checkToken !== newToken){
+    //   res.send('error2')
+    // }
+
+    const rst = new gxtToken.TokenRst();
+    rst.fromgw = req.query.userId;
+    rst.togw = req.query.storeId
+    const data = await gxtToken.exec(rst);
+    res.send(data)
+  }
 }
