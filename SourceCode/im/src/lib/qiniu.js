@@ -217,7 +217,7 @@ export function uploadNextChunk (blob, opts, callback) {
     }
   })
 }
-
+/* 上传 */
 export function uploadData (data, options, callback) {
   let xhr = new XMLHttpRequest()
   if (xhr.upload && options.support_options) {
@@ -255,6 +255,7 @@ export function uploadData (data, options, callback) {
 }
 
 export function uploadQiniu (file, opts, callback) {
+  // 检查是否分块
   if (file.size && opts.chunk_size < file.size) {
     let uniqueName = opts['genUId'](file)
     let suffix = file.name.substr(file.name.lastIndexOf('.'))

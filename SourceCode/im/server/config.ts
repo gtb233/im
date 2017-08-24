@@ -8,6 +8,10 @@ export default {
     psp: {
         url: "http://pspapi.gfoto99.cn/"
     },
+    //盖讯通
+    gxt: {
+        url: 'http://172.18.7.64:8080/backji/gmall/userInfoForMall'
+    },
     //融云api
     rong: {
         url: 'http://api.cn.ronghub.com/',
