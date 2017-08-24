@@ -8,9 +8,9 @@ export default {
   /* 获取用户TOKEN，设置用户ID、商家ID */
   [types.GET_USER_TOKEN] (state, userobj) {
     state.userToken = userobj.userToken
-    state.currentUserId = userobj.user
-    state.currentThreadID = userobj.currentThreadID
-    state.currentThreadName = userobj.currentThreadID // 待改为从列表获取
+    state.currentUserId = userobj.user.userId
+    state.currentThreadID = userobj.currentThreadID.userId
+    state.currentThreadName = userobj.currentThreadID.userNickname
   },
   /* 根据融云返回信息设置用户列表 */
   [types.SET_USER_LIST] (state, obj) {

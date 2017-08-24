@@ -66,8 +66,8 @@ let getUserList = function (cb, state) {
 export async function getUserTokenAsync (cb, state) {
   /* 请求获取TOKEN */
   let userToken = ''
-  const user = tool.urlParse()['user']
-  const currentThreadID = tool.urlParse()['store']
+  let user = tool.urlParse()['user']
+  let currentThreadID = tool.urlParse()['store']
   const checkToken = tool.urlParse()['token']
   if (!user || !currentThreadID) {
     alert('用户ID与商家ID数据异常！')
@@ -81,6 +81,8 @@ export async function getUserTokenAsync (cb, state) {
     console.log('service return:', data)
     if (data.resultCode === '200') {
       userToken = data.resultData.rongToken
+      user = data.resultData.fromgw // 变更为用户信息对象
+      currentThreadID = data.resultData.togw // 变更为商家信息对象
       console.log('userToken:  ' + userToken + '|||' + user + '|||' + currentThreadID)
     } else {
       console.log(response)
