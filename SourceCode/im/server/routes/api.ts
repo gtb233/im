@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { BaseRoute } from "./route";
-import * as login from '../sdk/openApi/login'
 import * as token from '../sdk/rong/token'
 import * as gxtToken from '../sdk/gxt/token'
 import * as tool from '../lib/util'
@@ -28,9 +27,6 @@ export class ApiRoute extends BaseRoute {
       new ApiRoute().index(req, res, next);
     });
 
-    router.get("/api/login", (req: Request, res: Response, next: NextFunction) => {
-      new ApiRoute().login(req, res, next);
-    });
     router.post("/api/token", (req: Request, res: Response, next: NextFunction) => {
       new ApiRoute().token(req, res, next);
     });
@@ -52,19 +48,6 @@ export class ApiRoute extends BaseRoute {
     res.send("api 接口");
   }
 
-  /**
-   * 登录
-   * @param req 
-   * @param res 
-   * @param next 
-   */
-  public async login(req: Request, res: Response, next: NextFunction) {
-    const rst = new login.loginRst();
-    rst.loginInfo = '0\tGW78829820\t123456\t';
-    const data = await login.exec(rst);
-    console.log(data)
-    res.send(data);
-  }
 
   /**
     * 获取token
@@ -100,12 +83,14 @@ export class ApiRoute extends BaseRoute {
     const check = tool.checkToken(req.body.userId, req.body.storeId, req.body.token)
     if (!check) {
       res.send("token 验证失败，您在当前页面停留过久，请刷新重试！");
+      return true;
     }
 
     const rst = new gxtToken.TokenRst();
     rst.fromgw = req.body.userId;
     rst.togw = req.body.storeId
     const data = await gxtToken.exec(rst);
+    console.log(data);
     res.send(data)
   }
 }

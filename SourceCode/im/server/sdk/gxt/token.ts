@@ -23,5 +23,10 @@ export class TokenRpn {
  */
 export async function exec(rst: TokenRst) {
     const data = await client.exec(urlConfig.token, rst);
-    return JSON.parse(data) as client.RSM<TokenRpn>;;
+    try{
+        return JSON.parse(data) as client.RSM<TokenRpn>;
+    }catch(e){
+        return data;
+    }
+   
 }
