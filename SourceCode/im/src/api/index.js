@@ -63,8 +63,8 @@ let getUserList = function (cb, state) {
   }, null)
 }
 
+/* 请求获取TOKEN */
 export async function getUserTokenAsync (cb, state) {
-  /* 请求获取TOKEN */
   let userToken = ''
   let get = tool.urlParse()
   let user = get['user']
@@ -77,7 +77,7 @@ export async function getUserTokenAsync (cb, state) {
     userId: user,
     name: user,
     token: get['token'],
-    storeId: get['storeid']
+    storeId: currentThreadID
   }
   await Vue.http.post(
     state.serverUrl + 'api/gxtToken',

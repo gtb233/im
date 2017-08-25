@@ -9,7 +9,7 @@ export const init = async (store) => {
   // await getUserInfo(store)
 }
 
-/* 取得用户信息 */
+/* 取得用户信息--弃用 */
 export const getUserInfo = async ({ dispatch, commit }) => {
   await api.getUserInfo(userInfo => {
     commit(types.GET_USER_INFO, userInfo)

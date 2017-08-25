@@ -103,8 +103,8 @@ export class ApiRoute extends BaseRoute {
     }
 
     const rst = new gxtToken.TokenRst();
-    rst.fromgw = req.query.userId;
-    rst.togw = req.query.storeId
+    rst.fromgw = req.body.userId;
+    rst.togw = req.body.storeId
     const data = await gxtToken.exec(rst);
     res.send(data)
   }

@@ -20,15 +20,15 @@ export default {
   /* 根据融云返回信息设置用户列表 */
   [types.SET_USER_LIST] (state, obj) {
     state.emojis = obj.emojis
-    state.userList = obj.userList
-    // 设置初始对话框用户名
-    if (state.userList) {
-      for (let info of state.userList) {
-        if (info.targetId === state.currentThreadID) {
-          state.currentThreadName = info.userName
-        }
-      }
-    }
+    state.userList = obj.userList ? obj.userList : []
+    // 设置初始对话框用户名--不再需要
+    // if (state.userList) {
+    //   for (let info of state.userList) {
+    //     if (info.targetId === state.currentThreadID) {
+    //       state.currentThreadName = info.userName
+    //     }
+    //   }
+    // }
   },
   /* 获取历史消息 */
   [types.GET_HISTORY_MESSAGE] (state, obj) {
@@ -71,7 +71,7 @@ export default {
       }
     })
   },
-  // 发送消息-文本和EMOJI，发送图片也使用此
+  // 发送消息后消息列表处理-文本和EMOJI，发送图片也使用此
   [types.SEND_MESSAGE] (state, obj) {
     // 添加发送内容到消息列表
     let firstMessage = state.messages['storeid'][0]

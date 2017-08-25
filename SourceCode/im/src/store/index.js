@@ -17,8 +17,8 @@ const state = {
     userId: '1',
     username: '测试用户',
     gaiNumber: 'GW123456',
-    thumb: 'http://qlogo2.store.qq.com/qzone/519430301/519430301/50?1495187229',
-    token: 'fgfdhdfhdfgh4564dg54sdg',
+    thumb: '',
+    token: '',
     userLevel: '正式会员'
   },
   emojis: [],
