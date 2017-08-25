@@ -6,7 +6,7 @@ export const init = async (store) => {
   /* 连接融云SOCK */
   await rongCloudInit(store)
   /* 获取用户信息，此应该是请求TOKEN时一并返回或去核心取 */
-  await getUserInfo(store)
+  // await getUserInfo(store)
 }
 
 /* 取得用户信息 */

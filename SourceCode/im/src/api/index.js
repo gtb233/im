@@ -85,11 +85,11 @@ export async function getUserTokenAsync (cb, state) {
       currentThreadID = data.resultData.togw // 变更为商家信息对象
       console.log('userToken:  ' + userToken + '|||' + user + '|||' + currentThreadID)
     } else {
-      console.log(response)
+      console.log(response.body)
     }
   }, response => {
     alert('请求连接失败，请刷新页面重试！')
-    console.log('请求TOKEN接口失败!')
+    console.log('请求TOKEN失败!')
   })
   await cb({ userToken, user, currentThreadID })
 }
@@ -164,6 +164,7 @@ export async function rongCloudInit (cb, state) {
     },
     onTokenIncorrect: function () {
       console.log('token无效')
+      alert('连接失败，请刷新页面重试！')
       // 此处可添加重新获取
     },
     onError: function (errorCode) {

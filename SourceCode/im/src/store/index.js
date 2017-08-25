@@ -10,6 +10,7 @@ Vue.use(Vuex)
 const state = {
   serverUrl: config.serverUrl, /* 请求TOKEN的服务器地址 */
   appKey: '6tnym1brnzv77', /* 融云申请的应用KEY */
+  userImgUrl: 'http://172.18.7.64:8080', // 用户头像前缀地址
   checkToken: '', /* 商城登录后的验证TOKEN */
   userToken: '', /* 融云用户TOKEN */
   userInfo: { /* 用户信息 */

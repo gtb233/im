@@ -3,14 +3,19 @@ import * as types from './mutation-types'
 export default {
   /* 获取用户信息 */
   [types.GET_USER_INFO] (state, userInfo) {
-    state.userInfo = userInfo
+    // state.userInfo = userInfo
   },
   /* 获取用户TOKEN，设置用户ID、商家ID */
   [types.GET_USER_TOKEN] (state, userobj) {
     state.userToken = userobj.userToken
     state.currentUserId = userobj.user.userId
+    // 商家信息
     state.currentThreadID = userobj.currentThreadID.userId
     state.currentThreadName = userobj.currentThreadID.userNickname
+    // 添加用户信息
+    state.userInfo.thumb = userobj.user.userHead ? state.userImgUrl + userobj.user.userHead : ''
+    state.userInfo.username = userobj.user.userNickname
+    state.userInfo.userLevel = '正式会员'
   },
   /* 根据融云返回信息设置用户列表 */
   [types.SET_USER_LIST] (state, obj) {
