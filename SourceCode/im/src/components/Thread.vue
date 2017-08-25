@@ -2,7 +2,7 @@
     <li :class="{ active: active }"
         @click="$emit('switch-thread', value.targetId)"
     >
-        <img class="logo" :src="value.userLogo">
+        <img class="logo" :src="value.userLogo ? value.userLogo : './static/images/bgs/hedader-tx.png' ">
         <p class="title">{{value.userName}}</p>
         <p class="txtle">
             {{value.lastMessage}}

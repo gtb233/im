@@ -15,7 +15,7 @@ const state = {
   userToken: '', /* 融云用户TOKEN */
   userInfo: { /* 用户信息 */
     userId: '1',
-    username: '测试用户',
+    username: '用户名',
     gaiNumber: 'GW123456',
     thumb: '',
     token: '',

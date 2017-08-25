@@ -37,20 +37,21 @@ let getUserList = function (cb, state) {
       for (let info of list) {
         let userInfo = {}
         let _targetId = ''
+        let _content = info.latestMessage.content
 
         newDate.setTime(info.sentTime)
         _targetId = info.targetId
         userInfo.targetId = _targetId
         userInfo.sentTime = newDate.toLocaleDateString()
         // 音频图片时 与消息窗口处理有差异，处理图标便可
-        userInfo.lastMessage = info.latestMessage.content.content
+        userInfo.lastMessage = _content.content
         userInfo.active = ''
         if (state.currentThreadID === _targetId) {
           userInfo.active = 'active'
         }
         /* 以下待修改成正确参数 */
-        userInfo.userLogo = info.latestMessage.content.user.portraitUri
-        userInfo.userName = info.targetId
+        userInfo.userLogo = _content.extra.userId !== state.currentUserId ? _content.extra.portraitUri : _content.user.portraitUri
+        userInfo.userName = _content.extra.userId !== state.currentUserId ? _content.extra.name : _content.user.name
         userInfo.messagesNumber = 0
         userList.push(userInfo)
       }
@@ -91,6 +92,9 @@ export async function getUserTokenAsync (cb, state) {
       user = data.resultData.fromgw // 变更为用户信息对象
       currentThreadID = data.resultData.togw // 变更为商家信息对象
       console.log('userToken:  ' + userToken + '|||' + user + '|||' + currentThreadID)
+    } else if (data.resultCode === '403') {
+      alert(data.resultDes + '!请重新进入!')
+      console.log(data)
     } else {
       alert(data)
       console.log(data)
