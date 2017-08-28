@@ -443,6 +443,7 @@ let filterMessage = (message) => {
     /* 文本消息（带原生Emoji） */
     case RongIMClient.MessageType.TextMessage:
       // HTML形式 效果好，感觉不安全
+      message.content.content_back = message.content.content
       message.content.content = RongIMLib.RongIMEmoji.emojiToHTML(message.content.content)
       // 处理成原生EMOJI 兼容性有问题
       // message.content.content = RongIMLib.RongIMEmoji.emojiToSymbol(message.content.content)

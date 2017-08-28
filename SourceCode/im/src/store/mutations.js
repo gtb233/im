@@ -133,7 +133,7 @@ export default {
     setTimeout(() => {
       state.userList.forEach(function (el) {
         if (el.targetId === obj.targetId) {
-          el.lastMessage = obj.content.content  // 设置内容，非对象结构
+          el.lastMessage = obj.content.content_back  // 设置内容，非对象结构
           el.sentTime = newDate.toLocaleDateString()
           if (el.targetId !== state.currentThreadID) {
             el.messagesNumber += 1
@@ -145,7 +145,7 @@ export default {
             targetId: obj.senderUserId, /* 目标ID */
             userLogo: '', /* 头像 */
             userName: obj.senderUserId, /* 商铺名称 */
-            lastMessage: obj.content.content, /* 最后一条消息内容 */
+            lastMessage: obj.content.content_back, /* 最后一条消息内容 */
             messagesNumber: 1, /* 消息数 */
             sendTime: newDate.toLocaleDateString(), /* 最后一条消息时间 */
             active: ''
@@ -153,7 +153,7 @@ export default {
           state.userList.push(user)
         }
       })
-    }, 200)
+    }, 500)
   },
   /* 修改搜索字段 */
   [types.SET_SEARCH_NAME] (state, obj) {
