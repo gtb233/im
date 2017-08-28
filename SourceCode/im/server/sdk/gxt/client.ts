@@ -16,17 +16,31 @@ if (config.proxy) {
     }
     httpc = new httpm.HttpClient('', undefined, requestOption);
 }
+
 /**
  * 通用响应类，无分页
+ */
+// export class RSM<T>
+// {
+//     /// 响应代码
+//     public resultCode: string;
+//     /// 响应描述
+//     public resultDes: string;
+//     /// 响应数据
+//     public resultData: T;
+// }
+
+/**
+ * 通用响应类，无分页 （旧接口返回格式）
  */
 export class RSM<T>
 {
     /// 响应代码
-    public resultCode: string;
+    public result: string;
     /// 响应描述
-    public resultDes: string;
+    public tag: string;
     /// 响应数据
-    public resultData: T;
+    public data: T;
 }
 
 /* 
@@ -34,7 +48,6 @@ export class RSM<T>
  * @param url 
  * @param rst 
  */
-
 export async function exec<T>(url: string, rst: any) {
     const headers = {
         ["Content-Type"]: "application/x-www-form-urlencoded",

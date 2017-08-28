@@ -50,8 +50,8 @@ let getUserList = function (cb, state) {
           userInfo.active = 'active'
         }
         /* 以下待修改成正确参数 */
-        userInfo.userLogo = _content.extra.userId !== state.currentUserId ? _content.extra.portraitUri : _content.user.portraitUri
-        userInfo.userName = _content.extra.userId !== state.currentUserId ? _content.extra.name : _content.user.name
+        userInfo.userLogo = info.latestMessage.senderUserId !== state.currentUserId ? _content.user.portraitUri : _content.extra.portraitUri
+        userInfo.userName = info.latestMessage.senderUserId !== state.currentUserId ? _content.user.name : _content.extra.name
         userInfo.messagesNumber = 0
         userList.push(userInfo)
       }
@@ -87,21 +87,28 @@ export async function getUserTokenAsync (cb, state) {
   ).then(response => {
     let data = response.body
     console.log('service return:', data)
-    if (data.resultCode === '200') {
-      userToken = data.resultData.rongToken
-      user = data.resultData.fromgw // 变更为用户信息对象
-      currentThreadID = data.resultData.togw // 变更为商家信息对象
+    if (data.result === '1') {
+      // 检查商家
+      if (data.data.togw === 'null' || data.data.togw === null) {
+        alert('商家不存在，请核对！')
+        console.log('商家不存在')
+      }
+      userToken = data.data.rongToken
+      user = data.data.fromgw // 变更为用户信息对象
+      currentThreadID = data.data.togw // 变更为商家信息对象
       console.log('userToken:  ' + userToken + '|||' + user + '|||' + currentThreadID)
-    } else if (data.resultCode === '403') {
-      alert(data.resultDes + '!请重新进入!')
+    } else if (data.result === '403') {
+      alert(data.tag + '!请重新进入!')
       console.log(data)
     } else {
-      alert(data)
+      alert('服务异常，请稍候再试！')
       console.log(data)
+      return false
     }
   }, response => {
     alert('请求连接失败，请刷新页面重试！')
     console.log('请求TOKEN失败!')
+    return false
   })
   await cb({ userToken, user, currentThreadID })
 }
@@ -175,7 +182,7 @@ export async function rongCloudInit (cb, state) {
       console.log('链接成功，用户id：' + userId)
     },
     onTokenIncorrect: function () {
-      console.log('token无效')
+      console.log('token无效,连接失败!')
       alert('连接失败，请刷新页面重试！')
       // 此处可添加重新获取
     },
@@ -203,9 +210,9 @@ export async function sendMsg (cb, state, obj) {
       'portraitUri': state.userInfo.thumb
     },
     extra: { // 接收方信息
-      'name': state.currentThreadName,
       'userId': currentThreadID,
-      'portraitUri': state.userInfo.thumb
+      'name': state.currentThreadName,
+      'portraitUri': state.currentThreadLogo
     }
   }
 

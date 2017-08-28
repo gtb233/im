@@ -27,6 +27,7 @@ export const getUserToken = async ({ dispatch, commit, state }) => {
 export const rongCloudInit = async ({ dispatch, commit, state }) => {
   // 等待 getUserToken 完成
   await dispatch('getUserToken')
+  // 连接融云
   await api.rongCloudInit((obj, action) => {
     switch (action) {
       case 'connect':

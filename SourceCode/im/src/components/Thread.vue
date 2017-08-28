@@ -1,6 +1,6 @@
 <template>
     <li :class="{ active: active }"
-        @click="$emit('switch-thread', value.targetId, value.userName)"
+        @click="$emit('switch-thread', value.targetId, value.userName, value.userLogo)"
     >
         <img class="logo" :src="value.userLogo ? value.userLogo : './static/images/bgs/hedader-tx.png' ">
         <p class="title">{{value.userName}}</p>

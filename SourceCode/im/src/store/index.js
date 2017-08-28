@@ -25,6 +25,7 @@ const state = {
   currentUserId: null,
   currentThreadID: null,
   currentThreadName: '连接中...',
+  currentThreadLogo: '',
   searchName: '', // 侧边栏搜索内容
   userList: [{
     targetId: '', /* 目标ID */

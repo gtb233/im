@@ -12,6 +12,7 @@ export default {
     // 商家信息
     state.currentThreadID = userobj.currentThreadID.userId
     state.currentThreadName = userobj.currentThreadID.userNickname
+    state.currentThreadLogo = userobj.currentThreadID.userHead ? state.userImgUrl + userobj.currentThreadID.userHead : ''
     // 添加用户信息
     state.userInfo.thumb = userobj.user.userHead ? state.userImgUrl + userobj.user.userHead : ''
     state.userInfo.username = userobj.user.userNickname
@@ -21,7 +22,7 @@ export default {
   [types.SET_USER_LIST] (state, obj) {
     state.emojis = obj.emojis
     state.userList = obj.userList ? obj.userList : []
-    // 设置初始对话框用户名--不再需要
+    // 设置初始时对话框用户名--弃用
     // if (state.userList) {
     //   for (let info of state.userList) {
     //     if (info.targetId === state.currentThreadID) {
@@ -62,6 +63,7 @@ export default {
   [types.CHANGE_CURRENT_THREAD_INFO] (state, obj) {
     state.currentThreadID = obj.targetId
     state.currentThreadName = obj.userName // 可能需要改为从列表获取
+    state.currentThreadLogo = obj.userLogo // 可能需要改为从列表获取
     // 改变列表高亮
     state.userList.forEach(function (el) {
       el.active = ''
