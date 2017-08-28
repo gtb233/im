@@ -61,7 +61,7 @@ export default {
   /* 改变聊天用户 */
   [types.CHANGE_CURRENT_THREAD_INFO] (state, obj) {
     state.currentThreadID = obj.targetId
-    state.currentThreadName = obj.targetId // 待改为从列表获取
+    state.currentThreadName = obj.userName // 可能需要改为从列表获取
     // 改变列表高亮
     state.userList.forEach(function (el) {
       el.active = ''

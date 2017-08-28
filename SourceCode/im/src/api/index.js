@@ -23,7 +23,7 @@ export function getUserInfo (cb) {
   )
 }
 
-// 获取回话列表
+// 获取会话列表
 let getUserList = function (cb, state) {
   // 待考虑做缓存
   RongIMClient.getInstance().getConversationList({
