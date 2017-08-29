@@ -11,7 +11,7 @@ export const init = async (store) => {
 
 /* 取得用户信息--弃用 */
 export const getUserInfo = async ({ dispatch, commit, state }) => {
-  await api.getUserInfo(userInfo => {
+  await api.getUser(userInfo => {
     commit(types.GET_USER_INFO, userInfo)
   }, state)
 }

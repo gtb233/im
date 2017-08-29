@@ -12,15 +12,44 @@ let RongIMClient = global.RongIMLib.RongIMClient
 
 Vue.use(VueResource)
 
-const LATENCY = 16
 const conversationtype = RongIMLib.ConversationType.PRIVATE
 
-export async function getUserInfo (cb, state) {
+/* 取得历史用户列表 */
+export async function getUser (cb, state) {
+  const params = {
+    userId: state.currentUserId
+  }
   await Vue.http.post(
     state.serverUrl + 'api/getUserList',
-    {},
+    params,
     { emulateJSON: true }
-  ).then(response => {}, response => {})
+  ).then(response => {
+    console.log(response)
+    console.log(response.body)
+  }, response => {})
+}
+
+/* 添加聊天用户到列表 */
+export async function setUser (cb, state) {
+  const params = {
+    userId: state.currentUserId,
+    targetId: '', /* 目标ID */
+    userLogo: '', /* 头像 */
+    userName: '加载中...!', /* 商铺名称 */
+    lastMessage: '若未响应，请刷新重试!', /* 最后一条消息内容 */
+    messagesNumber: '0', /* 消息数 */
+    sendTime: '', /* 最后一条消息时间 */
+    active: ''
+  }
+  await Vue.http.post(
+    state.serverUrl + 'api/setUserList',
+    params,
+    { emulateJSON: true }
+  ).then(response => {
+    console.log('用户添加成功！')
+  }, response => {
+    console.log('用户添加失败！')
+  })
 }
 
 // 获取会话列表

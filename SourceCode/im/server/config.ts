@@ -7,8 +7,8 @@ export default {
     // redis
     redis: {
         PORT: 6379,
-        HOST: '127.0.0.1',
-        OPTIONS: {auth_pass: 'aaa123'}
+        HOST: '172.18.7.77',
+        OPTIONS: {}
     },
     //融云api
     rong: {

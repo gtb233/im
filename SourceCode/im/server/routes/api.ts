@@ -93,16 +93,40 @@ export class ApiRoute extends BaseRoute {
 
     const rst = new gxtToken.TokenRst();
     rst.fromgw = req.body.userId;
-    rst.togw = req.body.storeId
+    rst.togw = req.body.storeId;
     const data = await gxtToken.exec(rst);
-    console.log(data);
+    // console.log(data);
     res.send(data)
   }
 
   /**
-   * 取得服务端缓存会话列表  redis 
+   * 取得服务端缓存会话列表  redis
+   * @param req 
+   * @param res 
+   * @param next 
    */
   public async getUserList(req: Request, res: Response, next: NextFunction){
-    redis.getUserList()
+    const data = await redis.getUserList(req.body.userId)
+    res.send(data)
+    console.log(data)
+  }
+
+  /**
+   * 设置会话列表用户信息 redis
+   * @param req 
+   * @param res 
+   * @param next 
+   */
+  public async setUserList(req: Request, res: Response, next: NextFunction){
+    const rst = new redis.setRst
+    rst.targetId = req.body.targetId
+    rst.lastMessage = req.body.lastMessage
+    rst.sentTime = req.body.sentTime
+    rst.messagesNumber = req.body.messagesNumber
+    rst.userLogo = req.body.userLogo
+    rst.userName = req.body.userName
+
+    const data = await redis.setUserList(req.body.userId, rst)
+    res.send(data)
   }
 }
