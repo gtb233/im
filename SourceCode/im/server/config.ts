@@ -4,6 +4,12 @@ export default {
     gxt: {
         url: 'http://172.18.7.64:8080/'
     },
+    // redis
+    redis: {
+        PORT: 6379,
+        HOST: '127.0.0.1',
+        OPTIONS: {auth_pass: 'aaa123'}
+    },
     //融云api
     rong: {
         url: 'http://api.cn.ronghub.com/',

@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { BaseRoute } from "./route";
-import * as token from '../sdk/rong/token'
-import * as gxtToken from '../sdk/gxt/token'
-import * as tool from '../lib/util'
+import * as token from '../sdk/rong/token';
+import * as gxtToken from '../sdk/gxt/token';
+import * as tool from '../lib/util';
+import * as redis from '../lib/redis';
 
 /**
  * / route
@@ -33,6 +34,10 @@ export class ApiRoute extends BaseRoute {
 
     router.post("/api/gxtToken", (req: Request, res: Response, next: NextFunction) => {
       new ApiRoute().gxtToken(req, res, next);
+    });
+
+    router.post("/api/getUserList", (req: Request, res: Response, next: NextFunction) => {
+      new ApiRoute().getUserList(req, res, next);
     });
   }
   /**
@@ -92,5 +97,12 @@ export class ApiRoute extends BaseRoute {
     const data = await gxtToken.exec(rst);
     console.log(data);
     res.send(data)
+  }
+
+  /**
+   * 取得服务端缓存会话列表  redis 
+   */
+  public async getUserList(req: Request, res: Response, next: NextFunction){
+    redis.getUserList()
   }
 }

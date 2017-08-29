@@ -1,4 +1,3 @@
-import * as data from './mock-data'
 import Vue from 'vue'
 import VueResource from 'vue-resource'
 import * as tool from '../lib/util'
@@ -16,11 +15,12 @@ Vue.use(VueResource)
 const LATENCY = 16
 const conversationtype = RongIMLib.ConversationType.PRIVATE
 
-export function getUserInfo (cb) {
-  setTimeout(
-    () => { cb(data.userInfo) },
-    LATENCY
-  )
+export async function getUserInfo (cb, state) {
+  await Vue.http.post(
+    state.serverUrl + 'api/getUserList',
+    {},
+    { emulateJSON: true }
+  ).then(response => {}, response => {})
 }
 
 // 获取会话列表
@@ -41,6 +41,9 @@ let getUserList = function (cb, state) {
 
         newDate.setTime(info.sentTime)
         _targetId = info.targetId
+        if (_targetId === '验证消息') {
+          continue // 只展示用户
+        }
         userInfo.targetId = _targetId
         userInfo.sentTime = newDate.toLocaleDateString()
         // 音频图片时 与消息窗口处理有差异，处理图标便可
@@ -49,9 +52,9 @@ let getUserList = function (cb, state) {
         if (state.currentThreadID === _targetId) {
           userInfo.active = 'active'
         }
-        /* 以下待修改成正确参数 */
-        userInfo.userLogo = info.latestMessage.senderUserId !== state.currentUserId ? _content.user.portraitUri : _content.extra.portraitUri
-        userInfo.userName = info.latestMessage.senderUserId !== state.currentUserId ? _content.user.name : _content.extra.name
+        /* 盖讯通无任何数据，只能自己服务端添加时加上些字段以便作用 */
+        userInfo.userLogo = '' // info.latestMessage.senderUserId !== state.currentUserId ? _content.user.portraitUri : _content.extra.portraitUri
+        userInfo.userName = _targetId // info.latestMessage.senderUserId !== state.currentUserId ? _content.user.name : _content.extra.name
         userInfo.messagesNumber = 0
         userList.push(userInfo)
       }
@@ -170,9 +173,14 @@ export async function rongCloudInit (cb, state) {
   RongIMClient.setOnReceiveMessageListener({
     onReceived: function (message) {
       console.log('接收到的消息', message)
-      message = filterMessage(message)
-      result.msg = message
-      cb(result, 'newMsg')
+      // 输入中状态判断
+      if (message.messageType !== 'TypingStatusMessage') {
+        message = filterMessage(message)
+        result.msg = message
+        cb(result, 'newMsg')
+      } else {
+        console.log('输入中。。')
+      }
     }
   })
 
