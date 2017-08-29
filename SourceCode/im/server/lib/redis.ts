@@ -1,5 +1,6 @@
 import * as redis from 'redis';
 import config from '../config';
+import * as q from 'q';
 
 const client = redis.createClient(config.redis.PORT, config.redis.HOST, config.redis.OPTIONS)
 
@@ -44,17 +45,18 @@ export class getRpn {
  * 获取历史会话列表
  * key: "gxt_emall_IM_userlist_" + userid 盖讯通融云处的ID
  */
-export async function getUserList(userId: string) {
+export function getUserList(userId: string) : q.Promise<getRpn> {
   let result: any = null
   const key = "gxt_emall_IM_userlist_" + userId
-  await client.get(key, function(err, reply) {
-    console.log(reply)
+  let deferred: q.Deferred<getRpn> = q.defer<getRpn>();
+   client.get(key,(err, reply)=>{
     try{
-      return JSON.parse(reply) as getRpn
+      return deferred.resolve(JSON.parse(reply) as getRpn);
     }catch(e){
       return null
     }
-  })
+  });
+  return deferred.promise;
 }
 
 /**
