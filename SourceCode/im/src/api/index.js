@@ -14,59 +14,55 @@ Vue.use(VueResource)
 
 const conversationtype = RongIMLib.ConversationType.PRIVATE
 
-/* 取得历史用户列表 */
-export async function getUser (cb, state) {
-  const params = {
-    userId: state.currentUserId
-  }
-  await Vue.http.post(
-    state.serverUrl + 'api/getUserList',
-    params,
-    { emulateJSON: true }
-  ).then(response => {
-    console.log(response)
-    console.log(response.body)
-  }, response => {})
-}
-
-/* 添加聊天用户到列表 */
-export async function setUser (cb, state) {
+/* 添加聊天用户到列表
+ * params {
+    targetId
+    lastMessage
+    userLogo
+    userName
+ * }
+ */
+export async function setUserList (cb, state, obj) {
   const params = {
     userId: state.currentUserId,
-    targetId: '', /* 目标ID */
-    userLogo: '', /* 头像 */
-    userName: '加载中...!', /* 商铺名称 */
-    lastMessage: '若未响应，请刷新重试!', /* 最后一条消息内容 */
-    messagesNumber: '0', /* 消息数 */
-    sendTime: '', /* 最后一条消息时间 */
-    active: ''
+    targetId: state.currentThreadID, /* 目标ID */
+    userLogo: state.currentThreadLogo, /* 头像 */
+    userName: state.currentThreadName, /* 商铺名称 */
+    lastMessage: obj.lastMessage, /* 最后一条消息内容 */
+    messagesNumber: 0 /* 消息数 */
   }
   await Vue.http.post(
     state.serverUrl + 'api/setUserList',
     params,
     { emulateJSON: true }
   ).then(response => {
-    console.log('用户添加成功！')
+    console.log('会话列表更新成功！')
   }, response => {
-    console.log('用户添加失败！')
+    console.log('会话列表更新失败！')
   })
 }
 
 // 获取会话列表
 let getUserList = function (cb, state) {
-  // 待考虑做缓存
-  RongIMClient.getInstance().getConversationList({
-    onSuccess: function (list) {
-      let userList = []
-      // 获取成功
-      console.log('userList:', list)
+  // 新获取方法：
+  const params = {
+    userId: state.currentUserId
+  }
+  Vue.http.post(
+    state.serverUrl + 'api/getUserList',
+    params,
+    { emulateJSON: true }
+  ).then(response => {
+    let list = response.body
+    let userList = []
+    // 获取成功
+    console.log('userList:', list)
 
-      let newDate = new Date()
-
+    let newDate = new Date()
+    try {
       for (let info of list) {
         let userInfo = {}
         let _targetId = ''
-        let _content = info.latestMessage.content
 
         newDate.setTime(info.sentTime)
         _targetId = info.targetId
@@ -76,18 +72,60 @@ let getUserList = function (cb, state) {
         userInfo.targetId = _targetId
         userInfo.sentTime = newDate.toLocaleDateString()
         // 音频图片时 与消息窗口处理有差异，处理图标便可
-        userInfo.lastMessage = _content.content
+        userInfo.lastMessage = info.lastMessage
         userInfo.active = ''
         if (state.currentThreadID === _targetId) {
           userInfo.active = 'active'
         }
         /* 盖讯通无任何数据，只能自己服务端添加时加上些字段以便作用 */
-        userInfo.userLogo = '' // info.latestMessage.senderUserId !== state.currentUserId ? _content.user.portraitUri : _content.extra.portraitUri
-        userInfo.userName = _targetId // info.latestMessage.senderUserId !== state.currentUserId ? _content.user.name : _content.extra.name
+        userInfo.userLogo = info.userLogo
+        userInfo.userName = info.userName
         userInfo.messagesNumber = 0
         userList.push(userInfo)
       }
-      cb(userList)
+    } catch (e) {
+      console.log('用户列表数据异常')
+      userList = []
+    }
+    cb(userList)
+  }, response => {
+    console.log('用户列表获取失败！')
+  })
+
+  // 融云获取会话列表 -- 弃用，改为服务端保存.功能暂时保留
+  RongIMClient.getInstance().getConversationList({
+    onSuccess: function (list) {
+      // let userList = []
+      // // 获取成功
+      // console.log('userList:', list)
+
+      // let newDate = new Date()
+
+      // for (let info of list) {
+      //   let userInfo = {}
+      //   let _targetId = ''
+      //   let _content = info.latestMessage.content
+
+      //   newDate.setTime(info.sentTime)
+      //   _targetId = info.targetId
+      //   if (_targetId === '验证消息') {
+      //     continue // 只展示用户
+      //   }
+      //   userInfo.targetId = _targetId
+      //   userInfo.sentTime = newDate.toLocaleDateString()
+      //   // 音频图片时 与消息窗口处理有差异，处理图标便可
+      //   userInfo.lastMessage = _content.content
+      //   userInfo.active = ''
+      //   if (state.currentThreadID === _targetId) {
+      //     userInfo.active = 'active'
+      //   }
+      //   /* 盖讯通无任何数据，只能自己服务端添加时加上些字段以便作用 */
+      //   userInfo.userLogo = '' // info.latestMessage.senderUserId !== state.currentUserId ? _content.user.portraitUri : _content.extra.portraitUri
+      //   userInfo.userName = _targetId // info.latestMessage.senderUserId !== state.currentUserId ? _content.user.name : _content.extra.name
+      //   userInfo.messagesNumber = 0
+      //   userList.push(userInfo)
+      // }
+      // cb(userList)
     },
     onError: function (error) {
       // 列表获取失败时处理
@@ -241,15 +279,7 @@ export async function sendMsg (cb, state, obj) {
     // content:"hello " + encodeURIComponent('π，α，β'),
     content: msgContent, // 名称 转 Emoji 消息体里必须使用原生 Emoji 字符
     // content: obj.msg,
-    user: { // 暂定发送用户信息
-      'userId': state.currentUserId,
-      'name': state.userInfo.username,
-      'portraitUri': state.userInfo.thumb
-    },
-    extra: { // 接收方信息
-      'userId': currentThreadID,
-      'name': state.currentThreadName,
-      'portraitUri': state.currentThreadLogo
+    extra: { // 跟盖讯通同步，此不再传数据
     }
   }
 
@@ -258,6 +288,9 @@ export async function sendMsg (cb, state, obj) {
   RongIMClient.getInstance().sendMessage(conversationtype, currentThreadID, msg, {
     onSuccess: function (message) {
       console.log('发送文字消息成功', message, start)
+      // 更新用户列表数据
+      setUserList(cb, state, {lastMessage: msgContent})
+      // 发送成功处理
       obj.msg = RongIMLib.RongIMEmoji.symbolToHTML(obj.msg) // 列表展示数据处理
       obj.msgContent = msgContent
       obj.currentThreadID = currentThreadID

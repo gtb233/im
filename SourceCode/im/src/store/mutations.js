@@ -22,14 +22,6 @@ export default {
   [types.SET_USER_LIST] (state, obj) {
     state.emojis = obj.emojis
     state.userList = obj.userList ? obj.userList : []
-    // 设置初始时对话框用户名--弃用
-    // if (state.userList) {
-    //   for (let info of state.userList) {
-    //     if (info.targetId === state.currentThreadID) {
-    //       state.currentThreadName = info.userName
-    //     }
-    //   }
-    // }
   },
   /* 获取历史消息 */
   [types.GET_HISTORY_MESSAGE] (state, obj) {
@@ -106,7 +98,6 @@ export default {
     // 添加发送内容到消息列表 存在
     obj = obj.msg
     let newDate = new Date()
-    let isExist = 0
     // 更新对话框内容
     let messageList = state.messages[obj.senderUserId]
     let messageInfo = {
@@ -131,6 +122,7 @@ export default {
     // 防此初始化时过快处理报错，延迟执行。更新列表数据,并在列表无此用户时添加用户到列表
     newDate.setTime(obj.sentTime)
     setTimeout(() => {
+      let isExist = 0
       state.userList.forEach(function (el) {
         if (el.targetId === obj.targetId) {
           el.lastMessage = obj.content.content_back  // 设置内容，非对象结构
@@ -140,19 +132,19 @@ export default {
           }
           isExist = 1
         }
-        if (!isExist) {
-          let user = {
-            targetId: obj.senderUserId, /* 目标ID */
-            userLogo: '', /* 头像 */
-            userName: obj.senderUserId, /* 商铺名称 */
-            lastMessage: obj.content.content_back, /* 最后一条消息内容 */
-            messagesNumber: 1, /* 消息数 */
-            sendTime: newDate.toLocaleDateString(), /* 最后一条消息时间 */
-            active: ''
-          }
-          state.userList.push(user)
-        }
       })
+      if (!isExist) {
+        let user = {
+          targetId: obj.senderUserId, /* 目标ID */
+          userLogo: '', /* 头像 */
+          userName: obj.senderUserId, /* 商铺名称 */
+          lastMessage: obj.content.content_back, /* 最后一条消息内容 */
+          messagesNumber: 1, /* 消息数 */
+          sendTime: newDate.toLocaleDateString(), /* 最后一条消息时间 */
+          active: ''
+        }
+        state.userList.push(user)
+      }
     }, 500)
   },
   /* 修改搜索字段 */
