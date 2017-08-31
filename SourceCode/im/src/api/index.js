@@ -471,15 +471,7 @@ const sendImage = async (data, state, cb) => {
     let content = {
       imageUri: data.downloadUrl,
       content: data.thumbnail,
-      user: { // 暂定发送用户信息
-        'userId': state.currentUserId,
-        'name': state.userInfo.username,
-        'portraitUri': state.userInfo.thumb
-      },
-      extra: { // 接收方信息
-        'name': state.currentThreadName,
-        'userId': currentThreadID,
-        'portraitUri': state.userInfo.thumb
+      extra: { // 与盖讯通同步
       }
     }
     let msg = new RongIMLib.ImageMessage(content)
@@ -491,6 +483,13 @@ const sendImage = async (data, state, cb) => {
         message = await filterMessage(message)
         obj.msg = message.content.content
         await cb(obj)
+        // 更新用户列表数据
+        setUserList(cb, state, {
+          targetId: state.currentThreadID, /* 目标ID */
+          userLogo: state.currentThreadLogo, /* 头像 */
+          userName: state.currentThreadName, /* 商铺名称 */
+          lastMessage: message.content.content_back
+        })
       },
       onError: function (errorCode, message) {
         console.log('图片发送失败！')
