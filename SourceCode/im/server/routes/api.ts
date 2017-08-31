@@ -115,7 +115,7 @@ export class ApiRoute extends BaseRoute {
   public async getUserList(req: Request, res: Response, next: NextFunction){
     const data = await redis.getUserList(req.body.userId)
     res.send(data)
-    console.log("获取到的数据：",data)
+    // console.log("获取到的数据：",data)
   }
 
   /**

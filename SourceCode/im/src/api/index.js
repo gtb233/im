@@ -546,8 +546,18 @@ let filterMessage = (message) => {
   switch (message.messageType) {
     /* 文本消息（带原生Emoji） */
     case RongIMClient.MessageType.TextMessage:
-      // HTML形式 效果好，感觉不安全
+      // HTML形式
       message.content.content_back = message.content.content
+
+      // 商城URL添加跳转功能
+      // let match = /^((ht|f)tps?):\/\/([\w\-]+(\.[\w\-]+)*\/)*[\w\-]+(\.[\w\-]+)*\/?(\?([\w\-\.,@?^=%&:\/~\+#]*)+)?/
+      let match = new RegExp('http://www.g-emall.com/product/view(.*)', 'i')
+      message.content.content = message.content.content.replace(
+        match,
+        '<a href="http://www.g-emall.com/product/view$1" target="_blank">http://www.g-emall.com/product/view$1</a>'
+      )
+      console.log(message.content.content)
+
       message.content.content = RongIMLib.RongIMEmoji.emojiToHTML(message.content.content)
       // 处理成原生EMOJI 兼容性有问题
       // message.content.content = RongIMLib.RongIMEmoji.emojiToSymbol(message.content.content)
