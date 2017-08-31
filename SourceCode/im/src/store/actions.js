@@ -44,9 +44,9 @@ export const rongCloudInit = async ({ dispatch, commit, state }) => {
 
 /* 获取历史消息 */
 export const getHistoryMessage = async ({state, commit}) => {
-  await api.getHistoryMsgAsync((obj) => {
-    commit(types.GET_HISTORY_MESSAGE, obj)
-  }, state)
+  // await api.getHistoryMsgAsync((obj) => {
+  //   commit(types.GET_HISTORY_MESSAGE, obj)
+  // }, state)
 }
 
 /* 发送消息 */
@@ -61,9 +61,9 @@ export const sendMessage = async ({ dispatch, commit, state }, obj) => {
 export const changeCurrentThreadID = async ({commit, state}, obj) => {
   await commit(types.CHANGE_CURRENT_THREAD_INFO, obj)
   // 实时列表
-  await api.getHistoryMsg((obj) => {
-    commit(types.GET_HISTORY_MESSAGE, obj)
-  }, state)
+  // await api.getHistoryMsg((obj) => {
+  //   commit(types.GET_HISTORY_MESSAGE, obj)
+  // }, state)
 }
 
 /* 播放语音 */
