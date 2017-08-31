@@ -5,15 +5,15 @@ import * as types from './mutation-types'
 export const init = async (store) => {
   /* 连接融云SOCK */
   await rongCloudInit(store)
-  /* 获取用户信息，此应该是请求TOKEN时一并返回或去核心取 */
+  /* 获取用户信息 */
   // await getUserInfo(store)
 }
 
-/* 取得用户信息--弃用 */
+/* 取得用户信息 */
 export const getUserInfo = async ({ dispatch, commit, state }) => {
-  // await api.getUser(userInfo => {
-  //   commit(types.GET_USER_INFO, userInfo)
-  // }, state)
+  await api.getUserInfo(userInfo => {
+    commit(types.GET_USER_INFO, userInfo)
+  }, state)
 }
 
 /* 取得用户融云TOKEN */

@@ -29,12 +29,18 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 # 前端部分
 请求示例：http://localhost:8081/#/?user=GW87209993&storeid=GW50326071&token=sfdfdfsdfdsf
 
-盖讯通测试地址：http://172.18.7.64:8080/backji/gmall/userInfoForMall
-测试账号:
-GW87209993   123456
-GW50326071   123456
-GW00172590
+## 盖讯通测试环境：
+> 测试账号:
+- GW87209993   123456
 
+- GW50326071   123456
+
+- GW00172590
+
+## 接口
+
+- 获取用户TOKEN： http://172.18.7.64:8080/backji/gmall/userInfoForMall
+```
 与盖讯通对接拟定请求参数与返回结构
 //请求数据示例
 {
@@ -65,3 +71,58 @@ GW00172590
     "resultCode": "403",
     "resultDes": "GW号不存在"
 }
+```
+- 根据userid 查询用户信息 (客户端使用版本，需要TOKEN)
+http://172.18.7.64:8080/backji/user/viewInfo
+
+- 根据userid 查询用户信息 (客户端使用版本，需要TOKEN)
+http://172.18.7.64:8080/backji/user/getUserByUserId
+```
+{
+    "result": "1",
+    "myPage": null,
+    "other": null,
+    "page": null,
+    "tag": "获取数据成功",
+    "entity": {
+        "constellation": "",
+        "registerDate": "2017-08-24 15:51:01",
+        "unread": 0,
+        "userPassword": "e10adc3949ba59abbe56e057f20f883e",
+        "userQq": "",
+        "addr": "",
+        "userPassword2": "c19c632062977f0900c1a8691e9caa18da9175a6dee99d3f",
+        "userBirthday": "",
+        "apiKey": "!@*^juyou#i@*%$",
+        "city": "",
+        "id": 14566,
+        "userState": 1,
+        "is_login_check": true,
+        "userBg": "",
+        "userId": "5179f1c8d86e4fa58b8e4c0451467a9b",
+        "province": "",
+        "userName": "GW00172590",
+        "longitude": 0,
+        "userPhone": "",
+        "userDescription": "",
+        "userHead": "",
+        "signName": "",
+        "job": "",
+        "userNickname": "GW00172590",
+        "gaiNumber": "GW00172590",
+        "systemBg": 1,
+        "logout": true,
+        "school": "",
+        "email": "",
+        "company": "",
+        "userSex": 0,
+        "latitude": 0,
+        "userAge": 0,
+        "specialSign": "",
+        "salt": "",
+        "mobile": "null"
+    },
+    "map": null,
+    "list": null
+}
+```

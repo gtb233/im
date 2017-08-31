@@ -14,20 +14,31 @@ Vue.use(VueResource)
 
 const conversationtype = RongIMLib.ConversationType.PRIVATE
 
-/* 添加聊天用户到列表
- * params {
-    targetId
-    lastMessage
-    userLogo
-    userName
- * }
- */
+/* 取得盖讯通用户信息 */
+export async function getUserInfo (cb, state, userId) {
+  const params = {
+    userId: userId
+  }
+  await Vue.http.post(
+    state.serverUrl + 'api/getUserInfo',
+    params,
+    { emulateJSON: true }
+  ).then(response => {
+    console.log('会话列表更新成功！')
+    cb(response)
+  }, response => {
+    console.log('会话列表更新失败！')
+    cb(0)
+  })
+}
+
+/* 添加聊天用户到列表 */
 export async function setUserList (cb, state, obj) {
   const params = {
     userId: state.currentUserId,
-    targetId: state.currentThreadID, /* 目标ID */
-    userLogo: state.currentThreadLogo, /* 头像 */
-    userName: state.currentThreadName, /* 商铺名称 */
+    targetId: obj.targetId, /* 目标ID */
+    userLogo: obj.userLogo, /* 头像 */
+    userName: obj.userName, /* 商铺名称 */
     lastMessage: obj.lastMessage, /* 最后一条消息内容 */
     messagesNumber: 0 /* 消息数 */
   }
@@ -42,7 +53,7 @@ export async function setUserList (cb, state, obj) {
   })
 }
 
-// 获取会话列表
+/* 获取会话列表 */
 let getUserList = function (cb, state) {
   // 新获取方法：
   const params = {
@@ -201,6 +212,7 @@ export async function rongCloudInit (cb, state) {
     connect: false,
     newMsg: null,
     userList: null,
+    userInfo: {},
     emojis: []
   }
   // 连接状态监听器
@@ -242,9 +254,27 @@ export async function rongCloudInit (cb, state) {
       console.log('接收到的消息', message)
       // 输入中状态判断
       if (message.messageType !== 'TypingStatusMessage') {
-        message = filterMessage(message)
-        result.msg = message
-        cb(result, 'newMsg')
+        // 取得用户消息并处理数据,记录列表
+        getUserInfo((response) => {
+          if (response) {
+            let info = response.body
+            result.userInfo.userHead = info.entity.userHead ? state.userImgUrl + info.entity.userHead : ''
+            result.userInfo.userId = info.entity.userId
+            result.userInfo.userNickname = info.entity.userNickname
+          }
+          message = filterMessage(message)
+          result.msg = message
+          // 更新消息框
+          cb(result, 'newMsg')
+          // 记录会话列表
+          setUserList(() => {}, state, {
+            targetId: message.targetId, /* 目标ID */
+            userLogo: result.userInfo.userHead, /* 头像 */
+            userName: result.userInfo.userNickname, /* 商铺名称 */
+            lastMessage: message.content.content_back, /* 最后一条消息内容 */
+            messagesNumber: 0 /* 消息数 */
+          })
+        }, state, message.targetId)
       } else {
         console.log('输入中。。')
       }
@@ -289,7 +319,12 @@ export async function sendMsg (cb, state, obj) {
     onSuccess: function (message) {
       console.log('发送文字消息成功', message, start)
       // 更新用户列表数据
-      setUserList(cb, state, {lastMessage: msgContent})
+      setUserList(cb, state, {
+        targetId: state.currentThreadID, /* 目标ID */
+        userLogo: state.currentThreadLogo, /* 头像 */
+        userName: state.currentThreadName, /* 商铺名称 */
+        lastMessage: msgContent
+      })
       // 发送成功处理
       obj.msg = RongIMLib.RongIMEmoji.symbolToHTML(obj.msg) // 列表展示数据处理
       obj.msgContent = msgContent
@@ -523,7 +558,7 @@ let filterMessage = (message) => {
     /* 音频 */
     case RongIMClient.MessageType.VoiceMessage:
       message.content.content_back = message.content.content
-      message.content.content = '<img src="http://mu6.bdstatic.com/static/images/page/index/icon-fm.png" />' // 待修改成自己的
+      message.content.content = '<img src="http://mu6.bdstatic.com/static/images/page/index/icon-fm.png" />' // 待修改成自己的音乐GIF图标
       break
 
     /* 文件（图片） */

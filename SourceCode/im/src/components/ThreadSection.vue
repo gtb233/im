@@ -63,8 +63,6 @@ export default {
             'userName': userName,
             'userLogo': userLogo
             })
-        //变更列表数据(本地替换最后信息，消息数，发送时间)
-        console.log(targetId)
       }
     }
 }

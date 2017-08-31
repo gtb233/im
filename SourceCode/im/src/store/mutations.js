@@ -54,8 +54,8 @@ export default {
   /* 改变聊天用户 */
   [types.CHANGE_CURRENT_THREAD_INFO] (state, obj) {
     state.currentThreadID = obj.targetId
-    state.currentThreadName = obj.userName // 可能需要改为从列表获取
-    state.currentThreadLogo = obj.userLogo // 可能需要改为从列表获取
+    state.currentThreadName = obj.userName
+    state.currentThreadLogo = obj.userLogo
     // 改变列表高亮
     state.userList.forEach(function (el) {
       el.active = ''
@@ -96,6 +96,7 @@ export default {
   /* 接收消息 */
   [types.RECEIVE_MESSAGE] (state, obj) {
     // 添加发送内容到消息列表 存在
+    let userInfo = obj.userInfo
     obj = obj.msg
     let newDate = new Date()
     // 更新对话框内容
@@ -136,8 +137,8 @@ export default {
       if (!isExist) {
         let user = {
           targetId: obj.senderUserId, /* 目标ID */
-          userLogo: '', /* 头像 */
-          userName: obj.senderUserId, /* 商铺名称 */
+          userLogo: userInfo.userHead, /* 头像 */
+          userName: userInfo.userNickname, /* 商铺名称 */
           lastMessage: obj.content.content_back, /* 最后一条消息内容 */
           messagesNumber: 1, /* 消息数 */
           sendTime: newDate.toLocaleDateString(), /* 最后一条消息时间 */

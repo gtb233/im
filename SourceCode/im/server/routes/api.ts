@@ -2,6 +2,7 @@ import { NextFunction, Request, Response, Router } from "express";
 import { BaseRoute } from "./route";
 import * as token from '../sdk/rong/token';
 import * as gxtToken from '../sdk/gxt/token';
+import * as userInfo from '../sdk/gxt/userInfo';
 import * as tool from '../lib/util';
 import * as redis from '../lib/redis';
 
@@ -41,6 +42,9 @@ export class ApiRoute extends BaseRoute {
     });
     router.post("/api/setUserList", (req: Request, res: Response, next: NextFunction) => {
       new ApiRoute().setUserList(req, res, next);
+    });
+    router.post("/api/getUserInfo", (req: Request, res: Response, next: NextFunction) => {
+      new ApiRoute().getUserInfo(req, res, next);
     });
   }
   /**
@@ -130,6 +134,20 @@ export class ApiRoute extends BaseRoute {
     rst.userName = req.body.userName
 
     const data = await redis.setUserList(req.body.userId, rst)
+    res.send(data)
+  }
+
+  /**
+   * 取得用户基础信息
+   * @param req 
+   * @param res 
+   * @param next 
+   */
+  public async getUserInfo(req: Request, res: Response, next: NextFunction){
+    const rst = new userInfo.userInfoRst
+    rst.userId = req.body.userId
+
+    const data = await userInfo.exec(rst);
     res.send(data)
   }
 }

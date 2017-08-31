@@ -68,7 +68,11 @@ export async function setUserList(userId: string, rst: setRst) {
   const key: string = "gxt_emall_IM_userlist_" + userId
 
   let data: any = await getUserList(userId)
-  // console.log(data)
+  console.log('原始redis记录值 ',data)
+
+  if (data == null || data == 'null'){
+    data  = []
+  }
 
   //直接替换旧的参数值
   const value: Object = {
