@@ -549,14 +549,30 @@ let filterMessage = (message) => {
       // HTML形式
       message.content.content_back = message.content.content
 
-      // 商城URL添加跳转功能
-      // let match = /^((ht|f)tps?):\/\/([\w\-]+(\.[\w\-]+)*\/)*[\w\-]+(\.[\w\-]+)*\/?(\?([\w\-\.,@?^=%&:\/~\+#]*)+)?/
-      let match = new RegExp('http://www.g-emall.com/product/view(.*)', 'i')
-      message.content.content = message.content.content.replace(
-        match,
-        '<a href="http://www.g-emall.com/product/view$1" target="_blank">http://www.g-emall.com/product/view$1</a>'
-      )
-      console.log(message.content.content)
+      try {
+        // 替换掉HTML tag
+        message.content.content = message.content.content.replace(/<\/?[^>]*>/g, '')
+        /*
+         * 商城URL添加跳转功能
+         * 地址以http/https/ftp/ftps开头
+         * 地址不能包含双字节符号或非链接特殊字符
+         * /^ (https|ftps) :// ( [\w -]+ ( \. [\w - ]+)* / )* [\w - ]+ ( \. [\w - ]+)* /{0,1} ( ? ([\w -.,@?^=%&:/~+# ]*)+ ){0,1} $/
+         * 所有URL /^((ht|f)tps?):\/\/([\w\-]+(\.[\w\-]+)*\/)*[\w\-]+(\.[\w\-]+)*\/?(\?([\w\-\.,@?^=%&:\/~\+#]*)+)?/
+         * 商城URL /^((ht|f)tps?):\/\/(.+)\.g\-emall\.com\/([\w\-]+([\w\-]+)*\/)*[\w\-]+(\.[\w\-]+)*\/?(\?([\w\-\.,@?^=%&:\/~\+#]*)+)?/
+         */
+        let match = /^((ht|f)tps?):\/\/(.+)\.g\-emall\.com\/([\w\-]+([\w\-]+)*\/)*[\w\-]+(\.[\w\-]+)*\/?(\?([\w\-\.,@?^=%&:\/~\+#]*)+)?/
+        let matchResult = message.content.content.match(match)
+        console.log(matchResult)
+
+        if (matchResult) {
+          message.content.content = message.content.content.replace(
+            matchResult[0],
+            '<a href="' + matchResult[0] + '" target="_blank">' + matchResult[0] + '</a>'
+          )
+        }
+      } catch (e) {
+        console.log(e)
+      }
 
       message.content.content = RongIMLib.RongIMEmoji.emojiToHTML(message.content.content)
       // 处理成原生EMOJI 兼容性有问题
