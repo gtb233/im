@@ -67,7 +67,7 @@ let getUserList = function (cb, state) {
     let list = response.body
     let userList = []
     // 获取成功
-    console.log('userList:', list)
+    // console.log('userList:', list)
 
     let newDate = new Date()
     try {
@@ -167,7 +167,7 @@ export async function getUserTokenAsync (cb, state) {
     { emulateJSON: true }
   ).then(response => {
     let data = response.body
-    console.log('service return:', data)
+    // console.log('service return:', data)
     if (data.result === '1') {
       // 检查商家
       if (data.data.togw === 'null' || data.data.togw === null) {
@@ -177,12 +177,12 @@ export async function getUserTokenAsync (cb, state) {
       userToken = data.data.rongToken
       user = data.data.fromgw // 变更为用户信息对象
       currentThreadID = data.data.togw // 变更为商家信息对象
-      console.log('userToken:  ' + userToken + '|||' + user + '|||' + currentThreadID)
+      // console.log('userToken:  ' + userToken + '|||' + user + '|||' + currentThreadID)
     } else if (data.result === '403') {
       alert(data.tag + '!请重新进入!')
       console.log(data)
     } else {
-      alert('服务异常，请稍候再试！')
+      alert('验证失败！可能您在当前页面停留过久，请重新进入！')
       console.log(data)
       return false
     }
@@ -251,7 +251,7 @@ export async function rongCloudInit (cb, state) {
   // 接收消息
   RongIMClient.setOnReceiveMessageListener({
     onReceived: function (message) {
-      console.log('接收到的消息', message)
+      // console.log('接收到的消息', message)
       // 输入中状态判断
       if (message.messageType !== 'TypingStatusMessage') {
         // 取得用户消息并处理数据,记录列表
@@ -317,7 +317,7 @@ export async function sendMsg (cb, state, obj) {
   let start = new Date().getTime()
   RongIMClient.getInstance().sendMessage(conversationtype, currentThreadID, msg, {
     onSuccess: function (message) {
-      console.log('发送文字消息成功', message, start)
+      console.log('发送文字消息成功')
       // 更新用户列表数据
       setUserList(cb, state, {
         targetId: state.currentThreadID, /* 目标ID */
@@ -478,7 +478,7 @@ const sendImage = async (data, state, cb) => {
     let obj = {}
     RongIMClient.getInstance().sendMessage(conversationtype, currentThreadID, msg, {
       onSuccess: async function (message) {
-        console.log('sendImag', message)
+        // console.log('sendImag', message)
         // 添加 到消息框
         message = await filterMessage(message)
         obj.msg = message.content.content
@@ -527,7 +527,7 @@ let urlItem = {
     RongIMClient.getInstance().getFileUrl(fileType, data.filename, null, {
       onSuccess: function (result) {
         data.downloadUrl = result.downloadUrl
-        console.log(data)
+        // console.log(data)
         return data
       },
       onError: function (error) {
