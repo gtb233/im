@@ -303,6 +303,8 @@ export async function sendMsg (cb, state, obj) {
   if (obj.msg == null || obj.msg === '' || obj.msg === undefined) {
     return false
   }
+  // 去除尾部空行
+  obj.msg = obj.msg.replace(/[ | ]*\n/g, '\n')
   let msgContent = RongIMLib.RongIMEmoji.symbolToEmoji(obj.msg) // 用于发送的注意保持干净
   let currentThreadID = state.currentThreadID
   let content = {
