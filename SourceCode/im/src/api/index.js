@@ -151,6 +151,7 @@ export async function getUserTokenAsync (cb, state) {
   let get = tool.urlParse()
   let user = get['user']
   let currentThreadID = get['storeid']
+  let isQuery = get['isQuery']
   if (!user || !currentThreadID) {
     alert('用户ID与商家ID数据异常！')
     return false
@@ -191,7 +192,7 @@ export async function getUserTokenAsync (cb, state) {
     console.log('请求TOKEN失败!')
     return false
   })
-  await cb({ userToken, user, currentThreadID })
+  await cb({ userToken, user, currentThreadID, isQuery })
 }
 
 /**
@@ -215,87 +216,105 @@ export async function rongCloudInit (cb, state) {
     userInfo: {},
     emojis: []
   }
-  // 连接状态监听器
-  RongIMClient.setConnectionStatusListener({
-    onChanged: function (status) {
-      switch (status) {
-        case RongIMLib.ConnectionStatus.CONNECTED:
-          result.connect = true // 改为使用额外参数，防止重复调用
-          getUserList((userList) => {
-            result.userList = userList
+  if (state.isQuery) {
+    RongIMClient.getInstance().hasRemoteUnreadMessages(state.userToken, {
+      onSuccess: function (hasMessage) {
+        if (hasMessage) {
+          // 有未读的消息
+          console.log('有新消息')
+        } else {
+          // 没有未读的消息
+          console.log('无新消息')
+        }
+      },
+      onError: function (err) {
+        // 错误处理...
+        console.log(err)
+      }
+    })
+  } else {
+    // 连接状态监听器
+    RongIMClient.setConnectionStatusListener({
+      onChanged: function (status) {
+        switch (status) {
+          case RongIMLib.ConnectionStatus.CONNECTED:
+            result.connect = true // 改为使用额外参数，防止重复调用
+            getUserList((userList) => {
+              result.userList = userList
+              cb(result, 'connect')
+            }, state)
+            // 返回表情 此处回调处理时间会早于用于列表
+            result.emojis = RongIMLib.RongIMEmoji.emojis
             cb(result, 'connect')
-          }, state)
-          // 返回表情 此处回调处理时间会早于用于列表
-          result.emojis = RongIMLib.RongIMEmoji.emojis
-          cb(result, 'connect')
-          break
-        case RongIMLib.ConnectionStatus.CONNECTING:
-          console.log('正在链接')
-          break
-        case RongIMLib.ConnectionStatus.DISCONNECTED:
-          console.log('断开连接')
-          break
-        case RongIMLib.ConnectionStatus.KICKED_OFFLINE_BY_OTHER_CLIENT:
-          console.log('其他设备登录')
-          break
-        case RongIMLib.ConnectionStatus.DOMAIN_INCORRECT:
-          console.log('域名不正确')
-          break
-        case RongIMLib.ConnectionStatus.NETWORK_UNAVAILABLE:
-          console.log('网络不可用')
-          break
+            break
+          case RongIMLib.ConnectionStatus.CONNECTING:
+            console.log('正在链接')
+            break
+          case RongIMLib.ConnectionStatus.DISCONNECTED:
+            console.log('断开连接')
+            break
+          case RongIMLib.ConnectionStatus.KICKED_OFFLINE_BY_OTHER_CLIENT:
+            console.log('其他设备登录')
+            break
+          case RongIMLib.ConnectionStatus.DOMAIN_INCORRECT:
+            console.log('域名不正确')
+            break
+          case RongIMLib.ConnectionStatus.NETWORK_UNAVAILABLE:
+            console.log('网络不可用')
+            break
+        }
       }
-    }
-  })
+    })
 
-  // 接收消息
-  RongIMClient.setOnReceiveMessageListener({
-    onReceived: function (message) {
-      // console.log('接收到的消息', message)
-      // 输入中状态判断
-      if (message.messageType !== 'TypingStatusMessage') {
-        // 取得用户消息并处理数据,记录列表
-        getUserInfo((response) => {
-          if (response) {
-            let info = response.body
-            result.userInfo.userHead = info.entity.userHead ? state.userImgUrl + info.entity.userHead : ''
-            result.userInfo.userId = info.entity.userId
-            result.userInfo.userNickname = info.entity.userNickname
-          }
-          message = filterMessage(message)
-          result.msg = message
-          // 更新消息框
-          cb(result, 'newMsg')
-          // 记录会话列表
-          setUserList(() => {}, state, {
-            targetId: message.targetId, /* 目标ID */
-            userLogo: result.userInfo.userHead, /* 头像 */
-            userName: result.userInfo.userNickname, /* 商铺名称 */
-            lastMessage: message.content.content_back, /* 最后一条消息内容 */
-            messagesNumber: 0 /* 消息数 */
-          })
-        }, state, message.targetId)
-      } else {
-        console.log('输入中。。')
+    // 接收消息
+    RongIMClient.setOnReceiveMessageListener({
+      onReceived: function (message) {
+        // console.log('接收到的消息', message)
+        // 输入中状态判断
+        if (message.messageType !== 'TypingStatusMessage') {
+          // 取得用户消息并处理数据,记录列表
+          getUserInfo((response) => {
+            if (response) {
+              let info = response.body
+              result.userInfo.userHead = info.entity.userHead ? state.userImgUrl + info.entity.userHead : ''
+              result.userInfo.userId = info.entity.userId
+              result.userInfo.userNickname = info.entity.userNickname
+            }
+            message = filterMessage(message)
+            result.msg = message
+            // 更新消息框
+            cb(result, 'newMsg')
+            // 记录会话列表
+            setUserList(() => {}, state, {
+              targetId: message.targetId, /* 目标ID */
+              userLogo: result.userInfo.userHead, /* 头像 */
+              userName: result.userInfo.userNickname, /* 商铺名称 */
+              lastMessage: message.content.content_back, /* 最后一条消息内容 */
+              messagesNumber: 0 /* 消息数 */
+            })
+          }, state, message.targetId)
+        } else {
+          console.log('输入中。。')
+        }
       }
-    }
-  })
+    })
 
-  /* 开始连接 */
-  RongIMClient.connect(state.userToken, {
-    onSuccess: function (userId) {
-      console.log('链接成功，用户id：' + userId)
-    },
-    onTokenIncorrect: function () {
-      console.log('token无效,连接失败!')
-      alert('连接失败，请刷新页面重试！')
-      // 此处可添加重新获取
-    },
-    onError: function (errorCode) {
-      console.log('=============================================')
-      console.log(errorCode)
-    }
-  })
+    /* 开始连接 */
+    RongIMClient.connect(state.userToken, {
+      onSuccess: function (userId) {
+        console.log('链接成功，用户id：' + userId)
+      },
+      onTokenIncorrect: function () {
+        console.log('token无效,连接失败!')
+        alert('连接失败，请刷新页面重试！')
+        // 此处可添加重新获取
+      },
+      onError: function (errorCode) {
+        console.log('=============================================')
+        console.log(errorCode)
+      }
+    })
+  }
 }
 
 // 发送文本消息

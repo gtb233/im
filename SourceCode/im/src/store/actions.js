@@ -39,7 +39,7 @@ export const rongCloudInit = async ({ dispatch, commit, state }) => {
     }
   }, state)
   /* 获取此对话历史消息,延迟一秒让主程序加载完 */
-  await dispatch('getHistoryMessage')
+  // await dispatch('getHistoryMessage')
 }
 
 /* 获取历史消息 */

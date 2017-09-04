@@ -13,6 +13,7 @@ const state = {
   userImgUrl: 'http://172.18.7.64:8080', // 用户头像前缀地址
   checkToken: '', /* 商城登录后的验证TOKEN */
   userToken: '', /* 融云用户TOKEN */
+  isQuery: 0, /* 是否只是查询消息 1是 */
   userInfo: { /* 用户信息 */
     userId: '1',
     username: '用户名',

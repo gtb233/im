@@ -17,6 +17,8 @@ export default {
     state.userInfo.thumb = userobj.user.userHead ? state.userImgUrl + userobj.user.userHead : ''
     state.userInfo.username = userobj.user.userNickname
     state.userInfo.userLevel = '正式会员'
+    // 定义辅助判断信息
+    state.isQuery = userobj.isQuery === '1' ? 1 : 0
   },
   /* 根据融云返回信息设置用户列表 */
   [types.SET_USER_LIST] (state, obj) {
