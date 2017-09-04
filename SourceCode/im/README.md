@@ -27,7 +27,7 @@ npm test
 For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
 
 # 前端部分
-请求示例：http://localhost:8081/#/?user=GW87209993&storeid=GW50326071&token=sfdfdfsdfdsf
+请求示例：http://localhost:8081/#/?user=GW87209993&storeid=GW00172590&token=sfdfdfsdfdsf&isQuery=1
 
 ## 盖讯通测试环境：
 > 测试账号:
