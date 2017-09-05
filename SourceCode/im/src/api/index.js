@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueResource from 'vue-resource'
 import * as tool from '../lib/util'
 import UploadClient from '../lib/init'
+import $ from 'jquery'
 
 /**
  * 各种api链接
@@ -222,6 +223,7 @@ export async function rongCloudInit (cb, state) {
         if (hasMessage) {
           // 有未读的消息
           console.log('有新消息')
+          // 修改商城代码，添加消息提示图标
         } else {
           // 没有未读的消息
           console.log('无新消息')
@@ -255,6 +257,12 @@ export async function rongCloudInit (cb, state) {
             break
           case RongIMLib.ConnectionStatus.KICKED_OFFLINE_BY_OTHER_CLIENT:
             console.log('其他设备登录')
+            alert('其他页面登录') // 看是否需要提示
+            window.location.href = 'about:blank' // 兼容chrome 添加处理
+            // 有父类时可直接使用下面的
+            window.opener = null
+            window.open('', '_self', '')
+            window.close()
             break
           case RongIMLib.ConnectionStatus.DOMAIN_INCORRECT:
             console.log('域名不正确')
@@ -272,6 +280,10 @@ export async function rongCloudInit (cb, state) {
         // console.log('接收到的消息', message)
         // 输入中状态判断
         if (message.messageType !== 'TypingStatusMessage') {
+          // console.log(window.parent.document)
+          // let parentObj = $('.gx-collection-tc', window.parent.document).html()
+          // console.log(parentObj)
+
           // 取得用户消息并处理数据,记录列表
           getUserInfo((response) => {
             if (response) {

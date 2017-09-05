@@ -54,7 +54,7 @@ const state = {
       sentTime: '',
       messageId: '',
       content: {
-        content: '你好，有什么可以帮你的吗？',
+        content: '欢迎咨询在线客服！',
         content_back: '', // 用于保存音频图片之类的原始文件数据
         messageName: 'TextMessage'
       },
