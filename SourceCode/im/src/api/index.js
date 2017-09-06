@@ -280,9 +280,8 @@ export async function rongCloudInit (cb, state) {
         // console.log('接收到的消息', message)
         // 输入中状态判断
         if (message.messageType !== 'TypingStatusMessage') {
-          // console.log(window.parent.document)
-          // let parentObj = $('.gx-collection-tc', window.parent.document).html()
-          // console.log(parentObj)
+          // 处理商城图标提示语
+          $('#gx-socket-message', window.parent.document).html('有新消息，请查收')
 
           // 取得用户消息并处理数据,记录列表
           getUserInfo((response) => {
