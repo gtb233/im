@@ -257,8 +257,8 @@ export async function rongCloudInit (cb, state) {
             break
           case RongIMLib.ConnectionStatus.KICKED_OFFLINE_BY_OTHER_CLIENT:
             console.log('其他设备登录')
-            alert('其他页面登录') // 看是否需要提示
-            window.location.href = 'about:blank' // 兼容chrome 添加处理
+            // alert('其他页面登录') // 看是否需要提示
+            // window.location.href = 'about:blank' // 兼容chrome 添加处理
             // 有父类时可直接使用下面的
             window.opener = null
             window.open('', '_self', '')
@@ -283,6 +283,7 @@ export async function rongCloudInit (cb, state) {
           // 处理商城图标提示语
           $('#gx-socket-message', window.parent.document).html('有新消息，请查收')
 
+          // 优先查询是否存在
           // 取得用户消息并处理数据,记录列表
           getUserInfo((response) => {
             if (response) {

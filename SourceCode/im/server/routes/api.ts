@@ -5,6 +5,7 @@ import * as gxtToken from '../sdk/gxt/token';
 import * as userInfo from '../sdk/gxt/userInfo';
 import * as tool from '../lib/util';
 import * as redis from '../lib/redis';
+import * as core from '../sdk/core/userInfo'
 
 /**
  * / route
@@ -98,12 +99,31 @@ export class ApiRoute extends BaseRoute {
       return true;
     }
 
-    const rst = new gxtToken.TokenRst();
-    rst.fromgw = req.body.userId;
-    rst.togw = req.body.storeId;
-    const data = await gxtToken.exec(rst);
-    // console.log(data);
-    res.send(data)
+    //请求核心接口获取用户信息，若不存在则报错处理
+    let userInfoRst = new core.userInfoRst();
+    userInfoRst.code = req.body.userId;
+    let result1 = await core.exec(userInfoRst);
+    userInfoRst.code = req.body.storeId;
+    let result2 = await core.exec(userInfoRst);
+    console.log(result1)
+    console.log(result2)
+    if (result1.code !== '' || result2.code !== '') {
+      // 用户信息验证失败
+      let data: Object = {
+        result: 403,
+        tag: '用户不存在！',
+        data: {}
+      }
+      res.send(data)
+    } else {
+      // 获取盖讯通
+      const rst = new gxtToken.TokenRst();
+      rst.fromgw = req.body.userId;
+      rst.togw = req.body.storeId;
+      let data = await gxtToken.exec(rst);
+      // console.log(data);
+      res.send(data)
+    }
   }
 
   /**
@@ -132,6 +152,8 @@ export class ApiRoute extends BaseRoute {
     rst.messagesNumber = req.body.messagesNumber
     rst.userLogo = req.body.userLogo
     rst.userName = req.body.userName
+    //增加一个GW记录
+    // rst.GWcode = req.body.GWcode
 
     const data = await redis.setUserList(req.body.userId, rst)
     res.send(data)

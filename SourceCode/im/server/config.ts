@@ -1,5 +1,9 @@
 export default {
     proxy:false, //设置代理，用于fiddle抓包 调试用
+    // 核心平台
+    core: {
+        url: 'http://172.18.7.215/'
+    },
     //盖讯通
     gxt: {
         url: 'http://172.18.7.64:8080/'
