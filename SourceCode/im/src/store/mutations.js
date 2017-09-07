@@ -11,7 +11,7 @@ export default {
     state.currentUserId = userobj.user.userId
     // 商家信息
     state.currentThreadID = userobj.currentThreadID.userId
-    state.currentThreadName = userobj.currentThreadID.userNickname
+    state.currentThreadName = userobj.currentThreadID.userNickname ? userobj.currentThreadID.userNickname : userobj.currentThreadID.userInfo.userName
     state.currentThreadLogo = userobj.currentThreadID.userHead ? state.userImgUrl + userobj.currentThreadID.userHead : ''
     // 添加用户信息
     state.userInfo.thumb = userobj.user.userHead ? state.userImgUrl + userobj.user.userHead : ''

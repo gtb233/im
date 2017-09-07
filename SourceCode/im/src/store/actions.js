@@ -51,6 +51,11 @@ export const getHistoryMessage = async ({state, commit}) => {
 
 /* 发送消息 */
 export const sendMessage = async ({ dispatch, commit, state }, obj) => {
+  if (state.currentUserId === state.currentThreadID) {
+    alert('请选择用户，或至商品页选择商家')
+    return false
+  }
+  console.log(state.currentUserId)
   await api.sendMsg((obj) => {
     commit(types.SEND_MESSAGE, obj)
     commit(types.UPDATE_USERLIST_INFO, obj)
@@ -79,6 +84,9 @@ export const changeSearchName = ({commit, state}, obj) => {
 
 /* 上传图片 */
 export const uploadImg = ({commit, state}, obj) => {
+  if (state.currentUserId === state.currentThreadID) {
+    return false
+  }
   api.uploadFile((result) => {
     commit(types.SEND_MESSAGE, result)
   }, state, obj)

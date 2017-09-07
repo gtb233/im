@@ -98,13 +98,17 @@ export class ApiRoute extends BaseRoute {
       res.send("token 验证失败，您在当前页面停留过久，请刷新重试！");
       return true;
     }
-
+    // 默认客服号替换成可查询用户ID
+    if (req.body.storeId === 'GW00000001') {
+      req.body.storeId = req.body.userId
+    }
     //请求核心接口获取用户信息，若不存在则不再查询
     let userInfoRst = new core.userInfoRst();
     userInfoRst.code = req.body.userId;
     let userInfo = await core.exec(userInfoRst);
     userInfoRst.code = req.body.storeId;
     let storeInfo = await core.exec(userInfoRst);
+    
     console.log(userInfo)
     console.log(storeInfo)
     if (userInfo.code !== '' || storeInfo.code !== '') {

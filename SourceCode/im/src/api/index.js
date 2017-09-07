@@ -157,6 +157,10 @@ export async function getUserTokenAsync (cb, state) {
     alert('用户ID与商家ID数据异常！')
     return false
   }
+  if (user === currentThreadID) {
+    alert('这是你自己的商品哦！')
+    return false
+  }
   const params = {
     userId: user,
     name: user,
@@ -176,10 +180,14 @@ export async function getUserTokenAsync (cb, state) {
         alert('商家不存在，请核对！')
         console.log('商家不存在')
       }
+      // 检查是否初始客服号，若是则替换提示语
+      if (data.data.togw.userId === data.data.fromgw.userId) {
+        data.data.togw.userNickname = '请选择要咨询的商家'
+      }
       userToken = data.data.rongToken
       user = data.data.fromgw // 变更为用户信息对象
       currentThreadID = data.data.togw // 变更为商家信息对象
-      // console.log('userToken:  ' + userToken + '|||' + user + '|||' + currentThreadID)
+      // console.log('userToken:  ' + userToken + '|||' + user + '|||' + currentThreadID)6
     } else if (data.result === '403') {
       alert(data.tag + '!请重新进入!')
       console.log(data)
@@ -282,7 +290,7 @@ export async function rongCloudInit (cb, state) {
         if (message.messageType !== 'TypingStatusMessage') {
           // 处理商城图标提示语
           $('#gx-socket-message', window.parent.document).html('有新消息，请查收')
-
+          window.parent.isNewMessage = 1
           // 优先查询是否存在
           // 取得用户消息并处理数据,记录列表
           getUserInfo((response) => {
