@@ -169,7 +169,7 @@ export async function getUserTokenAsync (cb, state) {
     { emulateJSON: true }
   ).then(response => {
     let data = response.body
-    // console.log('service return:', data)
+    console.log('service return:', data)
     if (data.result === '1') {
       // 检查商家
       if (data.data.togw === 'null' || data.data.togw === null) {
@@ -184,7 +184,7 @@ export async function getUserTokenAsync (cb, state) {
       alert(data.tag + '!请重新进入!')
       console.log(data)
     } else {
-      alert('验证失败！可能您在当前页面停留过久，请重新进入！')
+      alert('在线对话验证失败！可能您在当前页面停留过久，请重新进入！')
       console.log(data)
       return false
     }

@@ -99,30 +99,39 @@ export class ApiRoute extends BaseRoute {
       return true;
     }
 
-    //请求核心接口获取用户信息，若不存在则报错处理
+    //请求核心接口获取用户信息，若不存在则不再查询
     let userInfoRst = new core.userInfoRst();
     userInfoRst.code = req.body.userId;
-    let result1 = await core.exec(userInfoRst);
+    let userInfo = await core.exec(userInfoRst);
     userInfoRst.code = req.body.storeId;
-    let result2 = await core.exec(userInfoRst);
-    console.log(result1)
-    console.log(result2)
-    if (result1.code !== '' || result2.code !== '') {
+    let storeInfo = await core.exec(userInfoRst);
+    console.log(userInfo)
+    console.log(storeInfo)
+    if (userInfo.code !== '' || storeInfo.code !== '') {
       // 用户信息验证失败
       let data: Object = {
         result: 403,
-        tag: '用户不存在！',
+        tag: '用户或商家不存在！',
         data: {}
       }
-      res.send(data)
+      res.send(data);
     } else {
       // 获取盖讯通
       const rst = new gxtToken.TokenRst();
       rst.fromgw = req.body.userId;
       rst.togw = req.body.storeId;
-      let data = await gxtToken.exec(rst);
+      //补充提交数据
+      rst.fromUserNickname = userInfo.data.userName ? userInfo.data.userName : '' ;
+      rst.fromUserHead = userInfo.data.userHead ? userInfo.data.userHead : '' ;
+      rst.toUserNickname = storeInfo.data.userName ? storeInfo.data.userName : '' ;
+      rst.toUserHead = storeInfo.data.userHead ? storeInfo.data.userHead : '' ;
+      let data: any  = await gxtToken.exec(rst);
+      if(data.result == '1'){
+        data.data.fromgw.userInfo = userInfo.data
+        data.data.togw.userInfo = storeInfo.data
+      }
       // console.log(data);
-      res.send(data)
+      res.send(data);
     }
   }
 

@@ -5,7 +5,11 @@ import urlConfig from './urlConfig'
  */
 export class TokenRst {
     public fromgw: string; //用户ID
+    public fromUserHead: string; // 头像
+    public fromUserNickname: string; // 昵称
     public togw: string; //商家ID
+    public toUserHead: string; // 头像
+    public toUserNickname: string;
 }
 /**
  * 返回数据
