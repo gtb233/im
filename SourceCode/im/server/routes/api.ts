@@ -109,8 +109,8 @@ export class ApiRoute extends BaseRoute {
     userInfoRst.code = req.body.storeId;
     let storeInfo = await core.exec(userInfoRst);
     
-    console.log(userInfo)
-    console.log(storeInfo)
+    // console.log(userInfo)
+    // console.log(storeInfo)
     if (userInfo.code !== '' || storeInfo.code !== '') {
       // 用户信息验证失败
       let data: Object = {
@@ -122,19 +122,30 @@ export class ApiRoute extends BaseRoute {
     } else {
       // 获取盖讯通
       const rst = new gxtToken.TokenRst();
+      // rst.fromgw = JSON.stringify({
+      //   userId: req.body.userId,
+      //   userNickname: userInfo.data.userName ? userInfo.data.userName : '',
+      //   userHead: userInfo.data.userHead ? userInfo.data.userHead : ''
+      // })
+      // rst.togw = JSON.stringify({
+      //   storeId: req.body.storeId,
+      //   userNickname: storeInfo.data.userName ? storeInfo.data.userName : '',
+      //   userHead: storeInfo.data.userHead ? storeInfo.data.userHead : ''
+      // })
       rst.fromgw = req.body.userId;
       rst.togw = req.body.storeId;
       //补充提交数据
-      rst.fromUserNickname = userInfo.data.userName ? userInfo.data.userName : '' ;
-      rst.fromUserHead = userInfo.data.userHead ? userInfo.data.userHead : '' ;
-      rst.toUserNickname = storeInfo.data.userName ? storeInfo.data.userName : '' ;
-      rst.toUserHead = storeInfo.data.userHead ? storeInfo.data.userHead : '' ;
+      // rst.fromUserNickname = userInfo.data.userName ? userInfo.data.userName : '' ;
+      // rst.fromUserHead = userInfo.data.userHead ? userInfo.data.userHead : '' ;
+      // rst.toUserNickname = storeInfo.data.userName ? storeInfo.data.userName : '' ;
+      // rst.toUserHead = storeInfo.data.userHead ? storeInfo.data.userHead : '' ;
+      console.log(rst)
       let data: any  = await gxtToken.exec(rst);
       if(data.result == '1'){
         data.data.fromgw.userInfo = userInfo.data
         data.data.togw.userInfo = storeInfo.data
       }
-      // console.log(data);
+      console.log(data);
       res.send(data);
     }
   }
@@ -165,8 +176,8 @@ export class ApiRoute extends BaseRoute {
     rst.messagesNumber = req.body.messagesNumber
     rst.userLogo = req.body.userLogo
     rst.userName = req.body.userName
-    //增加一个GW记录
-    // rst.GWcode = req.body.GWcode
+    rst.message = req.body.message
+    console.log(rst)
 
     const data = await redis.setUserList(req.body.userId, rst)
     res.send(data)

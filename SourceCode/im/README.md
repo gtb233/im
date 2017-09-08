@@ -30,7 +30,7 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 请求示例：http://localhost:8081/#/?user=GW87209993&storeid=GW00172590&token=sfdfdfsdfdsf&isQuery=1
 测试使用时：
 配置本地 im.gemall.com 代理到 http://localhost:8081/
-目前跨域设置的是 gemall.com 上线到生产环境请修改
+目前跨域设置的是 document.domain = 'gemall.com' 上线到生产环境请修改
 
 ## 盖讯通测试环境：
 > 测试账号:

@@ -33,15 +33,33 @@ export async function getUserInfo (cb, state, userId) {
   })
 }
 
-/* 添加聊天用户到列表 */
+/*
+ * 添加聊天用户到列表
+ * msgObj 格式 参考消息列表
+ */
 export async function setUserList (cb, state, obj) {
   const params = {
     userId: state.currentUserId,
     targetId: obj.targetId, /* 目标ID */
     userLogo: obj.userLogo, /* 头像 */
     userName: obj.userName, /* 商铺名称 */
-    lastMessage: obj.lastMessage, /* 最后一条消息内容 */
-    messagesNumber: 0 /* 消息数 */
+    lastMessage: obj.lastMessage, /* 最后一条消息文本内容 */
+    messagesNumber: 0, /* 消息数 */
+    message: {
+      senderUserId: obj.message.senderUserId, /* 以此参数为判断谁发的 */
+      targetId: obj.message.targetId,
+      sentTime: obj.message.sentTime,
+      messageId: obj.message.messageId,
+      content: {
+        content: obj.message.content.content,
+        content_back: obj.message.content.content_back ? obj.message.content.content_back : '', // 用于保存音频图片之类的原始文件数据
+        imageUri: obj.message.content.imageUri ? obj.message.content.imageUri : '',
+        messageName: obj.message.messageName
+      },
+      messageType: obj.message.messageType,
+      messageUId: obj.message.messageUId,
+      sentStatus: obj.message.sentStatus
+    } /* 当前消息内容，用于记录消息历史 */
   }
   await Vue.http.post(
     state.serverUrl + 'api/setUserList',
@@ -288,6 +306,7 @@ export async function rongCloudInit (cb, state) {
         // console.log('接收到的消息', message)
         // 输入中状态判断
         if (message.messageType !== 'TypingStatusMessage') {
+          let messageBack = message
           // 处理商城图标提示语
           $('#gx-socket-message', window.parent.document).html('有新消息，请查收')
           window.parent.isNewMessage = 1
@@ -310,7 +329,8 @@ export async function rongCloudInit (cb, state) {
               userLogo: result.userInfo.userHead, /* 头像 */
               userName: result.userInfo.userNickname, /* 商铺名称 */
               lastMessage: message.content.content_back, /* 最后一条消息内容 */
-              messagesNumber: 0 /* 消息数 */
+              messagesNumber: 0, /* 消息数 */
+              message: messageBack
             })
           }, state, message.targetId)
         } else {
@@ -358,13 +378,14 @@ export async function sendMsg (cb, state, obj) {
   let start = new Date().getTime()
   RongIMClient.getInstance().sendMessage(conversationtype, currentThreadID, msg, {
     onSuccess: function (message) {
-      console.log('发送文字消息成功')
+      console.log('发送文字消息成功', message)
       // 更新用户列表数据
       setUserList(cb, state, {
         targetId: state.currentThreadID, /* 目标ID */
         userLogo: state.currentThreadLogo, /* 头像 */
         userName: state.currentThreadName, /* 商铺名称 */
-        lastMessage: msgContent
+        lastMessage: msgContent,
+        message: message /* 保存消息到历史 */
       })
       // 发送成功处理
       obj.msg = RongIMLib.RongIMEmoji.symbolToHTML(obj.msg) // 列表展示数据处理
@@ -519,7 +540,8 @@ const sendImage = async (data, state, cb) => {
     let obj = {}
     RongIMClient.getInstance().sendMessage(conversationtype, currentThreadID, msg, {
       onSuccess: async function (message) {
-        // console.log('sendImag', message)
+        console.log('sendImag', message)
+        let messageBack = message /* 记录历史消息 */
         // 添加 到消息框
         message = await filterMessage(message)
         obj.msg = message.content.content
@@ -529,7 +551,8 @@ const sendImage = async (data, state, cb) => {
           targetId: state.currentThreadID, /* 目标ID */
           userLogo: state.currentThreadLogo, /* 头像 */
           userName: state.currentThreadName, /* 商铺名称 */
-          lastMessage: message.content.content_back
+          lastMessage: message.content.content_back,
+          message: messageBack
         })
       },
       onError: function (errorCode, message) {

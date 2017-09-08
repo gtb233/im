@@ -28,7 +28,15 @@ export class setRst {
   public messagesNumber: number;
   public userLogo: string;
   public userName: string;
+  public message?: Object;
 }
+
+/**
+ * 历史消息请求体
+ */
+export class setHistoryMsgRst {
+}
+
 /**
  * 返回数据
  */
@@ -100,4 +108,13 @@ export async function setUserList(userId: string, rst: setRst) {
   })
   // 设置过期时间/ 秒
   client.expire(key, 3600*24*30)
+}
+
+// 设置历史消息列表
+export async function setHistoryMsg(userId: string, message: Object){
+
+}
+// 取得用户对应的历史消息
+export async function getHistoryMsg(){
+
 }
