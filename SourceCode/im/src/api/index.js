@@ -175,10 +175,10 @@ export async function getUserTokenAsync (cb, state) {
     alert('用户ID与商家ID数据异常！')
     return false
   }
-  if (user === currentThreadID) {
-    alert('这是你自己的商品哦！')
-    return false
-  }
+  // if (user === currentThreadID) {
+  //   alert('这是你自己的商品哦！')
+  //   return false
+  // }
   const params = {
     userId: user,
     name: user,
@@ -210,12 +210,12 @@ export async function getUserTokenAsync (cb, state) {
       alert(data.tag + '!请重新进入!')
       console.log(data)
     } else {
-      alert('在线对话验证失败！可能您在当前页面停留过久，请重新进入！')
+      // alert('在线对话验证失败！可能您在当前页面停留过久，请重新进入！')
       console.log(data)
       return false
     }
   }, response => {
-    alert('请求连接失败，请刷新页面重试！')
+    // alert('请求连接失败，请刷新页面重试！')
     console.log('请求TOKEN失败!')
     return false
   })
