@@ -7,7 +7,7 @@ import Vuex from 'vuex'
 import VueResource from 'vue-resource'
 import store from './store'
 import { init } from './store/actions'
-import config from './config'
+import config from '../config/config'
 
 Vue.config.productionTip = false
 
