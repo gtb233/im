@@ -28,9 +28,12 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 
 # 前端部分
 请求示例：http://localhost:8081/#/?user=GW87209993&storeid=GW00172590&token=sfdfdfsdfdsf&isQuery=1
-测试使用时：
+本地测试使用时：
 配置本地 im.gemall.com 代理到 http://localhost:8081/
+
+## 配置项
 目前跨域设置的是 document.domain = 'gemall.com' 上线到生产环境请修改
+
 
 ## 盖讯通测试环境：
 > 测试账号:
@@ -41,8 +44,12 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 - GW00172590
 
 ## 接口
+> 旧测试地址 ：http://172.18.7.64:8080
 
-- 获取用户TOKEN： http://172.18.7.64:8080/backji/gmall/userInfoForMall
+> 新测试地址 ：http://172.18.7.64:8082
+
+- 获取用户TOKEN： 
+/backji/gmall/userInfoForMall
 ```
 与盖讯通对接拟定请求参数与返回结构
 //请求数据示例
@@ -76,10 +83,10 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 }
 ```
 - 根据userid 查询用户信息 (客户端使用版本，需要TOKEN)
-http://172.18.7.64:8080/backji/user/viewInfo
+/backji/user/viewInfo
 
-- 根据userid 查询用户信息 (客户端使用版本，需要TOKEN)
-http://172.18.7.64:8080/backji/user/getUserByUserId
+- 根据userid 查询用户信息 (客户端使用版本)
+/backji/user/getUserByUserId
 ```
 {
     "result": "1",

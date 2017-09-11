@@ -120,25 +120,20 @@ export class ApiRoute extends BaseRoute {
       }
       res.send(data);
     } else {
-      // 获取盖讯通
+      // 获取盖讯通 新请求结构
       const rst = new gxtToken.TokenRst();
-      // rst.fromgw = JSON.stringify({
-      //   userId: req.body.userId,
-      //   userNickname: userInfo.data.userName ? userInfo.data.userName : '',
-      //   userHead: userInfo.data.userHead ? userInfo.data.userHead : ''
-      // })
-      // rst.togw = JSON.stringify({
-      //   storeId: req.body.storeId,
-      //   userNickname: storeInfo.data.userName ? storeInfo.data.userName : '',
-      //   userHead: storeInfo.data.userHead ? storeInfo.data.userHead : ''
-      // })
-      rst.fromgw = req.body.userId;
-      rst.togw = req.body.storeId;
-      //补充提交数据
-      // rst.fromUserNickname = userInfo.data.userName ? userInfo.data.userName : '' ;
-      // rst.fromUserHead = userInfo.data.userHead ? userInfo.data.userHead : '' ;
-      // rst.toUserNickname = storeInfo.data.userName ? storeInfo.data.userName : '' ;
-      // rst.toUserHead = storeInfo.data.userHead ? storeInfo.data.userHead : '' ;
+      rst.fromgw = JSON.stringify({
+        GW: req.body.userId,
+        userNickname: userInfo.data.userName ? userInfo.data.userName : '',
+        userHead: userInfo.data.userHead ? userInfo.data.userHead : ''
+      })
+      rst.togw = JSON.stringify({
+        GW: req.body.storeId,
+        userNickname: storeInfo.data.userName ? storeInfo.data.userName : '',
+        userHead: storeInfo.data.userHead ? storeInfo.data.userHead : ''
+      })
+      // rst.fromgw = req.body.userId;
+      // rst.togw = req.body.storeId;
       console.log(rst)
       let data: any  = await gxtToken.exec(rst);
       if(data.result == '1'){
