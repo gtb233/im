@@ -7,8 +7,11 @@ import Vuex from 'vuex'
 import VueResource from 'vue-resource'
 import store from './store'
 import { init } from './store/actions'
+import config from './config'
 
 Vue.config.productionTip = false
+
+document.domain = config.imDomain
 
 Vue.use(Vuex)
 Vue.use(VueResource)

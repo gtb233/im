@@ -134,13 +134,13 @@ export class ApiRoute extends BaseRoute {
       })
       // rst.fromgw = req.body.userId;
       // rst.togw = req.body.storeId;
-      console.log(rst)
+      // console.log(rst)
       let data: any  = await gxtToken.exec(rst);
       if(data.result == '1'){
         data.data.fromgw.userInfo = userInfo.data
         data.data.togw.userInfo = storeInfo.data
       }
-      console.log(data);
+      // console.log(data);
       res.send(data);
     }
   }
