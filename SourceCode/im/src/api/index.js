@@ -378,7 +378,7 @@ export async function sendMsg (cb, state, obj) {
   let start = new Date().getTime()
   RongIMClient.getInstance().sendMessage(conversationtype, currentThreadID, msg, {
     onSuccess: function (message) {
-      console.log('发送文字消息成功', message)
+      // console.log('发送文字消息成功', message)
       // 更新用户列表数据
       setUserList(cb, state, {
         targetId: state.currentThreadID, /* 目标ID */
