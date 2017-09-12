@@ -26,10 +26,10 @@ export async function exec(rst: userInfoRst) {
         let result: any = JSON.parse(data) as client.RSM<userInfoRpn>;
         if(result.result == "1"){
             let entity = {
-                userId: result.entity.userId,
+                // userId: result.entity.userId,
                 userName: result.entity.userName,
                 userNickname: result.entity.userNickname,
-                gaiNumber: result.entity.gaiNumber,
+                // gaiNumber: result.entity.gaiNumber,
                 userHead: result.entity.userHead
             }
             result.entity  = entity

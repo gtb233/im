@@ -123,8 +123,8 @@ let getUserList = function (cb, state) {
   })
 
   // 融云获取会话列表 -- 弃用，改为服务端保存.功能暂时保留
-  RongIMClient.getInstance().getConversationList({
-    onSuccess: function (list) {
+  // RongIMClient.getInstance().getConversationList({
+  //   onSuccess: function (list) {
       // let userList = []
       // // 获取成功
       // console.log('userList:', list)
@@ -156,12 +156,12 @@ let getUserList = function (cb, state) {
       //   userList.push(userInfo)
       // }
       // cb(userList)
-    },
-    onError: function (error) {
-      // 列表获取失败时处理
-      console.log(error)
-    }
-  }, null)
+  //   },
+  //   onError: function (error) {
+  //     // 列表获取失败时处理
+  //     console.log(error)
+  //   }
+  // }, null)
 }
 
 /* 请求获取TOKEN */
@@ -316,8 +316,8 @@ export async function rongCloudInit (cb, state) {
             if (response) {
               let info = response.body
               result.userInfo.userHead = info.entity.userHead ? state.userImgUrl + info.entity.userHead : ''
-              result.userInfo.userId = info.entity.userId
-              result.userInfo.userNickname = info.entity.userNickname
+              result.userInfo.userId = message.senderUserId
+              result.userInfo.userNickname = info.entity.userNickname ? info.entity.userNickname : info.entity.userName
             }
             message = filterMessage(message)
             result.msg = message
@@ -346,7 +346,7 @@ export async function rongCloudInit (cb, state) {
       },
       onTokenIncorrect: function () {
         console.log('token无效,连接失败!')
-        alert('连接失败，请刷新页面重试！')
+        // alert('连接失败，请刷新页面重试！')
         // 此处可添加重新获取
       },
       onError: function (errorCode) {
