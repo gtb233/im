@@ -92,12 +92,12 @@ export class ApiRoute extends BaseRoute {
     * @param next 
    */
   public async gxtToken(req: Request, res: Response, next: NextFunction){
-    // res.header("Access-Control-Allow-Origin", "*");
-    // const check = tool.checkToken(req.body.userId, req.body.storeId, req.body.token)
-    // if (!check) {
-    //   res.send("token 验证失败，您在当前页面停留过久，请刷新重试！");
-    //   return true;
-    // }
+    res.header("Access-Control-Allow-Origin", "*");
+    const check = tool.checkToken(req.body.userId, req.body.storeId, req.body.token)
+    if (!check) {
+      res.send("token 验证失败，您在当前页面停留过久，请刷新重试！");
+      return true;
+    }
     // 默认客服号替换成可查询用户ID
     if (req.body.storeId === 'GW00000001') {
       req.body.storeId = req.body.userId
