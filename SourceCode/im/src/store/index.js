@@ -8,6 +8,7 @@ import config from '../../config/config'
 Vue.use(Vuex)
 
 const state = {
+  debug: config.debug,
   serverUrl: config.serverUrl, /* 请求TOKEN的服务器地址 */
   appKey: config.appKey, /* 融云申请的应用KEY */
   userImgUrl: config.userImgUrl, // 用户头像前缀地址
@@ -27,12 +28,15 @@ const state = {
   currentThreadID: null,
   currentThreadName: '连接中...',
   currentThreadLogo: '',
+  currentThreadGWCode: '',
   searchName: '', // 侧边栏搜索内容
   userList: [{
     targetId: '', /* 目标ID */
+    gwCode: '', /* 用户GW号 */
     userLogo: '', /* 头像 */
     userName: '加载中...!', /* 商铺名称 */
     lastMessage: '若未响应，请刷新重试!', /* 最后一条消息内容 */
+    lastMsgType: '',
     messagesNumber: '0', /* 消息数 */
     sendTime: '', /* 最后一条消息时间 */
     active: 'active'

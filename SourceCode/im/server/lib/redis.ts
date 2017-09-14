@@ -23,7 +23,9 @@ client.on("error", function (err) {
  */
 export class setRst {
   public targetId: string;
+  public gwCode: string;
   public lastMessage: string;
+  public lastMsgType: string;
   public sentTime: string;
   public messagesNumber: number;
   public userLogo: string;
@@ -85,9 +87,11 @@ export async function setUserList(userId: string, rst: setRst) {
   //直接替换旧的参数值
   const value: Object = {
     targetId: rst.targetId, /* 目标ID */
+    gwCode: rst.gwCode, /* 用户GW号 */
     userLogo: rst.userLogo, /* 头像 */
     userName: rst.userName, /* 商铺名称 */
     lastMessage: rst.lastMessage, /* 最后一条消息内容 */
+    lastMsgType: rst.lastMsgType, /* 消息类型 */
     messagesNumber: 0, /* 消息数 */
     sentTime: new Date().getTime()
   }

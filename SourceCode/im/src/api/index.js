@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueResource from 'vue-resource'
 import * as tool from '../lib/util'
+import * as func from '../lib/func'
 import UploadClient from '../lib/init'
 import $ from 'jquery'
 
@@ -25,7 +26,7 @@ export async function getUserInfo (cb, state, userId) {
     params,
     { emulateJSON: true }
   ).then(response => {
-    console.log('会话列表更新成功！')
+    if (state.debug) console.log('用户信息获取成功！', response)
     cb(response)
   }, response => {
     console.log('会话列表更新失败！')
@@ -40,10 +41,12 @@ export async function getUserInfo (cb, state, userId) {
 export async function setUserList (cb, state, obj) {
   const params = {
     userId: state.currentUserId,
+    gwCode: state.currentThreadGWCode, /* GW号 */
     targetId: obj.targetId, /* 目标ID */
     userLogo: obj.userLogo, /* 头像 */
     userName: obj.userName, /* 商铺名称 */
     lastMessage: obj.lastMessage, /* 最后一条消息文本内容 */
+    lastMsgType: obj.message.messageType, /* 消息类型 */
     messagesNumber: 0, /* 消息数 */
     message: {
       senderUserId: obj.message.senderUserId, /* 以此参数为判断谁发的 */
@@ -66,14 +69,14 @@ export async function setUserList (cb, state, obj) {
     params,
     { emulateJSON: true }
   ).then(response => {
-    console.log('会话列表更新成功！')
+    console.log('会话列表更新成功！', response)
   }, response => {
     console.log('会话列表更新失败！')
   })
 }
 
 /* 获取会话列表 */
-let getUserList = function (cb, state) {
+let getUserList = (cb, state) => {
   // 新获取方法：
   const params = {
     userId: state.currentUserId
@@ -86,7 +89,7 @@ let getUserList = function (cb, state) {
     let list = response.body
     let userList = []
     // 获取成功
-    // console.log('userList:', list)
+    if (state.debug) console.log('用户列表:', list)
 
     let newDate = new Date()
     try {
@@ -102,7 +105,7 @@ let getUserList = function (cb, state) {
         userInfo.targetId = _targetId
         userInfo.sentTime = newDate.toLocaleDateString()
         // 音频图片时 与消息窗口处理有差异，处理图标便可
-        userInfo.lastMessage = info.lastMessage
+        userInfo.lastMessage = func.checkUserlistMsg(info.lastMessage, info.lastMsgType)
         userInfo.active = ''
         if (state.currentThreadID === _targetId) {
           userInfo.active = 'active'
@@ -110,6 +113,8 @@ let getUserList = function (cb, state) {
         /* 盖讯通无任何数据，只能自己服务端添加时加上些字段以便作用 */
         userInfo.userLogo = info.userLogo
         userInfo.userName = info.userName
+        userInfo.lastMsgType = info.lastMsgType
+        userInfo.gwCode = info.gwCode
         userInfo.messagesNumber = 0
         userList.push(userInfo)
       }
@@ -175,10 +180,6 @@ export async function getUserTokenAsync (cb, state) {
     alert('用户ID与商家ID数据异常！')
     return false
   }
-  // if (user === currentThreadID) {
-  //   alert('这是你自己的商品哦！')
-  //   return false
-  // }
   const params = {
     userId: user,
     name: user,
@@ -191,7 +192,9 @@ export async function getUserTokenAsync (cb, state) {
     { emulateJSON: true }
   ).then(response => {
     let data = response.body
-    console.log('service return:', data)
+
+    if (state.debug) console.log('service return:', data)
+
     if (data.result === '1') {
       // 检查商家
       if (data.data.togw === 'null' || data.data.togw === null) {
@@ -205,13 +208,11 @@ export async function getUserTokenAsync (cb, state) {
       userToken = data.data.rongToken
       user = data.data.fromgw // 变更为用户信息对象
       currentThreadID = data.data.togw // 变更为商家信息对象
-      // console.log('userToken:  ' + userToken + '|||' + user + '|||' + currentThreadID)6
     } else if (data.result === '403') {
-      alert(data.tag + '!请重新进入!')
-      console.log(data)
+      // alert(data.tag + '!请重新进入!')
+      console.log('获取Token:', data)
     } else {
-      // alert('在线对话验证失败！可能您在当前页面停留过久，请重新进入！')
-      console.log(data)
+      console.log('获取Token 其他错误:', data)
       return false
     }
   }, response => {
@@ -303,13 +304,15 @@ export async function rongCloudInit (cb, state) {
     // 接收消息
     RongIMClient.setOnReceiveMessageListener({
       onReceived: function (message) {
-        // console.log('接收到的消息', message)
-        // 输入中状态判断
-        if (message.messageType !== 'TypingStatusMessage') {
+        if (state.debug) console.log('接收到的消息', message)
+
+        // 输入中状态判断,红包状态判断
+        if (message.messageType !== 'TypingStatusMessage' || message.messageType !== 'UnknownMessage') {
           let messageBack = message
-          // 处理商城图标提示语
+          // 处理商城图标提示语--商城处理部分
           $('#gx-socket-message', window.parent.document).html('有新消息，请查收')
           window.parent.isNewMessage = 1
+
           // 优先查询是否存在
           // 取得用户消息并处理数据,记录列表
           getUserInfo((response) => {
@@ -319,8 +322,9 @@ export async function rongCloudInit (cb, state) {
               result.userInfo.userId = message.senderUserId
               result.userInfo.userNickname = info.entity.userNickname ? info.entity.userNickname : info.entity.userName
             }
-            message = filterMessage(message)
+            message = func.filterMessage(message)
             result.msg = message
+            result.msg.content.content_back = func.checkUserlistMsg(result.msg.content.content_back, result.msg.messageType)
             // 更新消息框
             cb(result, 'newMsg')
             // 记录会话列表
@@ -369,7 +373,6 @@ export async function sendMsg (cb, state, obj) {
   let content = {
     // content:"hello " + encodeURIComponent('π，α，β'),
     content: msgContent, // 名称 转 Emoji 消息体里必须使用原生 Emoji 字符
-    // content: obj.msg,
     extra: { // 跟盖讯通同步，此不再传数据
     }
   }
@@ -378,7 +381,7 @@ export async function sendMsg (cb, state, obj) {
   let start = new Date().getTime()
   RongIMClient.getInstance().sendMessage(conversationtype, currentThreadID, msg, {
     onSuccess: function (message) {
-      // console.log('发送文字消息成功', message)
+      if (state.debug) console.log('发送文字消息成功', message)
       // 更新用户列表数据
       setUserList(cb, state, {
         targetId: state.currentThreadID, /* 目标ID */
@@ -388,8 +391,8 @@ export async function sendMsg (cb, state, obj) {
         message: message /* 保存消息到历史 */
       })
       // 发送成功处理
-      obj.msg = RongIMLib.RongIMEmoji.symbolToHTML(obj.msg) // 列表展示数据处理
-      obj.msgContent = msgContent
+      obj.msg = RongIMLib.RongIMEmoji.symbolToHTML(obj.msg) // 对话框展示数据处理
+      obj.msgContent = func.checkUserlistMsg(message.content.content, message.messageType) // 用户列表展示 数据处理
       obj.currentThreadID = currentThreadID
       cb(obj)
     },
@@ -429,10 +432,12 @@ export const getHistoryMsg = (cb, state) => {
       // list.sort(function (a, b) {
       //   return a.sentTime > b.sentTime
       // })
-      console.log('历史消息', list)
+
+      if (state.debug) console.log('历史消息', list)
+
       // 数据处理 RongIMLib.RongIMEmoji.emojiToHTML(message) unicode EMOJI转为HTML
       for (let key in list) {
-        list[key] = filterMessage(list[key])
+        list[key] = func.filterMessage(list[key])
       }
       result.list = list
       result.hasMsg = hasMsg
@@ -543,7 +548,7 @@ const sendImage = async (data, state, cb) => {
         console.log('sendImag', message)
         let messageBack = message /* 记录历史消息 */
         // 添加 到消息框
-        message = await filterMessage(message)
+        message = await func.filterMessage(message)
         obj.msg = message.content.content
         await cb(obj)
         // 更新用户列表数据
@@ -601,89 +606,3 @@ let urlItem = {
   }
 }
 
-/* 消息处理用于消息框展示 分为：文本（带表情）、音频（展示图片可点击）、文件图片（展示图片） */
-let filterMessage = (message) => {
-  // let result = {
-  //   message: message,
-  //   action: message.messageType
-  // }
-  switch (message.messageType) {
-    /* 文本消息（带原生Emoji） */
-    case RongIMClient.MessageType.TextMessage:
-      // HTML形式
-      message.content.content_back = message.content.content
-
-      try {
-        // 替换掉HTML tag
-        message.content.content = message.content.content.replace(/<\/?[^>]*>/g, '')
-        /*
-         * 商城URL添加跳转功能
-         * 地址以http/https/ftp/ftps开头
-         * 地址不能包含双字节符号或非链接特殊字符
-         * /^ (https|ftps) :// ( [\w -]+ ( \. [\w - ]+)* / )* [\w - ]+ ( \. [\w - ]+)* /{0,1} ( ? ([\w -.,@?^=%&:/~+# ]*)+ ){0,1} $/
-         * 所有URL /^((ht|f)tps?):\/\/([\w\-]+(\.[\w\-]+)*\/)*[\w\-]+(\.[\w\-]+)*\/?(\?([\w\-\.,@?^=%&:\/~\+#]*)+)?/
-         * 商城URL /^((ht|f)tps?):\/\/(.+)\.g\-emall\.com\/([\w\-]+([\w\-]+)*\/)*[\w\-]+(\.[\w\-]+)*\/?(\?([\w\-\.,@?^=%&:\/~\+#]*)+)?/
-         */
-        let match = /^((ht|f)tps?):\/\/(.+)\.g\-emall\.com\/([\w\-]+([\w\-]+)*\/)*[\w\-]+(\.[\w\-]+)*\/?(\?([\w\-\.,@?^=%&:\/~\+#]*)+)?/
-        let matchResult = message.content.content.match(match)
-        console.log(matchResult)
-
-        if (matchResult) {
-          message.content.content = message.content.content.replace(
-            matchResult[0],
-            '<a href="' + matchResult[0] + '" target="_blank">' + matchResult[0] + '</a>'
-          )
-        }
-      } catch (e) {
-        console.log(e)
-      }
-
-      message.content.content = RongIMLib.RongIMEmoji.emojiToHTML(message.content.content)
-      // 处理成原生EMOJI 兼容性有问题
-      // message.content.content = RongIMLib.RongIMEmoji.emojiToSymbol(message.content.content)
-      // message.content.content = RongIMLib.RongIMEmoji.symbolToEmoji(message.content.content)
-      break
-
-    /* 音频 */
-    case RongIMClient.MessageType.VoiceMessage:
-      message.content.content_back = message.content.content
-      message.content.content = '<img src="http://mu6.bdstatic.com/static/images/page/index/icon-fm.png" />' // 待修改成自己的音乐GIF图标
-      break
-
-    /* 文件（图片） */
-    case RongIMClient.MessageType.ImageMessage:
-      // message.content.content => 图片缩略图 base64。
-      // message.content.imageUri => 原图 URL。
-      // 具体待处理
-      message.content.content_back = message.content.content // 暂存缩略图 base64, 未做放大，直接使用原图
-      message.content.content = '<img src="' + message.content.imageUri + '" />'
-      break
-
-    /* 图文(未知) */
-    case RongIMClient.MessageType.RichContentMessage:
-      // message.content.content => 文本消息内容。
-      // message.content.imageUri => 图片 base64。
-      // message.content.url => 原图 URL。
-      break
-    case RongIMClient.MessageType.InformationNotificationMessage:
-        // do something...
-      break
-    case RongIMClient.MessageType.ContactNotificationMessage:
-        // do something...
-      break
-    case RongIMClient.MessageType.ProfileNotificationMessage:
-        // do something...
-      break
-    case RongIMClient.MessageType.CommandNotificationMessage:
-        // do something...
-      break
-    case RongIMClient.MessageType.CommandMessage:
-        // do something...
-      break
-    case RongIMClient.MessageType.UnknownMessage:
-        // do something...
-      break
-    default:
-  }
-  return message
-}

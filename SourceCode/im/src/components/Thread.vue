@@ -6,7 +6,7 @@
         <p class="title">{{value.userName}}</p>
         <p class="txtle">
             {{value.lastMessage}}
-            <span>{{value.messagesNumber}}</span>
+            <span v-bind:class="[{ isShowTips: value.messagesNumber == 0 },'']">{{value.messagesNumber}}</span>
         </p>
         <p class="time">{{value.sentTime}}</p>
     </li>
@@ -23,5 +23,7 @@ export default {
 </script>
 
 <style>
-  
+  .isShowTips {
+      display: none;
+  }
 </style>

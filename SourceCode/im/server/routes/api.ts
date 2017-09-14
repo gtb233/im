@@ -114,7 +114,7 @@ export class ApiRoute extends BaseRoute {
     if (userInfo.code !== '' || storeInfo.code !== '') {
       // 用户信息验证失败
       let data: Object = {
-        result: 403,
+        result: '403',
         tag: '用户或商家不存在！',
         data: {}
       }
@@ -167,11 +167,13 @@ export class ApiRoute extends BaseRoute {
     const rst = new redis.setRst
     rst.targetId = req.body.targetId
     rst.lastMessage = req.body.lastMessage
+    rst.lastMsgType = req.body.lastMsgType
     // rst.sentTime = req.body.sentTime
     rst.messagesNumber = req.body.messagesNumber
     rst.userLogo = req.body.userLogo
     rst.userName = req.body.userName
     rst.message = req.body.message
+    rst.gwCode = req.body.gwCode
     console.log(rst)
 
     const data = await redis.setUserList(req.body.userId, rst)

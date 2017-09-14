@@ -64,6 +64,7 @@ export default {
       if (el.targetId === obj.targetId) {
         el.active = 'active'
         el.messagesNumber = 0
+        state.currentThreadGWCode = el.gwCode
       }
     })
   },
