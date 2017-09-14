@@ -1,5 +1,5 @@
 export default {
-  debug: true,
+  debug: false,
   // serverUrl: 'http://localhost:8081/'
   serverUrl: 'http://im.gemall.com/', /* 请求TOKEN的服务器地址 */
   imDomain: 'gemall.com', /* 跨域 */

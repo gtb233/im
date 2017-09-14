@@ -92,7 +92,7 @@ export async function setUserList(userId: string, rst: setRst) {
     userName: rst.userName, /* 商铺名称 */
     lastMessage: rst.lastMessage, /* 最后一条消息内容 */
     lastMsgType: rst.lastMsgType, /* 消息类型 */
-    messagesNumber: 0, /* 消息数 */
+    messagesNumber: rst.messagesNumber, /* 消息数 */
     sentTime: new Date().getTime()
   }
   //验证是否存在
@@ -108,7 +108,7 @@ export async function setUserList(userId: string, rst: setRst) {
   } 
   // console.log('将设置的值',data)
   client.set(key, JSON.stringify(data), function(err, reply) {
-    console.log(reply)
+    // console.log(reply)
   })
   // 设置过期时间/ 秒
   client.expire(key, 3600*24*30)

@@ -92,12 +92,12 @@ export class ApiRoute extends BaseRoute {
     * @param next 
    */
   public async gxtToken(req: Request, res: Response, next: NextFunction){
-    res.header("Access-Control-Allow-Origin", "*");
-    const check = tool.checkToken(req.body.userId, req.body.storeId, req.body.token)
-    if (!check) {
-      res.send("token 验证失败，您在当前页面停留过久，请刷新重试！");
-      return true;
-    }
+    // res.header("Access-Control-Allow-Origin", "*");
+    // const check = tool.checkToken(req.body.userId, req.body.storeId, req.body.token)
+    // if (!check) {
+    //   res.send("token 验证失败，您在当前页面停留过久，请刷新重试！");
+    //   return true;
+    // }
     // 默认客服号替换成可查询用户ID
     if (req.body.storeId === 'GW00000001') {
       req.body.storeId = req.body.userId
@@ -169,12 +169,12 @@ export class ApiRoute extends BaseRoute {
     rst.lastMessage = req.body.lastMessage
     rst.lastMsgType = req.body.lastMsgType
     // rst.sentTime = req.body.sentTime
-    rst.messagesNumber = req.body.messagesNumber
+    rst.messagesNumber = <number>req.body.messagesNumber * 1
     rst.userLogo = req.body.userLogo
     rst.userName = req.body.userName
     rst.message = req.body.message
     rst.gwCode = req.body.gwCode
-    console.log(rst)
+    console.log('setUserlist: ',typeof rst.messagesNumber)
 
     const data = await redis.setUserList(req.body.userId, rst)
     res.send(data)

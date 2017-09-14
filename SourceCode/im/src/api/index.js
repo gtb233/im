@@ -38,7 +38,15 @@ export async function getUserInfo (cb, state, userId) {
  * 添加聊天用户到列表
  * msgObj 格式 参考消息列表
  */
-export async function setUserList (cb, state, obj) {
+export async function setUserList (cb, state, obj, isReceive = 0) {
+  let messagesNumber = 0
+  if (isReceive || obj.targetId !== state.currentThreadID) {
+    await state.userList.forEach(function (el) {
+      if (el.targetId === obj.targetId) {
+        messagesNumber = el.messagesNumber + 1
+      }
+    })
+  }
   const params = {
     userId: state.currentUserId,
     gwCode: state.currentThreadGWCode, /* GW号 */
@@ -47,7 +55,7 @@ export async function setUserList (cb, state, obj) {
     userName: obj.userName, /* 商铺名称 */
     lastMessage: obj.lastMessage, /* 最后一条消息文本内容 */
     lastMsgType: obj.message.messageType, /* 消息类型 */
-    messagesNumber: 0, /* 消息数 */
+    messagesNumber: parseInt(messagesNumber), /* 消息数 */
     message: {
       senderUserId: obj.message.senderUserId, /* 以此参数为判断谁发的 */
       targetId: obj.message.targetId,
@@ -64,12 +72,13 @@ export async function setUserList (cb, state, obj) {
       sentStatus: obj.message.sentStatus
     } /* 当前消息内容，用于记录消息历史 */
   }
+  console.log(params)
   await Vue.http.post(
     state.serverUrl + 'api/setUserList',
     params,
     { emulateJSON: true }
   ).then(response => {
-    console.log('会话列表更新成功！', response)
+    console.log('会话列表更新成功！')
   }, response => {
     console.log('会话列表更新失败！')
   })
@@ -115,7 +124,7 @@ let getUserList = (cb, state) => {
         userInfo.userName = info.userName
         userInfo.lastMsgType = info.lastMsgType
         userInfo.gwCode = info.gwCode
-        userInfo.messagesNumber = 0
+        userInfo.messagesNumber = info.messagesNumber
         userList.push(userInfo)
       }
     } catch (e) {
@@ -307,7 +316,9 @@ export async function rongCloudInit (cb, state) {
         if (state.debug) console.log('接收到的消息', message)
 
         // 输入中状态判断,红包状态判断
-        if (message.messageType !== 'TypingStatusMessage' || message.messageType !== 'UnknownMessage') {
+        if (message.messageType === RongIMClient.MessageType.TextMessage ||
+          message.messageType === RongIMClient.MessageType.VoiceMessage ||
+          message.messageType === RongIMClient.MessageType.ImageMessage) {
           let messageBack = message
           // 处理商城图标提示语--商城处理部分
           $('#gx-socket-message', window.parent.document).html('有新消息，请查收')
@@ -336,7 +347,9 @@ export async function rongCloudInit (cb, state) {
               messagesNumber: 0, /* 消息数 */
               message: messageBack
             })
-          }, state, message.targetId)
+          }, state, message.targetId, 1)
+        } else if (message.messageType === 'UnknownMessage') {
+          console.log('红包信息，请在手机端查收！')
         } else {
           console.log('输入中。。')
         }
