@@ -90,6 +90,11 @@ export default {
         },
         sendImage(){
             let _file = $("#img_upload")[0].files[0];
+            /* let types = ['image/gif', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/x-png']
+            if (types.indexOf(_file.type) == -1) {
+                alert('请上传图片文件！')
+                return false
+            } */
             this.$store.dispatch('uploadImg', { _file: _file})
         }
     },

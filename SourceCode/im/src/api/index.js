@@ -212,7 +212,7 @@ export async function getUserTokenAsync (cb, state) {
       }
       // 检查是否初始客服号，若是则替换提示语
       if (data.data.togw.userId === data.data.fromgw.userId) {
-        data.data.togw.userName = '请选择要咨询的商家'
+        data.data.togw.userInfo.userName = '请选择要咨询的商家'
       }
       userToken = data.data.rongToken // 融云TOKEN
       user = data.data.fromgw // 变更为用户信息对象
@@ -489,6 +489,12 @@ export const playVoice = (cb, state, obj) => {
 
 /* 发送图片 */
 export const uploadFile = (cb, state, obj) => {
+  // 检查文件格式
+  if (state.uploadFileTypes.indexOf(obj._file.type) === -1) {
+    alert('请上传正确的图片文件！')
+    return false
+  }
+
   // 配置
   let config = {
     domain: 'http://upload.qiniu.com',

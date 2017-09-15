@@ -12,6 +12,7 @@ const state = {
   serverUrl: config.serverUrl, /* 请求TOKEN的服务器地址 */
   appKey: config.appKey, /* 融云申请的应用KEY */
   userImgUrl: config.userImgUrl, // 用户头像前缀地址
+  uploadFileTypes: config.uploadFileTypes, // 允许上传的文件类型
   checkToken: '', /* 商城登录后的验证TOKEN */
   userToken: '', /* 融云用户TOKEN */
   isQuery: 0, /* 是否只是查询消息 1是 */
