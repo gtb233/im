@@ -1,4 +1,5 @@
 import * as types from './mutation-types'
+import * as tool from '../lib/util'
 
 export default {
   /* 获取用户信息 */
@@ -9,16 +10,18 @@ export default {
   [types.GET_USER_TOKEN] (state, userobj) {
     state.userToken = userobj.userToken
     state.currentUserId = userobj.user.userId
-    // 商家信息
-    state.currentThreadID = userobj.currentThreadID.userId
-    state.currentThreadName = userobj.currentThreadID.userNickname ? userobj.currentThreadID.userNickname : userobj.currentThreadID.userInfo.userName
-    state.currentThreadLogo = userobj.currentThreadID.userHead ? state.userImgUrl + userobj.currentThreadID.userHead : ''
-    // 添加用户信息
-    state.userInfo.thumb = userobj.user.userHead ? state.userImgUrl + userobj.user.userHead : ''
-    state.userInfo.username = userobj.user.userNickname ? userobj.user.userNickname : userobj.user.userInfo.userName
-    state.userInfo.userLevel = '正式会员'
-    // 定义辅助判断信息
-    state.isQuery = userobj.isQuery === '1' ? 1 : 0
+    let userInfo = userobj.user
+    let storeInfo = userobj.currentThreadID
+    // 商家信息 统一修改为使用商城用户信息
+    state.currentThreadID = storeInfo.userId
+    state.currentThreadName = storeInfo.userInfo.userName ? storeInfo.userInfo.userName : ''
+    state.currentThreadLogo = storeInfo.userInfo.userHead ? storeInfo.userInfo.userHead : ''
+    // 用户信息
+    state.userInfo.thumb = userInfo.userInfo.userHead ? tool.imageUrlConvert('sdlkf.jpg') : ''
+    state.userInfo.userName = userInfo.userInfo.userName ? userInfo.userInfo.userName : '获取失败，请刷新重试！'
+    state.userInfo.userLevel = userInfo.userInfo.grade * 1 + '级会员'
+    // 定义辅助判断信息 废弃
+    state.isQuery = 0 // userobj.isQuery === '1' ? 1 : 0
   },
   /* 根据融云返回信息设置用户列表 */
   [types.SET_USER_LIST] (state, obj) {

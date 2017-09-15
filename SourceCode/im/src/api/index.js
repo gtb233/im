@@ -212,9 +212,9 @@ export async function getUserTokenAsync (cb, state) {
       }
       // 检查是否初始客服号，若是则替换提示语
       if (data.data.togw.userId === data.data.fromgw.userId) {
-        data.data.togw.userNickname = '请选择要咨询的商家'
+        data.data.togw.userName = '请选择要咨询的商家'
       }
-      userToken = data.data.rongToken
+      userToken = data.data.rongToken // 融云TOKEN
       user = data.data.fromgw // 变更为用户信息对象
       currentThreadID = data.data.togw // 变更为商家信息对象
     } else if (data.result === '403') {
@@ -329,9 +329,9 @@ export async function rongCloudInit (cb, state) {
           getUserInfo((response) => {
             if (response) {
               let info = response.body
-              result.userInfo.userHead = info.entity.userHead ? state.userImgUrl + info.entity.userHead : ''
+              result.userInfo.userHead = info.userInfo.userHead ? info.userInfo.userHead : ''
               result.userInfo.userId = message.senderUserId
-              result.userInfo.userNickname = info.entity.userNickname ? info.entity.userNickname : info.entity.userName
+              result.userInfo.userName = info.userInfo.userName ? info.userInfo.userName : info.entity.userName
             }
             message = func.filterMessage(message)
             result.msg = message
@@ -342,7 +342,7 @@ export async function rongCloudInit (cb, state) {
             setUserList(() => {}, state, {
               targetId: message.targetId, /* 目标ID */
               userLogo: result.userInfo.userHead, /* 头像 */
-              userName: result.userInfo.userNickname, /* 商铺名称 */
+              userName: result.userInfo.userName, /* 商铺名称 */
               lastMessage: message.content.content_back, /* 最后一条消息内容 */
               messagesNumber: 0, /* 消息数 */
               message: messageBack
@@ -384,7 +384,6 @@ export async function sendMsg (cb, state, obj) {
   let msgContent = RongIMLib.RongIMEmoji.symbolToEmoji(obj.msg) // 用于发送的注意保持干净
   let currentThreadID = state.currentThreadID
   let content = {
-    // content:"hello " + encodeURIComponent('π，α，β'),
     content: msgContent, // 名称 转 Emoji 消息体里必须使用原生 Emoji 字符
     extra: { // 跟盖讯通同步，此不再传数据
     }

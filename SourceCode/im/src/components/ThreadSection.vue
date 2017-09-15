@@ -3,7 +3,7 @@
         <!-- 用户信息 -->
         <div class="socket-logo">
             <img :src="userInfo.thumb ? userInfo.thumb : './static/images/bgs/hedader-tx.png' ">
-            <p class="name"> {{ userInfo.username }} </p>
+            <p class="name"> {{ userInfo.userName }} </p>
             <p class="grade">
                 <i class="socket-icon"></i>{{userInfo.userLevel}}
             </p>

@@ -17,11 +17,11 @@ const state = {
   isQuery: 0, /* 是否只是查询消息 1是 */
   userInfo: { /* 用户信息 */
     userId: '1',
-    username: '用户名',
+    userName: '你的用户名',
     gaiNumber: 'GW123456',
     thumb: '',
     token: '',
-    userLevel: '正式会员'
+    userLevel: '0'
   },
   emojis: [],
   currentUserId: null,

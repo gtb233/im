@@ -1,3 +1,4 @@
+import config from '../../config/config'
 
 /**
  * 解析url参数
@@ -20,3 +21,17 @@ export function urlParse () {
   }
   return obj
 };
+
+/**
+ * 图片添加域名前缀
+ */
+export function imageUrlConvert (url, absoluteUrl = true) {
+  if (url) {
+    let reg = /^http:\/\//g
+    let arr = url.match(reg)
+    if (!arr) {
+      url = config.userImgUrl + url
+    }
+  }
+  return url
+}

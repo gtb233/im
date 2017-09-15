@@ -18,7 +18,7 @@ export class userInfoRpn {
 
 /**
  * 获取用户信息数据
- * @param rst 参数
+ * @param rst 请求参数
  */
 export async function exec(rst: userInfoRst) {
     const data: string = await client.exec(urlConfig.userInfo, rst);
@@ -26,10 +26,11 @@ export async function exec(rst: userInfoRst) {
         let result: any = JSON.parse(data) as client.RSM<userInfoRpn>;
         if(result.code == ""){
             let data = {
-                userId: result.data.uid,
+                // userId: result.data.uid, // 此为商城USERID
                 code: result.data.code,
+                grade: result.data.grade, // 会员等级
                 userName: result.data.userName,
-                nickname: result.data.nickname,
+                // nickname: result.data.nickname, //不再使用
                 userHead: result.data.headPortraitURL
             }
             result.data  = data

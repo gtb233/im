@@ -92,19 +92,19 @@ export class ApiRoute extends BaseRoute {
     * @param next 
    */
   public async gxtToken(req: Request, res: Response, next: NextFunction){
-    // res.header("Access-Control-Allow-Origin", "*");
-    // const check = tool.checkToken(req.body.userId, req.body.storeId, req.body.token)
-    // if (!check) {
-    //   res.send("token 验证失败，您在当前页面停留过久，请刷新重试！");
-    //   return true;
-    // }
+    res.header("Access-Control-Allow-Origin", "*");
+    const check = tool.checkToken(req.body.userId, req.body.storeId, req.body.token)
+    if (!check) {
+      res.send("token 验证失败，您在当前页面停留过久，请刷新重试！");
+      return true;
+    }
     // 默认客服号替换成可查询用户ID
     if (req.body.storeId === 'GW00000001') {
       req.body.storeId = req.body.userId
     }
     //请求核心接口获取用户信息，若不存在则不再查询
     let userInfoRst = new core.userInfoRst();
-    userInfoRst.code = req.body.userId;
+    userInfoRst.code = req.body.userId; // GW号
     let userInfo = await core.exec(userInfoRst);
     userInfoRst.code = req.body.storeId;
     let storeInfo = await core.exec(userInfoRst);
@@ -174,7 +174,7 @@ export class ApiRoute extends BaseRoute {
     rst.userName = req.body.userName
     rst.message = req.body.message
     rst.gwCode = req.body.gwCode
-    console.log('setUserlist: ',typeof rst.messagesNumber)
+    // console.log('setUserlist: ',typeof rst.messagesNumber)
 
     const data = await redis.setUserList(req.body.userId, rst)
     res.send(data)
@@ -191,6 +191,14 @@ export class ApiRoute extends BaseRoute {
     rst.userId = req.body.userId
 
     const data = await userInfo.exec(rst);
+    if (data.result == 1){
+      //请求核心接口获取用户信息，若不存在则不再查询
+      let userInfoRst = new core.userInfoRst();
+      userInfoRst.code = data.entity.userName; // GW号
+      let info = await core.exec(userInfoRst);
+      data.userInfo = info // 商城用户信息
+    }
+
     res.send(data)
   }
 }
