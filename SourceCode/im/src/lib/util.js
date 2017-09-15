@@ -32,6 +32,8 @@ export function imageUrlConvert (url, absoluteUrl = true) {
     if (!arr) {
       url = config.userImgUrl + url
     }
+  } else {
+    url = ''
   }
   return url
 }

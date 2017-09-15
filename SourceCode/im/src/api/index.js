@@ -329,7 +329,7 @@ export async function rongCloudInit (cb, state) {
           getUserInfo((response) => {
             if (response) {
               let info = response.body
-              result.userInfo.userHead = info.userInfo.userHead ? info.userInfo.userHead : ''
+              result.userInfo.userHead = tool.imageUrlConvert(info.userInfo.userHead)
               result.userInfo.userId = message.senderUserId
               result.userInfo.userName = info.userInfo.userName ? info.userInfo.userName : info.entity.userName
             }
@@ -557,7 +557,7 @@ const sendImage = async (data, state, cb) => {
     let obj = {}
     RongIMClient.getInstance().sendMessage(conversationtype, currentThreadID, msg, {
       onSuccess: async function (message) {
-        console.log('sendImag', message)
+        if (state.debug) console.log('sendImag', message)
         let messageBack = message /* 记录历史消息 */
         // 添加 到消息框
         message = await func.filterMessage(message)

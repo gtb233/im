@@ -15,9 +15,9 @@ export default {
     // 商家信息 统一修改为使用商城用户信息
     state.currentThreadID = storeInfo.userId
     state.currentThreadName = storeInfo.userInfo.userName ? storeInfo.userInfo.userName : ''
-    state.currentThreadLogo = storeInfo.userInfo.userHead ? storeInfo.userInfo.userHead : ''
+    state.currentThreadLogo = tool.imageUrlConvert(storeInfo.userInfo.userHead)
     // 用户信息
-    state.userInfo.thumb = userInfo.userInfo.userHead ? tool.imageUrlConvert('sdlkf.jpg') : ''
+    state.userInfo.thumb = tool.imageUrlConvert(userInfo.userInfo.userHead)
     state.userInfo.userName = userInfo.userInfo.userName ? userInfo.userInfo.userName : '获取失败，请刷新重试！'
     state.userInfo.userLevel = userInfo.userInfo.grade * 1 + '级会员'
     // 定义辅助判断信息 废弃
