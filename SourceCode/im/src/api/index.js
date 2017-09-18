@@ -49,7 +49,7 @@ export async function setUserList (cb, state, obj, isReceive = 0) {
   }
   const params = {
     userId: state.currentUserId,
-    gwCode: state.currentThreadGWCode, /* GW号 */
+    gwCode: obj.gwCode ? obj.gwCode : state.currentThreadGWCode, /* GW号 */
     targetId: obj.targetId, /* 目标ID */
     userLogo: obj.userLogo, /* 头像 */
     userName: obj.userName, /* 商铺名称 */
@@ -72,7 +72,7 @@ export async function setUserList (cb, state, obj, isReceive = 0) {
       sentStatus: obj.message.sentStatus
     } /* 当前消息内容，用于记录消息历史 */
   }
-  console.log(params)
+  if (state.debug) console.log('用户会话列表发送参数：', params)
   await Vue.http.post(
     state.serverUrl + 'api/setUserList',
     params,
@@ -310,7 +310,7 @@ export async function rongCloudInit (cb, state) {
       }
     })
 
-    // 接收消息
+    // 接收消息 如果有未接收的消息很多太快可能存在展示异常，待处理
     RongIMClient.setOnReceiveMessageListener({
       onReceived: function (message) {
         if (state.debug) console.log('接收到的消息', message)
@@ -321,8 +321,9 @@ export async function rongCloudInit (cb, state) {
           message.messageType === RongIMClient.MessageType.ImageMessage) {
           let messageBack = message
           // 处理商城图标提示语--商城处理部分
-          $('#gx-socket-message', window.parent.document).html('有新消息，请查收')
-          window.parent.isNewMessage = 1
+          let msgNum = window.parent.isNewMessage >= 1 ? window.parent.isNewMessage : 0
+          window.parent.isNewMessage = msgNum + 1
+          $('#gx-socket-message', window.parent.document).html(window.parent.isNewMessage + '条新信息')
 
           // 优先查询是否存在
           // 取得用户消息并处理数据,记录列表
@@ -332,6 +333,7 @@ export async function rongCloudInit (cb, state) {
               result.userInfo.userHead = tool.imageUrlConvert(info.userInfo.userHead)
               result.userInfo.userId = message.senderUserId
               result.userInfo.userName = info.userInfo.userName ? info.userInfo.userName : info.entity.userName
+              result.userInfo.gwCode = info.userInfo.code ? info.userInfo.code : info.entity.userName
             }
             message = func.filterMessage(message)
             result.msg = message
@@ -343,6 +345,7 @@ export async function rongCloudInit (cb, state) {
               targetId: message.targetId, /* 目标ID */
               userLogo: result.userInfo.userHead, /* 头像 */
               userName: result.userInfo.userName, /* 商铺名称 */
+              gwCode: result.userInfo.gwCode,
               lastMessage: message.content.content_back, /* 最后一条消息内容 */
               messagesNumber: 0, /* 消息数 */
               message: messageBack

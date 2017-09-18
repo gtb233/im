@@ -83,7 +83,6 @@ export async function setUserList(userId: string, rst: setRst) {
   if (data == null || data == 'null'){
     data  = []
   }
-  data  = []
   //直接替换旧的参数值
   const value: Object = {
     targetId: rst.targetId, /* 目标ID */

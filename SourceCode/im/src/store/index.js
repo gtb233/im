@@ -31,7 +31,7 @@ const state = {
   currentThreadLogo: '',
   currentThreadGWCode: '',
   searchName: '', // 侧边栏搜索内容
-  userList: [{
+  userList: [{ // 注意：此结构若变更接收消息设置用户列表处也得变
     targetId: '', /* 目标ID */
     gwCode: '', /* 用户GW号 */
     userLogo: '', /* 头像 */

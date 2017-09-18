@@ -27,7 +27,7 @@ export async function exec(rst: userInfoRst) {
         if(result.code == ""){
             let data = {
                 // userId: result.data.uid, // 此为商城USERID
-                code: result.data.code,
+                code: result.data.code, // GW号
                 grade: result.data.grade, // 会员等级
                 userName: result.data.userName,
                 // nickname: result.data.nickname, //不再使用

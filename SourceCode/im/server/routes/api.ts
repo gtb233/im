@@ -109,8 +109,6 @@ export class ApiRoute extends BaseRoute {
     userInfoRst.code = req.body.storeId;
     let storeInfo = await core.exec(userInfoRst);
     
-    // console.log(userInfo)
-    // console.log(storeInfo)
     if (userInfo.code !== '' || storeInfo.code !== '') {
       // 用户信息验证失败
       let data: Object = {
@@ -140,7 +138,6 @@ export class ApiRoute extends BaseRoute {
         data.data.fromgw.userInfo = userInfo.data
         data.data.togw.userInfo = storeInfo.data
       }
-      // console.log(data);
       res.send(data);
     }
   }

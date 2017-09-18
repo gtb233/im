@@ -101,7 +101,7 @@ export default {
   },
   /* 接收消息 */
   [types.RECEIVE_MESSAGE] (state, obj) {
-    // 添加发送内容到消息列表 存在
+    // 添加发送内容到消息列表
     let userInfo = obj.userInfo
     obj = obj.msg
     let newDate = new Date()
@@ -143,9 +143,11 @@ export default {
       if (!isExist) {
         let user = {
           targetId: obj.senderUserId, /* 目标ID */
+          gwCode: userInfo.gwCode, /* 用户GW号 */
           userLogo: userInfo.userHead, /* 头像 */
-          userName: userInfo.userNickname, /* 商铺名称 */
+          userName: userInfo.userName, /* 商铺名称 */
           lastMessage: obj.content.content_back, /* 最后一条消息内容 */
+          lastMsgType: obj.messageType,
           messagesNumber: 1, /* 消息数 */
           sendTime: newDate.toLocaleDateString(), /* 最后一条消息时间 */
           active: ''
