@@ -16,6 +16,7 @@ export default {
     state.currentThreadID = storeInfo.userId
     state.currentThreadName = storeInfo.userInfo.userName ? storeInfo.userInfo.userName : ''
     state.currentThreadLogo = tool.imageUrlConvert(storeInfo.userInfo.userHead)
+    state.currentThreadGWCode = storeInfo.userInfo.code ? storeInfo.userInfo.code : ''
     // 用户信息
     state.userInfo.thumb = tool.imageUrlConvert(userInfo.userInfo.userHead)
     state.userInfo.userName = userInfo.userInfo.userName ? userInfo.userInfo.userName : '获取失败，请刷新重试！'

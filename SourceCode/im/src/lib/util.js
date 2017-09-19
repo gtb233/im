@@ -37,3 +37,18 @@ export function imageUrlConvert (url, absoluteUrl = true) {
   }
   return url
 }
+
+/**
+ * 对象引用 修改成拷贝（值引用）
+ * @param {*} obj
+ */
+export function deepCopy (obj) {
+  if (typeof obj !== 'object') {
+    return obj
+  }
+  let newobj = {}
+  for (let attr in obj) {
+    newobj[attr] = deepCopy(obj[attr])
+  }
+  return newobj
+}

@@ -33,7 +33,7 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 
 ## 配置项
 目前跨域设置的是 document.domain = 'gemall.com' 上线到生产环境请修改
-
+配置文件有两处修改 config 与server下
 
 ## 盖讯通测试环境：
 > 测试账号:
@@ -95,42 +95,10 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
     "page": null,
     "tag": "获取数据成功",
     "entity": {
-        "constellation": "",
-        "registerDate": "2017-08-24 15:51:01",
-        "unread": 0,
-        "userPassword": "e10adc3949ba59abbe56e057f20f883e",
-        "userQq": "",
-        "addr": "",
-        "userPassword2": "c19c632062977f0900c1a8691e9caa18da9175a6dee99d3f",
-        "userBirthday": "",
-        "apiKey": "!@*^juyou#i@*%$",
-        "city": "",
-        "id": 14566,
-        "userState": 1,
-        "is_login_check": true,
-        "userBg": "",
         "userId": "5179f1c8d86e4fa58b8e4c0451467a9b",
-        "province": "",
         "userName": "GW00172590",
-        "longitude": 0,
-        "userPhone": "",
-        "userDescription": "",
-        "userHead": "",
-        "signName": "",
-        "job": "",
-        "userNickname": "GW00172590",
-        "gaiNumber": "GW00172590",
-        "systemBg": 1,
-        "logout": true,
-        "school": "",
-        "email": "",
-        "company": "",
-        "userSex": 0,
-        "latitude": 0,
-        "userAge": 0,
-        "specialSign": "",
-        "salt": "",
-        "mobile": "null"
+        "userNickname": "强哥",
+        "userHead": "/files/head/img/5179f1c8d86e4fa58b8e4c0451467a9b20170915175535.png"
     },
     "map": null,
     "list": null

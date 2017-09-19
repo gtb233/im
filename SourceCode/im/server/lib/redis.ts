@@ -1,6 +1,7 @@
 import * as redis from 'redis';
 import config from '../config';
 import * as q from 'q';
+import * as tool from './util'
 
 const client = redis.createClient(config.redis.PORT, config.redis.HOST, config.redis.OPTIONS)
 
@@ -30,14 +31,41 @@ export class setRst {
   public messagesNumber: number;
   public userLogo: string;
   public userName: string;
-  public message?: Object;
+  public message?: any;
 }
 
 /**
  * 历史消息请求体
  */
 export class setHistoryMsgRst {
+  public senderUserId: string; /* 发送用户 */
+  public targetId: string; /* 接收用户 */
+  public sentTime: string;
+  public messageId: number;
+  public content: contentRst;
+  public messageType: string;
+  public messageUId: string;
+  public sentStatus: any;
 }
+
+class contentRst {
+  public content: string;
+  public content_back: string;
+  public imageUri: string;
+  public messageName: string;
+}
+/* 历史消息返回结构 */
+export class getHistoryMsgRpn {
+  public senderUserId: string;
+  public targetId: string;
+  public sentTime: string;
+  public messageId: number;
+  public content: contentRst;
+  public messageType: string;
+  public messageUId: string;
+  public sentStatus: any;
+}
+
 
 /**
  * 返回数据
@@ -56,7 +84,7 @@ export class getRpn {
  * key: "gxt_emall_IM_userlist_" + userid 盖讯通融云处的ID
  */
 export function getUserList(userId: string) : q.Promise<getRpn> {
-  const key: string = "gxt_emall_IM_userlist_" + userId
+  const key: string = config.redis.keyPrefix.userList + userId
   let deferred: q.Deferred<getRpn> = q.defer<getRpn>();
   
   client.get(key,(err, reply)=>{
@@ -75,7 +103,7 @@ export function getUserList(userId: string) : q.Promise<getRpn> {
  * 过期时间暂定一个月
  */
 export async function setUserList(userId: string, rst: setRst) {
-  const key: string = "gxt_emall_IM_userlist_" + userId
+  const key: string = config.redis.keyPrefix.userList + userId
 
   let data: any = await getUserList(userId)
   // console.log('原始redis记录值 ',data)
@@ -113,11 +141,32 @@ export async function setUserList(userId: string, rst: setRst) {
   client.expire(key, 3600*24*30)
 }
 
-// 设置历史消息列表
-export async function setHistoryMsg(userId: string, message: Object){
-
+/**
+ * 设置历史消息列表
+ */
+export async function setHistoryMsg(userId: string, targetId: string, message: setHistoryMsgRst){
+  const key: string = config.redis.keyPrefix.historyMsg + tool.md5(userId + '_' + targetId)
+  console.log(JSON.stringify(message))
+  client.RPUSH(key, JSON.stringify(message), function(err, reply) {
+    // console.log(reply) // OK
+  })
+  client.expire(key, 3600*24*30)
 }
-// 取得用户对应的历史消息
-export async function getHistoryMsg(){
 
+/**
+ * 取得用户对应的历史消息,默认前15条
+ */
+export async function getHistoryMsg(userId:string, targetId: string, start: number, end: number){
+  const key: string = config.redis.keyPrefix.historyMsg + tool.md5(userId + '_' + targetId)
+
+  return new Promise((resolve, reject) => {
+    client.LRANGE(key, start, end, (err, reply) => {
+      try{
+        // console.log(reply)
+        resolve(reply);
+      }catch(e){
+        return []
+      }
+    });
+  })
 }

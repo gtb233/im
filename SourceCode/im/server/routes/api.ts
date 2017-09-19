@@ -41,11 +41,17 @@ export class ApiRoute extends BaseRoute {
     router.post("/api/getUserList", (req: Request, res: Response, next: NextFunction) => {
       new ApiRoute().getUserList(req, res, next);
     });
+    /* 用户会话列表 */
     router.post("/api/setUserList", (req: Request, res: Response, next: NextFunction) => {
       new ApiRoute().setUserList(req, res, next);
     });
+    /* 用户盖讯通与商城信息 */
     router.post("/api/getUserInfo", (req: Request, res: Response, next: NextFunction) => {
       new ApiRoute().getUserInfo(req, res, next);
+    });
+    /* 指定对话用户历史消息 */
+    router.post("/api/getHistoryMsg", (req: Request, res: Response, next: NextFunction) => {
+      new ApiRoute().getHistoryMsg(req, res, next);
     });
   }
   /**
@@ -171,10 +177,24 @@ export class ApiRoute extends BaseRoute {
     rst.userName = req.body.userName
     rst.message = req.body.message
     rst.gwCode = req.body.gwCode
-    // console.log('setUserlist: ',typeof rst.messagesNumber)
+    // console.log('setUserlist: ', rst.message)
 
     const data = await redis.setUserList(req.body.userId, rst)
+    // 记录到历史消息
+    let msgRst = new redis.setHistoryMsgRst
+    msgRst = rst.message
+    redis.setHistoryMsg(req.body.userId, req.body.targetId, msgRst)
+
     res.send(data)
+  }
+
+  /**
+   * 获取历史消息列表（默认前15条）
+   */
+  public async getHistoryMsg(req: Request, res: Response, next: NextFunction){
+    const result:any = await redis.getHistoryMsg(req.body.userId, req.body.targetId, 0, 14)
+
+    res.send(result)
   }
 
   /**
@@ -193,7 +213,7 @@ export class ApiRoute extends BaseRoute {
       let userInfoRst = new core.userInfoRst();
       userInfoRst.code = data.entity.userName; // GW号
       let info = await core.exec(userInfoRst);
-      data.userInfo = info // 商城用户信息
+      data.userInfo = info.data // 商城用户信息
     }
 
     res.send(data)

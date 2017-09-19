@@ -6,7 +6,8 @@ export const getUserList = (state, getters) => {
   if (state.searchName !== '') {
     for (let user of state.userList) {
       let reg = new RegExp(state.searchName, 'i')
-      let result = user.userName.match(reg)
+      let searchStr = user.userName + user.gwCode
+      let result = searchStr.match(reg)
       if (result) {
         userList.push(user)
       }

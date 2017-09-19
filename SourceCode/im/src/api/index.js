@@ -16,21 +16,26 @@ Vue.use(VueResource)
 
 const conversationtype = RongIMLib.ConversationType.PRIVATE
 
-/* 取得盖讯通用户信息 */
-export async function getUserInfo (cb, state, userId) {
-  const params = {
-    userId: userId
-  }
-  await Vue.http.post(
-    state.serverUrl + 'api/getUserInfo',
-    params,
-    { emulateJSON: true }
-  ).then(response => {
-    if (state.debug) console.log('用户信息获取成功！', response)
-    cb(response)
-  }, response => {
-    console.log('会话列表更新失败！')
-    cb(0)
+/**
+ * 取得盖讯通用户信息
+ * @param string userId 盖讯通ID
+ */
+export async function getUserInfo (state, userId) {
+  return new Promise((resolve, reject) => {
+    const params = {
+      userId: userId
+    }
+    Vue.http.post(
+      state.serverUrl + 'api/getUserInfo',
+      params,
+      { emulateJSON: true }
+    ).then(response => {
+      if (state.debug) console.log('用户信息获取成功！', response)
+      resolve(response)
+    }, response => {
+      console.log('会话列表更新失败！')
+      // reject('获取用户信息失败！')
+    })
   })
 }
 
@@ -47,9 +52,20 @@ export async function setUserList (cb, state, obj, isReceive = 0) {
       }
     })
   }
+  let info = {}
+  if (!obj.gwCode) {
+    if (!state.currentThreadGWCode) {
+      await getUserInfo(state, obj.message.targetId).then((response) => {
+        info = response.body
+      })
+      obj.gwCode = info.userInfo.code ? info.userInfo.code : info.entity.userName
+    }
+    obj.gwCode = obj.gwCode ? obj.gwCode : state.currentThreadGWCode
+  }
+
   const params = {
     userId: state.currentUserId,
-    gwCode: obj.gwCode ? obj.gwCode : state.currentThreadGWCode, /* GW号 */
+    gwCode: obj.gwCode, /* GW号 */
     targetId: obj.targetId, /* 目标ID */
     userLogo: obj.userLogo, /* 头像 */
     userName: obj.userName, /* 商铺名称 */
@@ -65,7 +81,7 @@ export async function setUserList (cb, state, obj, isReceive = 0) {
         content: obj.message.content.content,
         content_back: obj.message.content.content_back ? obj.message.content.content_back : '', // 用于保存音频图片之类的原始文件数据
         imageUri: obj.message.content.imageUri ? obj.message.content.imageUri : '',
-        messageName: obj.message.messageName
+        messageName: obj.message.content.messageName // 类型
       },
       messageType: obj.message.messageType,
       messageUId: obj.message.messageUId,
@@ -281,7 +297,7 @@ export async function rongCloudInit (cb, state) {
               result.userList = userList
               cb(result, 'connect')
             }, state)
-            // 返回表情 此处回调处理时间会早于用于列表
+            // 返回表情 此处回调处理时间会早于用户列表
             result.emojis = RongIMLib.RongIMEmoji.emojis
             cb(result, 'connect')
             break
@@ -312,45 +328,44 @@ export async function rongCloudInit (cb, state) {
 
     // 接收消息 如果有未接收的消息很多太快可能存在展示异常，待处理
     RongIMClient.setOnReceiveMessageListener({
-      onReceived: function (message) {
+      onReceived: async function (message) {
         if (state.debug) console.log('接收到的消息', message)
+        let messageBack = tool.deepCopy(message) // 注意对象引用的干扰
 
         // 输入中状态判断,红包状态判断
         if (message.messageType === RongIMClient.MessageType.TextMessage ||
           message.messageType === RongIMClient.MessageType.VoiceMessage ||
           message.messageType === RongIMClient.MessageType.ImageMessage) {
-          let messageBack = message
           // 处理商城图标提示语--商城处理部分
           let msgNum = window.parent.isNewMessage >= 1 ? window.parent.isNewMessage : 0
           window.parent.isNewMessage = msgNum + 1
           $('#gx-socket-message', window.parent.document).html(window.parent.isNewMessage + '条新信息')
 
-          // 优先查询是否存在
-          // 取得用户消息并处理数据,记录列表
-          getUserInfo((response) => {
-            if (response) {
-              let info = response.body
-              result.userInfo.userHead = tool.imageUrlConvert(info.userInfo.userHead)
-              result.userInfo.userId = message.senderUserId
-              result.userInfo.userName = info.userInfo.userName ? info.userInfo.userName : info.entity.userName
-              result.userInfo.gwCode = info.userInfo.code ? info.userInfo.code : info.entity.userName
-            }
-            message = func.filterMessage(message)
-            result.msg = message
-            result.msg.content.content_back = func.checkUserlistMsg(result.msg.content.content_back, result.msg.messageType)
-            // 更新消息框
-            cb(result, 'newMsg')
-            // 记录会话列表
-            setUserList(() => {}, state, {
-              targetId: message.targetId, /* 目标ID */
-              userLogo: result.userInfo.userHead, /* 头像 */
-              userName: result.userInfo.userName, /* 商铺名称 */
-              gwCode: result.userInfo.gwCode,
-              lastMessage: message.content.content_back, /* 最后一条消息内容 */
-              messagesNumber: 0, /* 消息数 */
-              message: messageBack
-            })
-          }, state, message.targetId, 1)
+          let info = {}
+          await getUserInfo(state, message.targetId).then((response) => {
+            info = response.body
+          })
+          result.userInfo.userHead = tool.imageUrlConvert(info.userInfo.userHead)
+          result.userInfo.userId = message.senderUserId
+          result.userInfo.userName = info.userInfo.userName ? info.userInfo.userName : info.entity.userName
+          result.userInfo.gwCode = info.userInfo.code ? info.userInfo.code : info.entity.userName
+          message = func.filterMessage(message) // 引用类型
+          result.msg = message
+          result.msg.content.content_back = func.checkUserlistMsg(result.msg.content.content_back, result.msg.messageType)
+
+          // 记录会话列表
+          setUserList(() => {}, state, {
+            targetId: message.targetId, /* 目标ID */
+            userLogo: result.userInfo.userHead, /* 头像 */
+            userName: result.userInfo.userName, /* 商铺名称 */
+            gwCode: result.userInfo.gwCode,
+            lastMessage: message.content.content_back, /* 最后一条消息内容 */
+            messagesNumber: 0, /* 消息数 */
+            message: messageBack
+          })
+
+          // 更新消息框
+          cb(result, 'newMsg')
         } else if (message.messageType === 'UnknownMessage') {
           console.log('红包信息，请在手机端查收！')
         } else {
@@ -377,7 +392,10 @@ export async function rongCloudInit (cb, state) {
   }
 }
 
-// 发送文本消息
+/**
+ * 发送文本消息
+ * 发送不做 链接跳转功能，只在接收方处理
+ */
 export async function sendMsg (cb, state, obj) {
   if (obj.msg == null || obj.msg === '' || obj.msg === undefined) {
     return false
@@ -431,37 +449,58 @@ export function getHistoryMsgAsync (cb, state) {
 }
 
 /* 获取历史消息，实时 */
-export const getHistoryMsg = (cb, state) => {
+export const getHistoryMsg = async (cb, state) => {
   // 最新十条
-  const count = 10  // 2 <= count <= 20
-  const timestrap = new Date().getTime() // 0, 1483950413013 //null 时第二次加载是遍历查询
+  // const count = 10  // 2 <= count <= 20
+  // const timestrap = new Date().getTime() // 0, 1483950413013 //null 时第二次加载是遍历查询
   let result = {
     list: [],
     hasMsg: false
   }
-  // 待考虑是否做成缓存
-  RongIMClient.getInstance().getHistoryMessages(conversationtype, state.currentThreadID, timestrap, count, {
-    onSuccess: function (list, hasMsg) {
-      // hasMsg为boolean值，如果为true则表示还有剩余历史消息可拉取，为false的话表示没有剩余历史消息可供拉取。
-      // 可通过sort订制其他顺序
-      // list.sort(function (a, b) {
-      //   return a.sentTime > b.sentTime
-      // })
-
-      if (state.debug) console.log('历史消息', list)
-
-      // 数据处理 RongIMLib.RongIMEmoji.emojiToHTML(message) unicode EMOJI转为HTML
-      for (let key in list) {
-        list[key] = func.filterMessage(list[key])
-      }
-      result.list = list
-      result.hasMsg = hasMsg
-      cb(result)
-    },
-    onError: function (error) {
-      console.log('获取历史消息失败！', error, timestrap)
+  const params = {
+    userId: state.currentUserId,
+    targetId: state.currentThreadID
+  }
+  await Vue.http.post(
+    state.serverUrl + 'api/getHistoryMsg',
+    params,
+    { emulateJSON: true }
+  ).then(response => {
+    if (state.debug) console.log('历史消息', response.body)
+    let list = response.body
+    for (let key in list) {
+      list[key] = JSON.parse(list[key])
+      list[key] = func.filterMessage(list[key])
     }
+    result.list = list
+    result.hasMsg = false
+    cb(result)
+  }, response => {
+    console.log('历史消息获取失败')
   })
+
+  // RongIMClient.getInstance().getHistoryMessages(conversationtype, state.currentThreadID, timestrap, count, {
+  //   onSuccess: function (list, hasMsg) {
+  //     // hasMsg为boolean值，如果为true则表示还有剩余历史消息可拉取，为false的话表示没有剩余历史消息可供拉取。
+  //     // 可通过sort订制其他顺序
+  //     // list.sort(function (a, b) {
+  //     //   return a.sentTime > b.sentTime
+  //     // })
+
+  //     if (state.debug) console.log('历史消息', list)
+
+  //     // 数据处理 RongIMLib.RongIMEmoji.emojiToHTML(message) unicode EMOJI转为HTML
+  //     for (let key in list) {
+  //       list[key] = func.filterMessage(list[key])
+  //     }
+  //     result.list = list
+  //     result.hasMsg = hasMsg
+  //     cb(result)
+  //   },
+  //   onError: function (error) {
+  //     console.log('获取历史消息失败！', error, timestrap)
+  //   }
+  // })
 }
 
 /* 播放语音 */
@@ -559,7 +598,7 @@ const sendImage = async (data, state, cb) => {
     let content = {
       imageUri: data.downloadUrl,
       content: data.thumbnail,
-      extra: { // 与盖讯通同步
+      extra: { // 与盖讯通保持结构一致
       }
     }
     let msg = new RongIMLib.ImageMessage(content)

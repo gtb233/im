@@ -27,6 +27,8 @@ export function checkUserlistMsg (lastMessage, msgType) {
 
 /**
  * 消息处理用于消息框展示 分为：文本（带表情）、音频（展示图片可点击）、文件图片（展示图片）
+ * content_back 用于保存原始数据
+ * content 保存页面展示数据
  */
 export const filterMessage = (message) => {
   switch (message.messageType) {

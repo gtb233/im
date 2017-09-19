@@ -13,8 +13,14 @@ export default {
     // redis
     redis: {
         PORT: 6379,
-        HOST: '172.18.7.77',
-        OPTIONS: {}
+        HOST: '172.18.7.77', // 测试环境
+        OPTIONS: {
+            // auth_pass: ''
+        },
+        keyPrefix: {// KEY前缀
+            userList: 'gxt_emall_IM_userlist_', // prefix + userId
+            historyMsg: 'gxt_emall_IM_historyMsg_' // prefix + md5(userId + _ + targetId)
+        }
     },
     //融云api
     rong: {
