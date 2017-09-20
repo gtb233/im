@@ -21,7 +21,7 @@
                 <thread :active="value.active == 'active'"
                         :value="value"
                         @switch-thread="navClickEvent(value.targetId, value.userName, value.userLogo)"
-                        v-for="(value, key) of userList" :key="value.messageId">
+                        v-for="(value, key) of userList" :key="value.targetId">
                 </thread>
             </ul>
         </div>
