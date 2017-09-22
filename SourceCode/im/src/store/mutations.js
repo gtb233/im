@@ -14,12 +14,12 @@ export default {
     let storeInfo = userobj.currentThreadID
     // 商家信息 统一修改为使用商城用户信息
     state.currentThreadID = storeInfo.userId
-    state.currentThreadName = storeInfo.userInfo.userName ? storeInfo.userInfo.userName : ''
+    state.currentThreadName = storeInfo.userInfo.userName ? storeInfo.userInfo.userName : storeInfo.userInfo.code
     state.currentThreadLogo = tool.imageUrlConvert(storeInfo.userInfo.userHead)
     state.currentThreadGWCode = storeInfo.userInfo.code ? storeInfo.userInfo.code : ''
     // 用户信息
     state.userInfo.thumb = tool.imageUrlConvert(userInfo.userInfo.userHead)
-    state.userInfo.userName = userInfo.userInfo.userName ? userInfo.userInfo.userName : '获取失败，请刷新重试！'
+    state.userInfo.userName = userInfo.userInfo.userName ? userInfo.userInfo.userName : userInfo.userInfo.code
     state.userInfo.userLevel = userInfo.userInfo.grade * 1 + '级会员'
     // 定义辅助判断信息 废弃
     state.isQuery = 0 // userobj.isQuery === '1' ? 1 : 0

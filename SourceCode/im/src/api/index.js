@@ -586,6 +586,23 @@ export const uploadFile = (cb, state, obj) => {
   initType[getFileType(obj._file.name)](obj._file)
 }
 
+/* 更新用户列表消息数提示 */
+export const changeMsgNumber = (state, obj) => {
+  const params = {
+    userId: state.currentUserId,
+    targetId: obj.targetId
+  }
+  Vue.http.post(
+    state.serverUrl + 'api/changeMsgNumber',
+    params,
+    { emulateJSON: true }
+  ).then(response => {
+    if (state.debug) console.log('提示值更新成功！')
+  }, response => {
+    console.log('消息提示更新失败！')
+  })
+}
+
 /* 上传完成处理 */
 const sendImage = async (data, state, cb) => {
   data.fileType = getFileType(data.name)

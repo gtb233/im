@@ -14,7 +14,7 @@
                     <message :own="message.senderUserId == currentUserId"
                         :message="message"
                         @play="play(message)"
-                        v-for="(message, key) of messageList" :key="message.messageId"
+                        v-for="(message, key) of messageList" :key="message.messageUId"
                     >
                     </message>
                 </ul>

@@ -68,6 +68,8 @@ export const changeCurrentThreadID = async ({commit, state}, obj) => {
   await api.getHistoryMsg((obj) => {
     commit(types.GET_HISTORY_MESSAGE, obj)
   }, state)
+  // 更新用户消息提示值数据
+  api.changeMsgNumber(state, obj)
 }
 
 /* 播放语音 */

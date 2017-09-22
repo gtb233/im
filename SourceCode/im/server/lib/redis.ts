@@ -142,7 +142,7 @@ export async function setUserList(userId: string, rst: setRst) {
 }
 
 /**
- * 设置历史消息列表
+ * 设置历史消息列表 队列
  */
 export async function setHistoryMsg(userId: string, targetId: string, message: setHistoryMsgRst){
   const key: string = config.redis.keyPrefix.historyMsg + tool.md5(userId + '_' + targetId)
@@ -154,7 +154,7 @@ export async function setHistoryMsg(userId: string, targetId: string, message: s
 }
 
 /**
- * 取得用户对应的历史消息,默认前15条
+ * 取得用户对应的历史消息,默认最新15条
  */
 export async function getHistoryMsg(userId:string, targetId: string, start: number, end: number){
   const key: string = config.redis.keyPrefix.historyMsg + tool.md5(userId + '_' + targetId)

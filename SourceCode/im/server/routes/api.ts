@@ -53,6 +53,10 @@ export class ApiRoute extends BaseRoute {
     router.post("/api/getHistoryMsg", (req: Request, res: Response, next: NextFunction) => {
       new ApiRoute().getHistoryMsg(req, res, next);
     });
+    /* 指定对话用户历史消息 */
+    router.post("/api/changeMsgNumber", (req: Request, res: Response, next: NextFunction) => {
+      new ApiRoute().changeMsgNumber(req, res, next);
+    });
   }
   /**
    * The home page route.
@@ -69,7 +73,7 @@ export class ApiRoute extends BaseRoute {
 
 
   /**
-    * 获取token
+    * 获取token （融云版）
     * @param req 
     * @param res 
     * @param next 
@@ -92,7 +96,7 @@ export class ApiRoute extends BaseRoute {
   }
 
   /**
-   * 获取盖讯通TOKEN与用户信息
+   * 获取盖讯通TOKEN与用户信息 （盖讯通版）
     * @param req 
     * @param res 
     * @param next 
@@ -124,16 +128,16 @@ export class ApiRoute extends BaseRoute {
       }
       res.send(data);
     } else {
-      // 获取盖讯通 新请求结构
+      // 获取盖讯通 新请求结构,当无用户名时使用GW号
       const rst = new gxtToken.TokenRst();
       rst.fromgw = JSON.stringify({
         GW: req.body.userId,
-        userNickname: userInfo.data.userName ? userInfo.data.userName : '',
+        userNickname: userInfo.data.userName ? userInfo.data.userName : userInfo.data.code,
         userHead: userInfo.data.userHead ? userInfo.data.userHead : ''
       })
       rst.togw = JSON.stringify({
         GW: req.body.storeId,
-        userNickname: storeInfo.data.userName ? storeInfo.data.userName : '',
+        userNickname: storeInfo.data.userName ? storeInfo.data.userName : storeInfo.data.code,
         userHead: storeInfo.data.userHead ? storeInfo.data.userHead : ''
       })
       // rst.fromgw = req.body.userId;
@@ -192,9 +196,35 @@ export class ApiRoute extends BaseRoute {
    * 获取历史消息列表（默认前15条）
    */
   public async getHistoryMsg(req: Request, res: Response, next: NextFunction){
-    const result:any = await redis.getHistoryMsg(req.body.userId, req.body.targetId, 0, 14)
+    const result:any = await redis.getHistoryMsg(req.body.userId, req.body.targetId, -15, -1)
 
     res.send(result)
+  }
+
+  /**
+   * 更新用户消息提示数
+   */
+  public async changeMsgNumber(req: Request, res: Response, next: NextFunction){
+    const result:any = await redis.getUserList(req.body.userId)
+    console.log('用户列表',result)
+    // 更新指定参数
+    const rst = new redis.setRst
+    for(let k in result) {
+      // console.log(result[k])
+      let _targetId = result[k].targetId
+      if(_targetId == req.body.targetId){
+        rst.targetId = req.body.targetId
+        rst.lastMessage = result[k].lastMessage
+        rst.lastMsgType = result[k].lastMsgType
+        rst.messagesNumber = 0
+        rst.userLogo = result[k].userLogo
+        rst.userName = result[k].userName
+        rst.gwCode = result[k].gwCode
+
+        await redis.setUserList(req.body.userId, rst)
+      }
+    }
+    res.send([])
   }
 
   /**
