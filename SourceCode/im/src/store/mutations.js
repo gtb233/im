@@ -1,5 +1,6 @@
 import * as types from './mutation-types'
 import * as tool from '../lib/util'
+import * as func from '../lib/func'
 
 export default {
   /* 获取用户信息 */
@@ -133,7 +134,7 @@ export default {
       let isExist = 0
       state.userList.forEach(function (el) {
         if (el.targetId === obj.targetId) {
-          el.lastMessage = obj.content.content_back  // 设置内容，非对象结构
+          el.lastMessage = func.checkUserlistMsg(obj.content.content_back, obj.messageType)  // 设置内容，非对象结构
           el.sentTime = newDate.toLocaleDateString()
           if (el.targetId !== state.currentThreadID) {
             el.messagesNumber += 1
@@ -147,7 +148,7 @@ export default {
           gwCode: userInfo.gwCode, /* 用户GW号 */
           userLogo: userInfo.userHead, /* 头像 */
           userName: userInfo.userName, /* 商铺名称 */
-          lastMessage: obj.content.content_back, /* 最后一条消息内容 */
+          lastMessage: func.checkUserlistMsg(obj.content.content_back, obj.messageType), /* 最后一条消息内容 */
           lastMsgType: obj.messageType,
           messagesNumber: 1, /* 消息数 */
           sendTime: newDate.toLocaleDateString(), /* 最后一条消息时间 */
