@@ -310,6 +310,9 @@ export async function rongCloudInit (cb, state) {
           case RongIMLib.ConnectionStatus.KICKED_OFFLINE_BY_OTHER_CLIENT:
             console.log('其他设备登录')
             // alert('其他页面登录') // 看是否需要提示
+            let index = parent.layer.getFrameIndex(window.name) // 先得到当前iframe层的索引
+            parent.layer.close(index) // 再执行关闭
+
             // window.location.href = 'about:blank' // 兼容chrome 添加处理
             // 有父类时可直接使用下面的
             window.opener = null
