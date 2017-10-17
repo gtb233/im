@@ -11,3 +11,4 @@ export const INIT_WINDOW = 'init_window'
 export const GET_HISTORY_MESSAGE = 'get_history_message'
 export const SET_SEARCH_NAME = 'set_search_name' // 侧边栏搜索实时刷新用
 export const UPDATE_USERLIST_INFO = 'update_userlist_info'
+export const CHANGE_TIPS_MESSAGE = 'change_tips_message' // 提示

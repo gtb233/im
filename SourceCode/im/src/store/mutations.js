@@ -172,6 +172,10 @@ export default {
         el.sentTime = newDate.toLocaleDateString()
       }
     })
+  },
+  /* 更新侧边栏消息提示数据 */
+  [types.CHANGE_TIPS_MESSAGE] (state, obj) {
+    state.tipsMsg = obj.info
   }
 }
 

@@ -206,7 +206,7 @@ export class ApiRoute extends BaseRoute {
    */
   public async changeMsgNumber(req: Request, res: Response, next: NextFunction){
     const result:any = await redis.getUserList(req.body.userId)
-    console.log('用户列表',result)
+    // console.log('用户列表',result)
     // 更新指定参数
     const rst = new redis.setRst
     for(let k in result) {

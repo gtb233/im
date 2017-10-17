@@ -18,7 +18,9 @@ export const getUserInfo = async ({ dispatch, commit, state }) => {
 export const getUserToken = async ({ dispatch, commit, state }) => {
   await api.getUserTokenAsync((userToken) => {
     commit(types.GET_USER_TOKEN, userToken)
-  }, state)
+  }, state, () => {
+    commit(types.CHANGE_TIPS_MESSAGE, {'info': '您在当前页面停留过久，请刷新重试！'})
+  })
 }
 
 /* 连接融云 */
@@ -63,6 +65,10 @@ export const sendMessage = async ({ dispatch, commit, state }, obj) => {
 
 /* 改变当前对话用户-列表单击事件触发 */
 export const changeCurrentThreadID = async ({commit, state}, obj) => {
+  if (obj.targetId === '') {
+    alert('用户数据异常，请检查连接状态')
+    return false
+  }
   await commit(types.CHANGE_CURRENT_THREAD_INFO, obj)
   // 实时列表
   await api.getHistoryMsg((obj) => {

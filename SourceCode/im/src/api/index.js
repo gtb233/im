@@ -194,8 +194,13 @@ let getUserList = (cb, state) => {
   // }, null)
 }
 
-/* 请求获取TOKEN */
-export async function getUserTokenAsync (cb, state) {
+/**
+ * 请求获取TOKEN
+ * @param cb
+ * @param state VUE 对象
+ * @param cb2 TOKEN失效时修改侧边栏提示
+ */
+export async function getUserTokenAsync (cb, state, cb2) {
   let userToken = ''
   let get = tool.urlParse()
   let user = get['user']
@@ -238,6 +243,7 @@ export async function getUserTokenAsync (cb, state) {
       console.log('获取Token:', data)
     } else {
       console.log('获取Token 其他错误:', data)
+      cb2()
       return false
     }
   }, response => {
