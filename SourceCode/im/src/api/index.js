@@ -319,13 +319,14 @@ export async function rongCloudInit (cb, state) {
           console.log('其他设备登录')
           // alert('其他页面登录') // 看是否需要提示
           let index = parent.layer.getFrameIndex(window.name) // 先得到当前iframe层的索引
+          if (index) window.parent.msgManage = true
           parent.layer.close(index) // 再执行关闭
 
           // window.location.href = 'about:blank' // 兼容chrome 添加处理
-          // 有父类时可直接使用下面的
-          window.opener = null
-          window.open('', '_self', '')
-          window.close()
+          // 独立页时，有父类时可直接使用下面的
+          // window.opener = null
+          // window.open('', '_self', '')
+          // window.close()
           break
         case RongIMLib.ConnectionStatus.DOMAIN_INCORRECT:
           console.log('域名不正确')
@@ -351,7 +352,9 @@ export async function rongCloudInit (cb, state) {
           // 处理商城图标提示语--商城处理部分
           let msgNum = window.parent.isNewMessage >= 1 ? window.parent.isNewMessage : 0
           window.parent.isNewMessage = msgNum + 1
-          $('#gx-socket-message', window.parent.document).html(window.parent.isNewMessage + '条新信息')
+          if (window.parent.msgManage) {
+            $('#gx-socket-message', window.parent.document).html(window.parent.isNewMessage + '条新信息')
+          }
         }
 
         let info = {}
