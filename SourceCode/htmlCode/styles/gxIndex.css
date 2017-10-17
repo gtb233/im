@@ -380,7 +380,7 @@ a:hover{color:#C20005; text-decoration:none;}
 .socket-face span{display: inline-block;cursor: pointer;}
 .socket-face .face{width: 18px;height: 18px;background-position: 0 -35px;margin-left: 20px;margin-top: 10px;}
 .socket-face .price {width: 20px;height: 16px;background-position: 0 -53px;margin-left: 6px;position: relative;overflow: hidden;display: inline-block;cursor: pointer;z-index: 9999}
-.socket-face .price  input {position: absolute;left: -70px;top: 0;cursor: pointer;z-index: 9999;padding-top: 20px;}
+.socket-face .price  input {position: absolute;left: -150px;top: 0;cursor: pointer;z-index: 9999;padding-top: 20px;}
 .face-box{position: absolute;width: 360px;height: 150px;border:#DFE6F6 solid 1px;bottom: 40px;display: none;background: #fff}
 .face-box ul li{width: 28px;height: 27px;border:#fff solid 1px;float: left;text-align: center;padding-top: 1px;cursor: pointer;}
 .face-box ul li:hover{border: #DFE6F6 solid 1px;}
@@ -388,3 +388,5 @@ a:hover{color:#C20005; text-decoration:none;}
 .not-tell{text-align: center;font-size: 14px;color: #8c8c8c;padding-top: 20px;margin-top: 110px;}
 .not-tell span{height:80px;width:96px;background-position: 0 -95px;display: block;margin:auto;margin-bottom: 20px;}
 .not-tell.none{display: none}
+
+.socket-face .fileInput{font-size: 12px;position:absolute;right:0;top:0;opacity: 0;filter:alpha(opacity=0);cursor:pointer;}

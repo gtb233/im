@@ -16,6 +16,7 @@
             <button class="socket-icon"></button>
         </div>
 
+        <!-- 列表 -->
         <div class="socket-list">
             <ul>
                 <thread :active="value.active == 'active'"

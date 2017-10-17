@@ -39,7 +39,7 @@
                     <span class="face socket-icon"  @click="isShow = !isShow"></span>
                     <span class="price socket-icon">
                         <!-- 目前只上传图片 -->
-                        <input type="file" id="img_upload" @change="sendImage()" accept=".gif,.jpg,.jpeg,.png"/>
+                        <input type="file" class="fileInput" id="img_upload" @change="sendImage()" accept=".gif,.jpg,.jpeg,.png"/>
                     </span>
                 </div>
                 <div class="socket-input"  @mousemove="isShow = false">

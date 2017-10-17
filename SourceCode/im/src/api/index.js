@@ -128,7 +128,7 @@ let getUserList = (cb, state) => {
           continue // 只展示用户
         }
         userInfo.targetId = _targetId
-        userInfo.sentTime = newDate.toLocaleDateString()
+        userInfo.sentTime = tool.changeTime(newDate.toLocaleDateString())
         // 音频图片时 与消息窗口处理有差异，处理图标便可
         userInfo.lastMessage = func.checkUserlistMsg(info.lastMessage, info.lastMsgType)
         userInfo.active = ''

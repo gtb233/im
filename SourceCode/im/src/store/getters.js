@@ -15,7 +15,7 @@ export const getUserList = (state, getters) => {
   } else {
     userList = state.userList
   }
-
+  // console.log(userList)
   return userList
 }
 /* 对话框消息 */
