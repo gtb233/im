@@ -262,7 +262,7 @@ export async function getUserTokenAsync (cb, state, cb2) {
  */
 export async function rongCloudInit (cb, state) {
   let appKey = state.appKey
-  console.log('公有云:' + appKey)
+  if (state.debug) console.log('公有云:' + appKey)
   await RongIMLib.RongIMClient.init(appKey)
   await global.RongIMLib.RongIMEmoji.init() // 表情初始化
   await global.RongIMLib.RongIMVoice.init() // 声音初始化
@@ -275,7 +275,8 @@ export async function rongCloudInit (cb, state) {
     userInfo: {},
     emojis: []
   }
-  if (state.isQuery) {
+  // 旧 验证新消息方法，已弃用
+  /* if (state.isQuery) {
     RongIMClient.getInstance().hasRemoteUnreadMessages(state.userToken, {
       onSuccess: function (hasMessage) {
         if (hasMessage) {
@@ -292,114 +293,116 @@ export async function rongCloudInit (cb, state) {
         console.log(err)
       }
     })
-  } else {
-    // 连接状态监听器
-    RongIMClient.setConnectionStatusListener({
-      onChanged: function (status) {
-        switch (status) {
-          case RongIMLib.ConnectionStatus.CONNECTED:
-            result.connect = true // 改为使用额外参数，防止重复调用
-            getUserList((userList) => {
-              result.userList = userList
-              cb(result, 'connect')
-            }, state)
-            // 返回表情 此处回调处理时间会早于用户列表
-            result.emojis = RongIMLib.RongIMEmoji.emojis
+  } */
+
+  // 连接状态监听器
+  RongIMClient.setConnectionStatusListener({
+    onChanged: function (status) {
+      switch (status) {
+        case RongIMLib.ConnectionStatus.CONNECTED:
+          result.connect = true // 改为使用额外参数，防止重复调用
+          getUserList((userList) => {
+            result.userList = userList
             cb(result, 'connect')
-            break
-          case RongIMLib.ConnectionStatus.CONNECTING:
-            console.log('正在链接')
-            break
-          case RongIMLib.ConnectionStatus.DISCONNECTED:
-            console.log('断开连接')
-            break
-          case RongIMLib.ConnectionStatus.KICKED_OFFLINE_BY_OTHER_CLIENT:
-            console.log('其他设备登录')
-            // alert('其他页面登录') // 看是否需要提示
-            let index = parent.layer.getFrameIndex(window.name) // 先得到当前iframe层的索引
-            parent.layer.close(index) // 再执行关闭
+          }, state)
+          // 返回表情 此处回调处理时间会早于用户列表
+          result.emojis = RongIMLib.RongIMEmoji.emojis
+          cb(result, 'connect')
+          break
+        case RongIMLib.ConnectionStatus.CONNECTING:
+          console.log('正在链接')
+          break
+        case RongIMLib.ConnectionStatus.DISCONNECTED:
+          console.log('断开连接')
+          break
+        case RongIMLib.ConnectionStatus.KICKED_OFFLINE_BY_OTHER_CLIENT:
+          console.log('其他设备登录')
+          // alert('其他页面登录') // 看是否需要提示
+          let index = parent.layer.getFrameIndex(window.name) // 先得到当前iframe层的索引
+          parent.layer.close(index) // 再执行关闭
 
-            // window.location.href = 'about:blank' // 兼容chrome 添加处理
-            // 有父类时可直接使用下面的
-            window.opener = null
-            window.open('', '_self', '')
-            window.close()
-            break
-          case RongIMLib.ConnectionStatus.DOMAIN_INCORRECT:
-            console.log('域名不正确')
-            break
-          case RongIMLib.ConnectionStatus.NETWORK_UNAVAILABLE:
-            console.log('网络不可用')
-            break
-        }
+          // window.location.href = 'about:blank' // 兼容chrome 添加处理
+          // 有父类时可直接使用下面的
+          window.opener = null
+          window.open('', '_self', '')
+          window.close()
+          break
+        case RongIMLib.ConnectionStatus.DOMAIN_INCORRECT:
+          console.log('域名不正确')
+          break
+        case RongIMLib.ConnectionStatus.NETWORK_UNAVAILABLE:
+          console.log('网络不可用')
+          break
       }
-    })
+    }
+  })
 
-    // 接收消息 如果有未接收的消息很多太快可能存在展示异常，待处理
-    RongIMClient.setOnReceiveMessageListener({
-      onReceived: async function (message) {
-        if (state.debug) console.log('接收到的消息', message)
-        let messageBack = tool.deepCopy(message) // 注意对象引用的干扰
+  // 接收消息 如果有未接收的消息很多太快可能存在展示异常，待处理
+  RongIMClient.setOnReceiveMessageListener({
+    onReceived: async function (message) {
+      if (state.debug) console.log('接收到的消息', message)
+      let messageBack = tool.deepCopy(message) // 注意对象引用的干扰
 
-        // 输入中状态判断,红包状态判断
-        if (message.messageType === RongIMClient.MessageType.TextMessage ||
-          message.messageType === RongIMClient.MessageType.VoiceMessage ||
-          message.messageType === RongIMClient.MessageType.ImageMessage) {
+      // 输入中状态判断,红包状态判断
+      if (message.messageType === RongIMClient.MessageType.TextMessage ||
+        message.messageType === RongIMClient.MessageType.VoiceMessage ||
+        message.messageType === RongIMClient.MessageType.ImageMessage) {
+        if (message.senderUserId !== state.currentUserId) {
           // 处理商城图标提示语--商城处理部分
           let msgNum = window.parent.isNewMessage >= 1 ? window.parent.isNewMessage : 0
           window.parent.isNewMessage = msgNum + 1
           $('#gx-socket-message', window.parent.document).html(window.parent.isNewMessage + '条新信息')
-
-          let info = {}
-          await getUserInfo(state, message.targetId).then((response) => {
-            info = response.body
-          })
-          result.userInfo.userHead = tool.imageUrlConvert(info.userInfo.userHead)
-          result.userInfo.userId = message.senderUserId
-          result.userInfo.userName = info.userInfo.userName ? info.userInfo.userName : info.entity.userName
-          result.userInfo.gwCode = info.userInfo.code ? info.userInfo.code : info.entity.userName
-          message = func.filterMessage(message) // 引用类型
-          result.msg = message
-          // 改为需要的地方添加处理
-          // result.msg.content.content_back = func.checkUserlistMsg(result.msg.content.content_back, result.msg.messageType)
-
-          // 记录会话列表
-          setUserList(() => {}, state, {
-            targetId: message.targetId, /* 目标ID */
-            userLogo: result.userInfo.userHead, /* 头像 */
-            userName: result.userInfo.userName, /* 商铺名称 */
-            gwCode: result.userInfo.gwCode,
-            lastMessage: func.checkUserlistMsg(result.msg.content.content_back, result.msg.messageType), /* 最后一条消息内容 */
-            messagesNumber: 0, /* 消息数 */
-            message: messageBack
-          })
-
-          // 更新消息框
-          cb(result, 'newMsg')
-        } else if (message.messageType === 'UnknownMessage') {
-          console.log('红包信息，请在手机端查收！')
-        } else {
-          console.log('输入中。。')
         }
-      }
-    })
 
-    /* 开始连接 */
-    RongIMClient.connect(state.userToken, {
-      onSuccess: function (userId) {
-        console.log('链接成功，用户id：' + userId)
-      },
-      onTokenIncorrect: function () {
-        console.log('token无效,连接失败!')
-        // alert('连接失败，请刷新页面重试！')
-        // 此处可添加重新获取
-      },
-      onError: function (errorCode) {
-        console.log('=============================================')
-        console.log(errorCode)
+        let info = {}
+        await getUserInfo(state, message.targetId).then((response) => {
+          info = response.body
+        })
+        result.userInfo.userHead = tool.imageUrlConvert(info.userInfo.userHead)
+        result.userInfo.userId = message.senderUserId
+        result.userInfo.userName = info.userInfo.userName ? info.userInfo.userName : info.entity.userName
+        result.userInfo.gwCode = info.userInfo.code ? info.userInfo.code : info.entity.userName
+        message = func.filterMessage(message) // 引用类型
+        result.msg = message
+        // 改为需要的地方添加处理
+        // result.msg.content.content_back = func.checkUserlistMsg(result.msg.content.content_back, result.msg.messageType)
+
+        // 记录会话列表
+        setUserList(() => {}, state, {
+          targetId: message.targetId, /* 目标ID */
+          userLogo: result.userInfo.userHead, /* 头像 */
+          userName: result.userInfo.userName, /* 商铺名称 */
+          gwCode: result.userInfo.gwCode,
+          lastMessage: func.checkUserlistMsg(result.msg.content.content_back, result.msg.messageType), /* 最后一条消息内容 */
+          messagesNumber: 0, /* 消息数 */
+          message: messageBack
+        })
+
+        // 更新消息框
+        cb(result, 'newMsg')
+      } else if (message.messageType === 'UnknownMessage') {
+        console.log('红包信息，请在手机端查收！')
+      } else {
+        console.log('输入中。。')
       }
-    })
-  }
+    }
+  })
+
+  /* 开始连接 */
+  RongIMClient.connect(state.userToken, {
+    onSuccess: function (userId) {
+      console.log('链接成功，用户id：' + userId)
+    },
+    onTokenIncorrect: function () {
+      console.log('token无效,连接失败!')
+      // alert('连接失败，请刷新页面重试！')
+      // 此处可添加重新获取
+    },
+    onError: function (errorCode) {
+      console.log('=============================================')
+      console.log(errorCode)
+    }
+  })
 }
 
 /**

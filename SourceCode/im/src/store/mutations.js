@@ -136,7 +136,7 @@ export default {
         if (el.targetId === obj.targetId) {
           el.lastMessage = func.checkUserlistMsg(obj.content.content_back, obj.messageType)  // 设置内容，非对象结构
           el.sentTime = newDate.toLocaleDateString()
-          if (el.targetId !== state.currentThreadID) {
+          if ((el.targetId !== state.currentThreadID) && (state.currentUserId !== obj.senderUserId)) {
             el.messagesNumber += 1
           }
           isExist = 1
@@ -150,7 +150,7 @@ export default {
           userName: userInfo.userName, /* 商铺名称 */
           lastMessage: func.checkUserlistMsg(obj.content.content_back, obj.messageType), /* 最后一条消息内容 */
           lastMsgType: obj.messageType,
-          messagesNumber: 1, /* 消息数 */
+          messagesNumber: state.currentUserId !== obj.senderUserId ? 0 : 1, /* 消息数 */
           sendTime: newDate.toLocaleDateString(), /* 最后一条消息时间 */
           active: ''
         }
