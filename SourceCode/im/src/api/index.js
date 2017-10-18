@@ -141,6 +141,7 @@ let getUserList = (cb, state) => {
         userInfo.lastMsgType = info.lastMsgType
         userInfo.gwCode = info.gwCode
         userInfo.messagesNumber = info.messagesNumber
+        userInfo.uniKey = parseInt(Math.random() * 1000000 + 10) // 辅助用，当数据异常时
         userList.push(userInfo)
       }
     } catch (e) {
@@ -486,6 +487,7 @@ export const getHistoryMsg = async (cb, state) => {
     let list = response.body
     for (let key in list) {
       list[key] = JSON.parse(list[key])
+      list[key].uniKey = parseInt(Math.random() * 1000000 + 10)
       list[key] = func.filterMessage(list[key])
     }
     result.list = list

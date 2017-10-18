@@ -18,7 +18,7 @@
                         <message :own="message.senderUserId == currentUserId"
                             :message="message"
                             @play="play(message)"
-                            v-for="(message, key) of messageList" :key="message.messageUId"
+                            v-for="(message, key) of messageList" :key="message.messageUId + message.uniKey"
                         >
                         </message>
                     </ul>
@@ -96,7 +96,7 @@ export default {
             }
         },
         sendImage(){
-            let _file = $("#img_upload")[0].files[0];
+            let _file = $("#img_upload")[0].files[0]; // 不支持IE10以下版本
             /* let types = ['image/gif', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/x-png']
             if (types.indexOf(_file.type) == -1) {
                 alert('请上传图片文件！')
