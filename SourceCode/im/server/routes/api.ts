@@ -103,14 +103,14 @@ export class ApiRoute extends BaseRoute {
    */
   public async gxtToken(req: Request, res: Response, next: NextFunction){
     res.header("Access-Control-Allow-Origin", "*");
-    const check = tool.checkToken(req.body.userId, req.body.storeId, req.body.token)
+    const check = tool.checkToken(req.body.userId, req.body.storeId, req.body.token);
     if (!check) {
       res.send("token 验证失败，您在当前页面停留过久，请刷新重试！");
       return true;
     }
     // 默认客服号替换成可查询用户ID
     if (req.body.storeId === 'GW00000001') {
-      req.body.storeId = req.body.userId
+      req.body.storeId = req.body.userId;
     }
     //请求核心接口获取用户信息，若不存在则不再查询
     let userInfoRst = new core.userInfoRst();
@@ -128,26 +128,33 @@ export class ApiRoute extends BaseRoute {
       }
       res.send(data);
     } else {
-      // 获取盖讯通 新请求结构,当无用户名时使用GW号
-      const rst = new gxtToken.TokenRst();
-      rst.fromgw = JSON.stringify({
-        GW: req.body.userId,
-        userNickname: userInfo.data.userName ? userInfo.data.userName : userInfo.data.code,
-        userHead: userInfo.data.userHead ? userInfo.data.userHead : ''
-      })
-      rst.togw = JSON.stringify({
-        GW: req.body.storeId,
-        userNickname: storeInfo.data.userName ? storeInfo.data.userName : storeInfo.data.code,
-        userHead: storeInfo.data.userHead ? storeInfo.data.userHead : ''
-      })
-      // rst.fromgw = req.body.userId;
-      // rst.togw = req.body.storeId;
-      // console.log(rst)
-      let data: any  = await gxtToken.exec(rst);
-      if(data.result == '1'){
-        data.data.fromgw.userInfo = userInfo.data
-        data.data.togw.userInfo = storeInfo.data
+      // TOKEN改为缓存记录，不再每次都重新获取。盖讯通设置有效期一个月，此暂定10分钟
+      let data: any = await redis.getRongCloudToken(req.body.userId, req.body.storeId);
+      if(data === null || !data){
+        // 获取盖讯通 新请求结构,当无用户名时使用GW号
+        const rst = new gxtToken.TokenRst();
+        rst.fromgw = JSON.stringify({ // 登录的用户
+          GW: req.body.userId,
+          userNickname: userInfo.data.userName ? userInfo.data.userName : userInfo.data.code,
+          userHead: userInfo.data.userHead ? userInfo.data.userHead : ''
+        });
+        rst.togw = JSON.stringify({
+          GW: req.body.storeId,
+          userNickname: storeInfo.data.userName ? storeInfo.data.userName : storeInfo.data.code,
+          userHead: storeInfo.data.userHead ? storeInfo.data.userHead : ''
+        });
+        // console.log(rst)
+
+        data = await gxtToken.exec(rst);
+        if(data.result == '1'){
+          data.data.fromgw.userInfo = userInfo.data;
+          data.data.togw.userInfo = storeInfo.data;
+        }
+        redis.setRongCloudToken(req.body.userId, req.body.storeId, data);
+      }else{
+        data = JSON.parse(data);
       }
+      
       res.send(data);
     }
   }

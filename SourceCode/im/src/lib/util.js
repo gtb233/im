@@ -54,9 +54,9 @@ export function deepCopy (obj) {
 }
 
 /**
- * 统一时间输出格式：YYYY-MM-DD
+ * 统一时间输出格式：YYYY/MM/DD 返回格式可自行定义
  * @param {*} str
- * @returns str 2017-10-11
+ * @returns str 2017/10/11
  */
 export function changeTime (str) {
   // Thursday, July 10, 2017这样的格式，先转2017年1月12日
@@ -112,6 +112,6 @@ export function changeTime (str) {
   if (curDay < 10) {
     curDay = '0' + curDay
   }
-  let returnDate = curYear + '-' + curMonth + '-' + curDay
+  let returnDate = curYear + '/' + curMonth + '/' + curDay
   return returnDate
 }

@@ -13,13 +13,14 @@ export default {
     // redis
     redis: {
         PORT: 6379,
-        HOST: '172.18.7.77', // 测试环境
+        HOST: '172.18.7.77', // 测试环境172.18.7.77
         OPTIONS: {
-            // auth_pass: ''
+            //auth_pass: ''
         },
-        keyPrefix: {// KEY前缀
-            userList: 'gxt_emall_IM_userlist_', // prefix + userId
-            historyMsg: 'gxt_emall_IM_historyMsg_' // prefix + md5(userId + _ + targetId)
+        keyPrefix: {// KEY前缀 注意加：gxt_emall_IM_ 
+            userList: 'gxt_emall_IM_userlist_', //用户列表  prefix + userId
+            historyMsg: 'gxt_emall_IM_historyMsg_', //历史消息  prefix + md5(userId + _ + targetId) 30天
+            rongCloudToken: 'gxt_emall_IM_rongCloud_token_' //融云TOKEN  prefix + userId + _ + targetId 10分钟
         }
     },
     //融云api

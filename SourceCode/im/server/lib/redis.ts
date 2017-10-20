@@ -170,3 +170,35 @@ export async function getHistoryMsg(userId:string, targetId: string, start: numb
     });
   })
 }
+
+/**
+ * 设置融云TOKEN 服务端记录保存 10分钟
+ */
+export async function setRongCloudToken(userId: string, targetId: string, data: any){
+  const key: string = config.redis.keyPrefix.rongCloudToken + userId + '_' + targetId
+  
+  await client.SET(key, JSON.stringify(data), (err, reply) => {
+    // console.log(reply)
+  });
+  
+  // 设置过期时间/ 秒
+  client.expire(key, 10*60)
+}
+
+/**
+ * 取得融云TOKEN 服务端记录数据
+ */
+export async function getRongCloudToken(userId: string, targetId: string){
+  const key: string = config.redis.keyPrefix.rongCloudToken + userId + '_' + targetId
+  
+  return new Promise((resolve, reject) => {
+    client.GET(key, (err, reply) => {
+      try{
+        //console.log(reply) // null
+        resolve(reply);
+      }catch(e){
+        return null
+      }
+    });
+  })
+}

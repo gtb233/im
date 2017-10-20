@@ -4,7 +4,12 @@
             <div class="tips">{{tipsMessage}}</div>
         </div>
         <div class="socket-right" v-bind:class="[{ isShowMsgSection: currentThreadID === currentUserId},'']">
-            <div class="socket-name">{{currentThreadName}}</div>
+            <div class="socket-name">
+                <span class="socket-shop-logo">
+                    <img class="socket-shop-logo" :src="currentThreadLogo ? currentThreadLogo : './static/images/bgs/hedader-tx.png' ">
+                </span>
+                {{currentThreadName}}
+            </div>
             <div class="socket-info"  @mouseout="isShow = false">
         
                 <!--没有选中店铺时显示-->
@@ -70,7 +75,8 @@ export default {
       ...mapState({
         currentUserId: state=>state.currentUserId,
         currentThreadID: state => state.currentThreadID,
-        currentThreadName : state => state.currentThreadName,
+        currentThreadName: state => state.currentThreadName,
+        currentThreadLogo: state => state.currentThreadLogo,
         tipsMessage: state => state.tipsMsg,
         emojis: state => state.emojis
       }),
