@@ -103,52 +103,61 @@ export class ApiRoute extends BaseRoute {
    */
   public async gxtToken(req: Request, res: Response, next: NextFunction){
     res.header("Access-Control-Allow-Origin", "*");
-    const check = tool.checkToken(req.body.userId, req.body.storeId, req.body.token);
-    if (!check) {
-      res.send("token 验证失败，您在当前页面停留过久，请刷新重试！");
-      return true;
-    }
+    
+    //取消限制-放行
+    // const check = tool.checkToken(req.body.userId, req.body.storeId, req.body.token);
+    // if (!check) {
+    //   res.send("token 验证失败，您在当前页面停留过久，请刷新重试！");
+    //   return true;
+    // }
+    
     // 默认客服号替换成可查询用户ID
-    if (req.body.storeId === 'GW00000001') {
-      req.body.storeId = req.body.userId;
-    }
+    // if (req.body.storeId === 'GW00000001') {
+    //   req.body.storeId = req.body.userId;
+    // }
+    
     //请求核心接口获取用户信息，若不存在则不再查询
     let userInfoRst = new core.userInfoRst();
     userInfoRst.code = req.body.userId; // GW号
     let userInfo = await core.exec(userInfoRst);
     userInfoRst.code = req.body.storeId;
     let storeInfo = await core.exec(userInfoRst);
-    
-    if (userInfo.code !== '' || storeInfo.code !== '') {
+
+    // console.log(userInfo);
+    if (userInfo.code == 0 || storeInfo.code == 0) {
       // 用户信息验证失败
       let data: Object = {
-        result: '403',
+        resultCode: '403',
         tag: '用户或商家不存在！',
         data: {}
       }
       res.send(data);
     } else {
-      // TOKEN改为缓存记录，不再每次都重新获取。盖讯通设置有效期一个月，此暂定10分钟
+      // TOKEN改为缓存记录，不再每次都重新获取。盖讯通设置有效期一个月，此暂定60分钟
       let data: any = await redis.getRongCloudToken(req.body.userId, req.body.storeId);
-      if(data === null || !data){
+      // console.log('data:',data)
+      if(data == null || !data){
         // 获取盖讯通 新请求结构,当无用户名时使用GW号
         const rst = new gxtToken.TokenRst();
-        rst.fromgw = JSON.stringify({ // 登录的用户
+        rst.fromgw = { // 登录的用户
           GW: req.body.userId,
-          userNickname: userInfo.data.userName ? userInfo.data.userName : userInfo.data.code,
+          userNickname: userInfo.data.nickname ? userInfo.data.nickname : userInfo.data.userName,
           userHead: userInfo.data.userHead ? userInfo.data.userHead : ''
-        });
-        rst.togw = JSON.stringify({
+        };
+        rst.togw = {
           GW: req.body.storeId,
-          userNickname: storeInfo.data.userName ? storeInfo.data.userName : storeInfo.data.code,
+          userNickname: storeInfo.data.nickname ? storeInfo.data.nickname : storeInfo.data.userName,
           userHead: storeInfo.data.userHead ? storeInfo.data.userHead : ''
-        });
+        };
         // console.log(rst)
 
         data = await gxtToken.exec(rst);
-        if(data.result == '1'){
-          data.data.fromgw.userInfo = userInfo.data;
-          data.data.togw.userInfo = storeInfo.data;
+        // console.log('new:',data)
+        if(data.resultCode == '0001'){
+          data.resultData.fromgw.userInfo = userInfo.data; //追加完整用户信息数据
+          data.resultData.togw.userInfo = storeInfo.data;
+        } else {
+          return false;
         }
         redis.setRongCloudToken(req.body.userId, req.body.storeId, data);
       }else{
@@ -242,7 +251,7 @@ export class ApiRoute extends BaseRoute {
    */
   public async getUserInfo(req: Request, res: Response, next: NextFunction){
     const rst = new userInfo.userInfoRst
-    rst.userId = req.body.userId
+    rst.code = req.body.userId
 
     const data = await userInfo.exec(rst);
     if (data.result == 1){

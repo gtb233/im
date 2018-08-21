@@ -1,3 +1,3 @@
 export default {
-    userInfo: "api/user/adm/queryByCode" // 根据GW号获取用户信息
+    userInfo: "v1/user/info" // 根据GW号获取用户信息
 }

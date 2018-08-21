@@ -15,12 +15,12 @@ export default {
     let storeInfo = userobj.currentThreadID
     // 商家信息 统一修改为使用商城用户信息
     state.currentThreadID = storeInfo.userId
-    state.currentThreadName = storeInfo.userInfo.userName ? storeInfo.userInfo.userName : storeInfo.userInfo.code
+    state.currentThreadName = storeInfo.userInfo.nickname ? storeInfo.userInfo.nickname : storeInfo.userInfo.userName
     state.currentThreadLogo = tool.imageUrlConvert(storeInfo.userInfo.userHead)
     state.currentThreadGWCode = storeInfo.userInfo.code ? storeInfo.userInfo.code : ''
     // 用户信息
     state.userInfo.thumb = tool.imageUrlConvert(userInfo.userInfo.userHead)
-    state.userInfo.userName = userInfo.userInfo.userName ? userInfo.userInfo.userName : userInfo.userInfo.code
+    state.userInfo.userName = userInfo.userInfo.nickname ? userInfo.userInfo.nickname : userInfo.userInfo.userName
     state.userInfo.userLevel = userInfo.userInfo.grade * 1 + '级会员'
     // 定义辅助判断信息 废弃
     state.isQuery = 0 // userobj.isQuery === '1' ? 1 : 0
@@ -147,7 +147,7 @@ export default {
           targetId: obj.senderUserId, /* 目标ID */
           gwCode: userInfo.gwCode, /* 用户GW号 */
           userLogo: userInfo.userHead, /* 头像 */
-          userName: userInfo.userName, /* 商铺名称 */
+          userName: userInfo.nickname, /* 商铺名称 */
           lastMessage: func.checkUserlistMsg(obj.content.content_back, obj.messageType), /* 最后一条消息内容 */
           lastMsgType: obj.messageType,
           messagesNumber: state.currentUserId !== obj.senderUserId ? 0 : 1, /* 消息数 */

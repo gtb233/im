@@ -1,18 +1,21 @@
 import * as client from './client'
 import urlConfig from './urlConfig'
+
 /**
  * 请求参数
  */
 export class userInfoRst {
-    public code: string; //GW号
+    public code: string | undefined; //GW号
 }
 /**
- * 返回数据
+ * 返回数据- T部分类型
  */
 export class userInfoRpn {
-    public code: string;
-    public description: string;
-    public data: any;
+    public id : number | undefined;
+    public username : string | undefined;
+    public nickname : string | undefined;
+    public sex: number | undefined;
+    public headPortrait: string | undefined;
 }
 
 
@@ -23,22 +26,24 @@ export class userInfoRpn {
 export async function exec(rst: userInfoRst) {
     const data: string = await client.exec(urlConfig.userInfo, rst);
     try{
-        let result: any = JSON.parse(data) as client.RSM<userInfoRpn>;
-        if(result.code == ""){
+        let result = JSON.parse(data) as client.RSM<userInfoRpn>;
+        if(result.resultCode == "0001"){
             let data = {
-                // userId: result.data.uid, // 此为商城USERID
-                code: result.data.code, // GW号
-                grade: result.data.grade, // 会员等级
-                userName: result.data.userName,
-                // nickname: result.data.nickname, //不再使用
-                userHead: result.data.headPortraitURL
+                userId: result.resultData.id, // 此为商城USERID
+                code: result.resultData.username, // GW号
+                grade: 0, // 会员等级
+                userName: result.resultData.username, //注意大小写
+                nickname: result.resultData.nickname,
+                userHead: result.resultData.headPortrait
             }
+            result.code  = result.resultCode
+            result.description = result.resultDesc
             result.data  = data
             return result
         }else{
             return {
-                code:0,
-                description: result.description,
+                code: 0,
+                description: result.resultDesc,
                 data: {}
             };
         }

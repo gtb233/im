@@ -172,7 +172,7 @@ export async function getHistoryMsg(userId:string, targetId: string, start: numb
 }
 
 /**
- * 设置融云TOKEN 服务端记录保存 10分钟
+ * 设置融云TOKEN 服务端记录保存 60分钟
  */
 export async function setRongCloudToken(userId: string, targetId: string, data: any){
   const key: string = config.redis.keyPrefix.rongCloudToken + userId + '_' + targetId
@@ -182,7 +182,7 @@ export async function setRongCloudToken(userId: string, targetId: string, data: 
   });
   
   // 设置过期时间/ 秒
-  client.expire(key, 10*60)
+  client.expire(key, 60*60)
 }
 
 /**

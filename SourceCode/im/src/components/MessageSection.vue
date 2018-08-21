@@ -23,7 +23,7 @@
                         <message :own="message.senderUserId == currentUserId"
                             :message="message"
                             @play="play(message)"
-                            v-for="(message, key) of messageList" :key="message.messageUId + message.uniKey"
+                            v-for="message of messageList" :key="message.messageUId + message.uniKey"
                         >
                         </message>
                     </ul>
@@ -33,7 +33,7 @@
                 <div class="socket-face">
                     <div class="face-box" v-if="isShow">
                         <ul>
-                            <li v-for="(emoji, keyid) of emojis" :key="emoji.children[0].getAttribute('name')"
+                            <li v-for="emoji of emojis" :key="emoji.children[0].getAttribute('name')"
                                 v-html="emoji.innerHTML"
                                 @click="addContent(emoji.children[0].getAttribute('name'))"
                                 :title="emoji.children[0].getAttribute('name')"

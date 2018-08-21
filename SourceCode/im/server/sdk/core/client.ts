@@ -23,11 +23,24 @@ if (config.proxy) {
 export class RSM<T>
 {
     /// 响应代码
-    public result: string;
+    public resultCode: string;
     /// 响应描述
-    public tag: string;
+    public resultDesc: string;
     /// 响应数据
-    public data: T;
+    public resultData: T;
+    /// 响应类型
+    public actionType: string |undefined;
+
+    //other
+    public code: string | undefined;
+    public description: string | undefined;
+    public data: any;
+
+    constructor (data: any = {}){
+        this.resultData = data
+        this.resultDesc = ''
+        this.resultCode = '0000'
+    }
 }
 
 /* 

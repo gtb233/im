@@ -32,30 +32,25 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 配置本地 im.gemall.com 代理到 http://localhost:8081/
 
 ## 配置项
-目前跨域设置的是 document.domain = 'gemall.com' 上线到生产环境请修改
+跨域设置 document.domain = ''
 配置文件有两处修改 config 与server下
 
-## 盖讯通测试环境：
+## 测试环境：
 > 测试账号:
-- GW87209993   123456
+- GW00000001   123456
 
-- GW50326071   123456
-
-- GW00172590
+- GW00000006   123456
 
 ## 接口
-> 旧测试地址 ：http://172.18.7.64:8080
-
-> 新测试地址 ：http://172.18.7.64:8082
 
 - 获取用户TOKEN： 
-/backji/gmall/userInfoForMall
+
 ```
-与盖讯通对接拟定请求参数与返回结构
+请求参数与返回结构
 //请求数据示例
 {
-    fromgw = '', //用户GW号
-    togw = '' //商家GW号
+    fromgw = '',
+    togw = ''
 }
 //返回数据示例
 {

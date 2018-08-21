@@ -16,7 +16,7 @@ export const getUserInfo = async ({ dispatch, commit, state }) => {
 
 /* 取得用户融云TOKEN */
 export const getUserToken = async ({ dispatch, commit, state }) => {
-  await api.getUserTokenAsync((userToken) => {
+  await api.getUserToken((userToken) => {
     commit(types.GET_USER_TOKEN, userToken)
   }, state, () => {
     commit(types.CHANGE_TIPS_MESSAGE, {'info': '您在当前页面停留过久，请刷新重试！'})

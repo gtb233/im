@@ -36,11 +36,13 @@ if (config.proxy) {
 export class RSM<T>
 {
     /// 响应代码
-    public result: string;
+    public resultCode: string | undefined;
     /// 响应描述
-    public tag: string;
+    public resultDesc: string | undefined;
     /// 响应数据
-    public data: T;
+    public resultData: T | undefined;
+    /// 响应类型
+    public actionType: string |undefined;
 }
 
 /* 
@@ -48,12 +50,15 @@ export class RSM<T>
  * @param url 
  * @param rst 
  */
-export async function exec<T>(url: string, rst: any) {
+export async function exec<T>(url: string, rst: string) {
     const headers = {
-        ["Content-Type"]: "application/x-www-form-urlencoded",
+        // ["Content-Type"]: "application/x-www-form-urlencoded",
+        ["Content-Type"]: "application/json; charset=utf-8",
     }
 
-    let query = Object.keys(rst).map(k => k + '=' + rst[k]).join('&');
+    let query:string = rst //json 串
+
+    // let query = Object.keys(rst).map(k => k + '=' + rst[k]).join('&');
     let re = await httpc.post(config.gxt.url + url, query, headers);
     return await re.readBody();
 }

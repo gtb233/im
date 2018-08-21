@@ -16,6 +16,8 @@ Vue.use(VueResource)
 
 const conversationtype = RongIMLib.ConversationType.PRIVATE
 
+// Vue.http.options.emulateJSON = true // 需要跨域时使用
+
 /**
  * 取得盖讯通用户信息
  * @param string userId 盖讯通ID
@@ -68,12 +70,12 @@ export async function setUserList (cb, state, obj, isReceive = 0) {
     gwCode: obj.gwCode, /* GW号 */
     targetId: obj.targetId, /* 目标ID */
     userLogo: obj.userLogo, /* 头像 */
-    userName: obj.userName, /* 商铺名称 */
+    userName: obj.nickname, /* 商铺名称-改用昵称 */
     lastMessage: obj.lastMessage, /* 最后一条消息文本内容 */
     lastMsgType: obj.message.messageType, /* 消息类型 */
     messagesNumber: parseInt(messagesNumber), /* 消息数 */
     message: {
-      senderUserId: obj.message.senderUserId, /* 以此参数为判断谁发的 */
+      senderUserId: obj.message.senderUserId, /* 以此参数为判断谁发的  */
       targetId: obj.message.targetId,
       sentTime: obj.message.sentTime,
       messageId: obj.message.messageId,
@@ -201,7 +203,7 @@ let getUserList = (cb, state) => {
  * @param state VUE 对象
  * @param cb2 TOKEN失效时修改侧边栏提示
  */
-export async function getUserTokenAsync (cb, state, cb2) {
+export async function getUserToken (cb, state, cb2) {
   let userToken = ''
   let get = tool.urlParse()
   let user = get['user']
@@ -209,6 +211,7 @@ export async function getUserTokenAsync (cb, state, cb2) {
   let isQuery = get['isQuery']
   if (!user || !currentThreadID) {
     alert('用户ID与商家ID数据异常！')
+    console.log('用户ID与商家ID数据异常！')
     return false
   }
   const params = {
@@ -217,6 +220,7 @@ export async function getUserTokenAsync (cb, state, cb2) {
     token: get['token'],
     storeId: currentThreadID
   }
+
   await Vue.http.post(
     state.serverUrl + 'api/gxtToken',
     params,
@@ -226,20 +230,20 @@ export async function getUserTokenAsync (cb, state, cb2) {
 
     if (state.debug) console.log('service return:', data)
 
-    if (data.result === '1') {
+    if (data.resultCode === '0001') {
       // 检查商家
-      if (data.data.togw === 'null' || data.data.togw === null) {
+      if (data.resultData.togw === 'null' || data.resultData.togw === null) {
         alert('商家不存在，请核对！')
         console.log('商家不存在')
       }
       // 检查是否初始客服号，若是则替换提示语
-      if (data.data.togw.userId === data.data.fromgw.userId) {
-        data.data.togw.userInfo.userName = '请选择要咨询的商家'
+      if (data.resultData.togw.userId === data.resultData.fromgw.userId) {
+        data.resultData.togw.userInfo.userName = '请选择要咨询的商家'
       }
-      userToken = data.data.rongToken // 融云TOKEN
-      user = data.data.fromgw // 变更为用户信息对象
-      currentThreadID = data.data.togw // 变更为商家信息对象
-    } else if (data.result === '403') {
+      userToken = data.resultData.rongToken // 融云TOKEN
+      user = data.resultData.fromgw // 变更为用户信息对象
+      currentThreadID = data.resultData.togw // 变更为商家信息对象
+    } else if (data.resultCode === '403') {
       // alert(data.tag + '!请重新进入!')
       console.log('获取Token:', data)
     } else {
@@ -248,7 +252,7 @@ export async function getUserTokenAsync (cb, state, cb2) {
       return false
     }
   }, response => {
-    // alert('请求连接失败，请刷新页面重试！')
+    alert('请求连接失败，请刷新页面重试！')
     console.log('请求TOKEN失败!')
     return false
   })
@@ -281,7 +285,6 @@ export async function rongCloudInit (cb, state) {
     RongIMClient.getInstance().hasRemoteUnreadMessages(state.userToken, {
       onSuccess: function (hasMessage) {
         if (hasMessage) {
-          // 有未读的消息
           console.log('有新消息')
           // 修改商城代码，添加消息提示图标
         } else {
@@ -318,7 +321,7 @@ export async function rongCloudInit (cb, state) {
           break
         case RongIMLib.ConnectionStatus.KICKED_OFFLINE_BY_OTHER_CLIENT:
           console.log('其他设备登录')
-          // alert('其他页面登录') // 看是否需要提示
+          // alert('其他页面登录')
           let index = parent.layer.getFrameIndex(window.name) // 先得到当前iframe层的索引
           if (index) window.parent.msgManage = true
           parent.layer.close(index) // 再执行关闭
@@ -365,6 +368,7 @@ export async function rongCloudInit (cb, state) {
         result.userInfo.userHead = tool.imageUrlConvert(info.userInfo.userHead)
         result.userInfo.userId = message.senderUserId
         result.userInfo.userName = info.userInfo.userName ? info.userInfo.userName : info.entity.userName
+        result.userInfo.nickname = info.userInfo.nickname ? info.userInfo.nickname : info.entity.userName
         result.userInfo.gwCode = info.userInfo.code ? info.userInfo.code : info.entity.userName
         message = func.filterMessage(message) // 引用类型
         result.msg = message
@@ -375,7 +379,8 @@ export async function rongCloudInit (cb, state) {
         setUserList(() => {}, state, {
           targetId: message.targetId, /* 目标ID */
           userLogo: result.userInfo.userHead, /* 头像 */
-          userName: result.userInfo.userName, /* 商铺名称 */
+          userName: result.userInfo.userName, /* 名称 */
+          nickname: result.userInfo.nickname, // 昵称
           gwCode: result.userInfo.gwCode,
           lastMessage: func.checkUserlistMsg(result.msg.content.content_back, result.msg.messageType), /* 最后一条消息内容 */
           messagesNumber: 0, /* 消息数 */
@@ -437,6 +442,7 @@ export async function sendMsg (cb, state, obj) {
         targetId: state.currentThreadID, /* 目标ID */
         userLogo: state.currentThreadLogo, /* 头像 */
         userName: state.currentThreadName, /* 商铺名称 */
+        nickname: state.currentThreadName,
         lastMessage: msgContent,
         message: message /* 保存消息到历史 */
       })
@@ -650,6 +656,7 @@ const sendImage = async (data, state, cb) => {
           targetId: state.currentThreadID, /* 目标ID */
           userLogo: state.currentThreadLogo, /* 头像 */
           userName: state.currentThreadName, /* 商铺名称 */
+          nickname: state.currentThreadName,
           lastMessage: message.content.content_back,
           message: messageBack
         })
